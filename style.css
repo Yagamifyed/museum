@@ -517,3 +517,23 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 .wallets dd button:hover { border-color: var(--faint); }
 .lock-go { border: 1px solid var(--ink); border-radius: 999px; padding: 9px 18px 10px; background: var(--ink); color: var(--bg); }
 .lock-go:hover { text-decoration: none; background: var(--bg); color: var(--ink); }
+
+/* ── walk through (3D) ───────────────────────────── */
+body.walking { overflow: hidden; }
+body.walking #about, body.walking .foot { display: none; }
+.walk { position: fixed; inset: 0; z-index: 10; background: #f6f6f4; }
+.walk canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+.walk canvas:active { cursor: grabbing; }
+.walk-ui {
+  position: fixed; left: var(--gutter); right: var(--gutter); bottom: 24px; z-index: 11;
+  display: flex; justify-content: space-between; align-items: flex-end; gap: 16px;
+  pointer-events: none;
+}
+.walk-ui > * { pointer-events: auto; }
+.walk-now { margin: 0; color: var(--mute); font-size: var(--t-small); max-width: 34em; }
+.walk-buttons { display: flex; gap: 10px; flex: none; }
+.walk-buttons .seg button { padding: 10px 18px 11px; }
+.walk-buttons .pill { display: inline-block; padding: 10px 18px 11px; font-size: var(--t-small); line-height: 1; border-radius: 999px; background: var(--bg); }
+.walk-link { color: var(--ink); }
+.walk-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 560px) { .walk-ui { flex-direction: column; align-items: stretch; } .walk-buttons { justify-content: space-between; } }

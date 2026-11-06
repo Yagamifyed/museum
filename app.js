@@ -14,7 +14,7 @@ const link = (w) => `#/work/${encodeURIComponent(w.id)}`;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const plural = (n, one, many = one + 's') => `${n} ${n === 1 ? one : many}`;
 
-const PAGE_TITLES = { museum: 'The Museum', vault: 'The Vault', watchlist: 'Watch List' };
+const PAGE_TITLES = { museum: 'The Museum', vault: 'The Vault', watchlist: 'Watch List', walk: 'Walk through the Museum' };
 const state = { page: null, chain: 'all', artist: null, view: 'grid', sort: 'recent' };
 const SORTS = [['recent', 'Recent'], ['artist', 'Artist'], ['title', 'Title'], ['chain', 'Chain']];
 const artistLink = (name) => `#/artist/${encodeURIComponent(name)}`;
@@ -199,8 +199,19 @@ function renderAbout() {
     `<dt>${CHAINS[c]}</dt><dd><code title="${esc(data.wallets[c])}">${esc(short(data.wallets[c]))}</code><button type="button" data-copy="${esc(data.wallets[c])}">Copy</button></dd>`).join('');
 }
 
+let walker = null; // the 3D module, loaded on first visit
+async function startWalk() {
+  const { enterWalk } = await import('./walk.js');
+  walker = await enterWalk($('[data-walk]'), museum, {
+    onOpen: (w) => { location.hash = link(w).slice(1); },
+    onFocus: (i, w, n) => { $('[data-walk-now]').textContent = `${pad(i + 1)} / ${pad(n)}  ${w.title}, ${by(w)}`; },
+  });
+}
+
 function showPage(page) {
   if (state.page === page) return;
+  if (state.page === 'walk') import('./walk.js').then((m) => m.leaveWalk());
+  document.body.classList.toggle('walking', page === 'walk');
   state.page = page;
   for (const el of $$('[data-page]')) el.hidden = el.dataset.page !== page;
   $$('[data-nav]').forEach((a) => (a.dataset.nav === page ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current')));
@@ -323,7 +334,7 @@ let current = null;
 let lastFocus = null;
 
 function sequence() {
-  if (state.page === 'museum' && current?.museum) return museum;
+  if ((state.page === 'museum' || state.page === 'walk') && current?.museum) return museum;
   const list = filtered();
   return list.includes(current) ? list : works;
 }
@@ -381,7 +392,7 @@ function closeSheet() {
 }
 
 function leaveSheet() {
-  history.pushState(null, '', state.page === 'vault' ? (state.artist ? artistLink(state.artist) : '#/vault') : '#/');
+  history.pushState(null, '', state.page === 'vault' ? (state.artist ? artistLink(state.artist) : '#/vault') : state.page === 'walk' ? '#/walk' : '#/');
   closeSheet();
 }
 
@@ -415,6 +426,7 @@ function route() {
     if (changed || !wasVault) { renderVaultHead(); renderFilters(); renderWorks(); if (wasVault) window.scrollTo({ top: 0 }); }
   }
   else if (h === '#/watchlist') { showPage('watchlist'); openWatchlist(); }
+  else if (h === '#/walk') { showPage('walk'); startWalk(); }
   else if (h === '' || h === '#' || h === '#/') showPage('museum');
   else if (!state.page) showPage('museum'); // plain anchors like #about keep the current page
 }
@@ -456,6 +468,8 @@ document.addEventListener('click', (e) => {
   }
   else if (t.hasAttribute('data-more')) { $('.sheet .desc.clamped')?.classList.remove('clamped'); t.remove(); }
   else if (t.hasAttribute('data-close')) leaveSheet();
+  else if (t.hasAttribute('data-walk-prev')) walker?.prev();
+  else if (t.hasAttribute('data-walk-next')) walker?.next();
   else if (t.hasAttribute('data-prev')) step(-1);
   else if (t.hasAttribute('data-next')) step(1);
   else if (t.hasAttribute('data-forget')) { forgetKey(); lockWatchlist(); toast('Locked'); }

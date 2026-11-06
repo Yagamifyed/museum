@@ -90,7 +90,8 @@
         "rank": 1,
         "size": "medium",
         "align": "left",
-        "note": ""
+        "note": "",
+        "walk": null
       }
     },
     {
@@ -245,7 +246,8 @@
         "rank": 4,
         "size": "small",
         "align": "left",
-        "note": ""
+        "note": "",
+        "walk": null
       }
     },
     {
@@ -912,7 +914,8 @@
         "rank": 6,
         "size": "medium",
         "align": "right",
-        "note": ""
+        "note": "",
+        "walk": null
       }
     },
     {
@@ -1102,7 +1105,8 @@
         "rank": 2,
         "size": "small",
         "align": "right",
-        "note": ""
+        "note": "",
+        "walk": null
       }
     },
     {
@@ -1329,7 +1333,8 @@
         "rank": 0,
         "size": "large",
         "align": "center",
-        "note": ""
+        "note": "",
+        "walk": null
       }
     },
     {
@@ -1626,7 +1631,8 @@
         "rank": 3,
         "size": "large",
         "align": "right",
-        "note": ""
+        "note": "",
+        "walk": "wall"
       }
     },
     {
@@ -1813,7 +1819,8 @@
         "rank": 5,
         "size": "medium",
         "align": "center",
-        "note": ""
+        "note": "",
+        "walk": null
       }
     },
     {
@@ -1830,7 +1837,7 @@
       "owned": 1,
       "minted": null,
       "acquired": "2023-06-21",
-      "interactive": "https://arweave.net/QkZ_dLT_FT4V5JZ-SpIzSDnVsmCqQJ4ns5JURzqekJA",
+      "interactive": null,
       "links": [
         [
           "OpenSea",
