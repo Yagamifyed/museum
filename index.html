@@ -30,6 +30,7 @@
     <nav>
       <a href="#/" data-nav="museum">The Museum</a>
       <a href="#/vault" data-nav="vault">The Vault</a>
+      <a href="#/artist-of-the-week" data-nav="week" data-week-nav hidden>Artist of the Week</a>
       <a href="#about" data-about-link>About</a>
     </nav>
   </header>
@@ -52,6 +53,8 @@
       </section>
 
       <section class="hang" data-hang aria-label="On view"></section>
+
+      <section class="block teaser-block" data-week-teaser hidden></section>
 
       <section class="block enter">
         <a class="enter-link" href="#/vault">
@@ -91,6 +94,24 @@
           <span class="quiet" data-count-artists></span>
         </div>
         <ol class="artists" data-artists></ol>
+      </section>
+    </div>
+
+    <!-- ── Artist of the Week ─────────────────────── -->
+    <div data-page="week" hidden>
+      <section class="vault-head">
+        <h1 class="vault-title">Artist of the Week</h1>
+        <p class="vault-sub" data-week-sub></p>
+      </section>
+      <section class="block block-tight">
+        <article class="pick" data-pick></article>
+      </section>
+      <section class="block" data-week-past-block>
+        <div class="block-head">
+          <h2>Previously</h2>
+          <span class="quiet" data-week-count></span>
+        </div>
+        <div class="grid" data-week-past></div>
       </section>
     </div>
 
@@ -143,6 +164,13 @@
           <p class="about-statement" data-statement></p>
         </div>
         <dl class="wallets" data-wallets></dl>
+      </div>
+      <div class="posts" data-posts hidden>
+        <div class="posts-head">
+          <span>On X</span>
+          <a class="quiet" data-x href="#" target="_blank" rel="noopener">@ ↗</a>
+        </div>
+        <div class="posts-list" data-posts-list></div>
       </div>
     </section>
   </main>

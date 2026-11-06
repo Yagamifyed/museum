@@ -14,12 +14,12 @@ const link = (w) => `#/work/${encodeURIComponent(w.id)}`;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const plural = (n, one, many = one + 's') => `${n} ${n === 1 ? one : many}`;
 
-const PAGE_TITLES = { museum: 'The Museum', vault: 'The Vault', watchlist: 'Watch List', walk: 'Walk through the Museum' };
+const PAGE_TITLES = { museum: 'The Museum', vault: 'The Vault', watchlist: 'Watch List', walk: 'Walk through the Museum', week: 'Artist of the Week' };
 const state = { page: null, chain: 'all', artist: null, view: 'grid', sort: 'recent' };
 const SORTS = [['recent', 'Recent'], ['artist', 'Artist'], ['title', 'Title'], ['chain', 'Chain']];
 const artistLink = (name) => `#/artist/${encodeURIComponent(name)}`;
 const cmp = (a, b) => a.localeCompare(b, 'en', { sensitivity: 'base', numeric: true });
-let data, works, museum;
+let data, works, museum, spot;
 
 // ── media ────────────────────────────────────────────
 
@@ -183,6 +183,106 @@ function renderArtists() {
   const rows = [...tally].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'en', { sensitivity: 'base' }));
   $('[data-artists]').innerHTML = rows.map(([name, n]) =>
     `<li><a href="${artistLink(name)}"><span>${esc(name)}</span><span>${n}</span></a></li>`).join('');
+}
+
+// ── artist of the week ───────────────────────────────
+// from Mother Flame's "Artist of the Week" list, newest first (data/spotlight.json)
+
+const weekLink = (p) => `#/artist-of-the-week/${p.no}`;
+const sameName = (a, b) => a && b && a.toLowerCase() === b.toLowerCase();
+const collected = (p) => works.filter((w) => sameName(by(w), p.name) || sameName(by(w), p.handle));
+const weekLine = (p) => [`No. ${pad(p.no)}`, p.date && day(p.date)].filter(Boolean).join(' · ');
+
+// the pick's own image, or else a work of theirs from the Vault
+function pickImage(p) {
+  if (p.image) return p.image;
+  const w = collected(p)[0];
+  return w && { src: w.media.src, thumb: w.media.thumb, w: w.media.w, h: w.media.h, pixelated: w.pixelated };
+}
+
+function pickImg(p, { sizes = '(max-width: 720px) 50vw, 25vw', eager = false } = {}) {
+  const im = pickImage(p);
+  if (!im) return '';
+  const size = im.w && im.h ? ` width="${im.w}" height="${im.h}"` : '';
+  const srcset = im.thumb ? ` srcset="${esc(im.thumb)} 720w, ${esc(im.src)} ${im.w || 1600}w" sizes="${sizes}"` : '';
+  return `<img${im.pixelated ? ' class="pixelated"' : ''} src="${esc(im.src)}"${srcset} alt="Work by ${esc(p.name)}"${size} loading="${eager ? 'eager' : 'lazy'}" decoding="async">`;
+}
+
+function renderWeekTeaser() {
+  const p = spot.weeks[0];
+  $('[data-week-teaser]').hidden = !p;
+  $$('[data-week-nav]').forEach((a) => (a.hidden = !p));
+  if (!p) return;
+  $('[data-week-teaser]').innerHTML = `<a class="teaser" href="#/artist-of-the-week">
+    <span class="teaser-text">
+      <span class="teaser-eyebrow">Artist of the Week · ${esc(weekLine(p))}</span>
+      <span class="teaser-name">${esc(p.name)} <span class="arrow">→</span></span>
+      ${p.tagline ? `<span class="teaser-tag">${esc(p.tagline)}</span>` : ''}
+      ${p.note ? `<span class="teaser-note">${esc(p.note)}</span>` : ''}
+    </span>
+    <span class="plate teaser-plate">${pickImg(p, { sizes: '(max-width: 720px) 100vw, 36vw' })}</span>
+  </a>`;
+  reveal($('[data-week-teaser]'));
+}
+
+function renderWeek(no) {
+  const p = spot.weeks.find((x) => x.no === no) || spot.weeks[0];
+  $('[data-week-sub]').innerHTML = `One artist a week, picked from the work people send me. Send yours on X: <a class="quiet" href="https://x.com/${esc(data.profile.x)}" target="_blank" rel="noopener">@${esc(data.profile.x)} ↗</a>`;
+  if (!p) {
+    $('[data-pick]').innerHTML = '<p class="quiet">The first pick is on its way.</p>';
+    $('[data-week-past-block]').hidden = true;
+    return;
+  }
+  const mine = collected(p);
+  const im = pickImage(p);
+  const ar = im?.w && im?.h ? (im.w / im.h).toFixed(4) : 1;
+  const open = p.workId ? `href="${link({ id: p.workId })}"` : p.work ? `href="${esc(p.work)}" target="_blank" rel="noopener noreferrer"` : '';
+  const facts = [
+    p.x && ['On X', `<a href="${esc(p.x)}" target="_blank" rel="noopener noreferrer">@${esc(p.handle)} ↗</a>`],
+    ['In the Vault', mine.length ? `<a href="${artistLink(by(mine[0]))}">${plural(mine.length, 'work')} ↗</a>` : 'Not yet'],
+    p.date && ['Picked', day(p.date)],
+  ].filter(Boolean);
+  $('[data-pick]').innerHTML = `
+    ${im ? `<a class="frame pick-frame" ${open || `href="${weekLink(p)}"`} data-ar="${ar}">${pickImg(p, { eager: true, sizes: '(max-width: 860px) 100vw, 55vw' })}</a>` : '<div></div>'}
+    <div class="pick-info">
+      <span class="sheet-chain">${esc(weekLine(p))}</span>
+      <h2 class="pick-name">${esc(p.name)}</h2>
+      ${p.tagline ? `<p class="pick-tag">${esc(p.tagline)}</p>` : ''}
+      ${p.note ? `<p class="pick-note">${esc(p.note)}</p>` : ''}
+      <dl class="facts">${facts.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
+      ${p.watch?.length ? `<div class="to-watch"><span class="quiet">${p.watch.length === 3 ? 'Three' : p.watch.length === 2 ? 'Two' : 'One'} to watch</span><ol>${p.watch.map((w) =>
+        `<li>${w.href ? `<a href="${esc(w.href)}" target="_blank" rel="noopener noreferrer">${esc(w.name)} ↗</a>` : esc(w.name)}</li>`).join('')}</ol></div>` : ''}
+      <div class="links">${(p.links || []).map(([label, href]) => `<a href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(label)} ↗</a>`).join('')}</div>
+    </div>`;
+  $$('[data-ar]', $('[data-pick]')).forEach((el) => el.style.setProperty('--ar', el.dataset.ar));
+
+  const past = spot.weeks.filter((x) => x !== p);
+  $('[data-week-past-block]').hidden = !past.length;
+  $('[data-week-past-block] h2').textContent = p === spot.weeks[0] ? 'Previously' : 'Every pick';
+  $('[data-week-count]').textContent = spot.weeks.length;
+  $('[data-week-past]').innerHTML = past.map((x) => `<a class="card" href="${weekLink(x)}">
+    <div class="plate">${pickImg(x)}</div>
+    <div class="cap">
+      <div class="cap-title">${esc(x.name)}</div>
+      <div class="cap-meta">${esc(weekLine(x))}</div>
+    </div>
+  </a>`).join('');
+  reveal($('[data-page="week"]'));
+}
+
+// ── posts from X ─────────────────────────────────────
+// chosen in Mother Flame's "Museum Posts" list; the text is copied at build
+// time, so no script or tracker from X runs here
+
+function renderPosts() {
+  const posts = spot.posts || [];
+  $('[data-posts]').hidden = !posts.length;
+  const text = (p) => p.parts.map(([t, href]) => href ? `<a href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(t)}</a>` : esc(t)).join('');
+  $('[data-posts-list]').innerHTML = posts.map((p, i) => `<figure class="post${i ? '' : ' lead'}">
+    <blockquote class="post-text">${text(p)}</blockquote>
+    <figcaption class="post-meta"><a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">${sameName(p.handle, data.profile.x) ? '' : `@${esc(p.handle)} · `}${esc(day(p.date))} ↗</a></figcaption>
+  </figure>`).join('');
+  $('[data-posts-list]').classList.toggle('single', posts.length === 1);
 }
 
 // ── shared ───────────────────────────────────────────
@@ -392,7 +492,8 @@ function closeSheet() {
 }
 
 function leaveSheet() {
-  history.pushState(null, '', state.page === 'vault' ? (state.artist ? artistLink(state.artist) : '#/vault') : state.page === 'walk' ? '#/walk' : '#/');
+  const back = { vault: state.artist ? artistLink(state.artist) : '#/vault', walk: '#/walk', week: '#/artist-of-the-week' };
+  history.pushState(null, '', back[state.page] || '#/');
   closeSheet();
 }
 
@@ -426,6 +527,13 @@ function route() {
     if (changed || !wasVault) { renderVaultHead(); renderFilters(); renderWorks(); if (wasVault) window.scrollTo({ top: 0 }); }
   }
   else if (h === '#/watchlist') { showPage('watchlist'); openWatchlist(); }
+  else if (/^#\/artist-of-the-week(\/\d+)?$/.test(h)) {
+    const no = Number(h.split('/')[2]) || null;
+    const was = state.page === 'week';
+    showPage('week');
+    renderWeek(no);
+    if (was) window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
   else if (h === '#/walk') { showPage('walk'); startWalk(); }
   else if (h === '' || h === '#' || h === '#/') showPage('museum');
   else if (!state.page) showPage('museum'); // plain anchors like #about keep the current page
@@ -492,8 +600,13 @@ data = await (await fetch('data/collection.json', { cache: 'no-cache' })).json()
 works = data.works;
 museum = works.filter((w) => w.museum).sort((a, b) => a.museum.rank - b.museum.rank);
 
+spot = await fetch('data/spotlight.json', { cache: 'no-cache' }).then((r) => r.json()).catch(() => null);
+spot = { weeks: spot?.weeks || [], posts: spot?.posts || [] };
+
 renderAbout();
+renderPosts();
 renderMuseum();
+renderWeekTeaser();
 renderVaultHead();
 renderFilters();
 renderWorks();
