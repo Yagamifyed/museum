@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>LevinLevin — The Museum</title>
-  <meta name="description" content="The Museum and the Vault of LevinLevin: digital works held on Tezos, Ethereum, Solana and Bitcoin.">
+  <meta name="description" content="The art LevinLevin collects, on Tezos, Ethereum and Solana.">
   <meta name="theme-color" content="#ffffff">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; media-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
   <meta name="referrer" content="no-referrer">
 
   <meta property="og:type" content="website">
   <meta property="og:title" content="LevinLevin — The Museum">
-  <meta property="og:description" content="A small, deliberate hang of works, and a Vault for everything else.">
+  <meta property="og:description" content="The art I collect, on Tezos, Ethereum and Solana.">
   <meta property="og:image" content="https://museum.levinlevin.xyz/og.jpg">
   <meta property="og:url" content="https://museum.levinlevin.xyz/">
   <link rel="canonical" href="https://museum.levinlevin.xyz/">
@@ -28,113 +28,55 @@
   <header class="bar">
     <a class="wordmark" href="#/"><img class="mark-pfp" src="pfp.png" width="48" height="48" alt=""><span data-name>LevinLevin</span></a>
     <nav>
-      <a href="#/" data-nav="museum">The Museum</a>
-      <a href="#/vault" data-nav="vault">The Vault</a>
-      <a href="#/artist-of-the-week" data-nav="week" data-week-nav hidden>Artist of the Week</a>
+      <a href="#/artist-of-the-week" data-week-nav hidden>Artist of the Week</a>
       <a href="#about" data-about-link>About</a>
     </nav>
   </header>
 
   <main>
-    <!-- ── The Museum ─────────────────────────────── -->
+    <!-- ── The Museum: the whole collection on one page ── -->
     <div data-page="museum">
       <section class="hero">
         <div class="hero-specimen" aria-hidden="true"></div>
-        <h1 class="hero-title">
-          <span class="ink">The Museum.</span> A small, deliberate hang of works
-          from a collection held on <span class="ink">Tezos</span>, <span class="ink">Ethereum</span>,
-          <span class="ink">Solana</span> and soon <span class="ink">Bitcoin</span>.
-        </h1>
+        <h1 class="hero-title" data-hero-title><span class="ink">The Museum.</span></h1>
         <div class="hero-foot">
-          <span><span data-on-view>—</span> · <a href="#/walk" class="walk-link">Walk through ↗</a></span>
-          <a href="#/vault" data-vault-count>The Vault ↗</a>
+          <span data-count></span>
           <a data-x href="#" target="_blank" rel="noopener">@ ↗</a>
         </div>
       </section>
 
-      <section class="hang" data-hang aria-label="On view"></section>
+      <section class="hang" data-hang aria-label="On the walls"></section>
 
-      <section class="block teaser-block" data-week-teaser hidden></section>
-
-      <section class="block enter">
-        <a class="enter-link" href="#/vault">
-          <span class="enter-eyebrow">Beyond the walls</span>
-          <span class="enter-title">The Vault <span class="arrow">→</span></span>
-          <span class="enter-sub" data-enter-sub></span>
-          <span class="enter-strip" data-enter-strip aria-hidden="true"></span>
-        </a>
-      </section>
-    </div>
-
-    <!-- ── The Vault ──────────────────────────────── -->
-    <div data-page="vault" hidden>
-      <section class="vault-head">
-        <h1 class="vault-title">The Vault</h1>
-        <p class="vault-sub" data-vault-sub></p>
-      </section>
-
-      <section class="block block-tight" id="works">
-        <div class="block-head controls">
-          <div class="seg seg-scroll" data-filters role="group" aria-label="Chain"></div>
-          <div class="controls-right">
-            <div class="seg" data-sorts role="group" aria-label="Sort"></div>
-            <div class="seg" role="group" aria-label="View">
-              <button type="button" data-view="grid" aria-pressed="true">Grid</button>
-              <button type="button" data-view="index" aria-pressed="false">Index</button>
-            </div>
-          </div>
-        </div>
-        <div class="grid" data-grid></div>
-        <div class="index" data-index hidden></div>
-      </section>
-
-      <section class="block" id="artists">
+      <section class="block" id="collection" data-rest-block>
         <div class="block-head">
-          <h2>Artists</h2>
-          <span class="quiet" data-count-artists></span>
+          <h2>Everything else</h2>
+          <span class="quiet" data-rest-count></span>
         </div>
-        <ol class="artists" data-artists></ol>
+        <div class="grid" data-rest></div>
       </section>
-    </div>
 
-    <!-- ── Artist of the Week ─────────────────────── -->
-    <div data-page="week" hidden>
-      <section class="vault-head">
-        <h1 class="vault-title">Artist of the Week</h1>
-        <p class="vault-sub" data-week-sub></p>
-      </section>
-      <section class="block block-tight">
+      <!-- Artist of the Week, hidden until the first pick -->
+      <section class="block" id="week" data-week hidden>
+        <div class="block-head">
+          <h2>Artist of the Week</h2>
+          <span class="quiet" data-week-sub></span>
+        </div>
         <article class="pick" data-pick></article>
-      </section>
-      <section class="block" data-week-past-block>
-        <div class="block-head">
-          <h2>Previously</h2>
-          <span class="quiet" data-week-count></span>
-        </div>
-        <div class="grid" data-week-past></div>
-      </section>
-    </div>
-
-    <!-- ── Walk through (3D) ─────────────────────── -->
-    <div data-page="walk" hidden>
-      <div class="walk" data-walk></div>
-      <div class="walk-ui">
-        <p class="walk-now" data-walk-now>Drag to look around, WASD or arrows to walk, click a work.</p>
-        <div class="walk-buttons">
-          <div class="seg" role="group" aria-label="Tour">
-            <button type="button" data-walk-prev aria-label="Previous work">←</button>
-            <button type="button" data-walk-next aria-label="Next work">→</button>
+        <div class="week-past" data-week-past-block>
+          <div class="posts-head">
+            <span data-week-past-title>Earlier picks</span>
+            <span data-week-count></span>
           </div>
-          <a class="pill" href="#/">Leave</a>
+          <div class="grid" data-week-past></div>
         </div>
-      </div>
+      </section>
     </div>
 
     <!-- ── The Watch List (private, not linked) ───── -->
     <div data-page="watchlist" hidden>
-      <section class="vault-head">
-        <h1 class="vault-title">Watch List</h1>
-        <p class="vault-sub" data-watch-sub>Private.</p>
+      <section class="page-head">
+        <h1 class="page-title">Watch List</h1>
+        <p class="page-sub" data-watch-sub>Private.</p>
       </section>
       <section class="block block-tight">
         <form class="lock" data-lock autocomplete="on">
@@ -200,8 +142,6 @@
       <aside class="sheet-info" data-sheet-info></aside>
     </div>
   </div>
-
-  <div class="peek" data-peek aria-hidden="true"></div>
 
   <script type="module" src="app.js"></script>
 </body>
