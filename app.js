@@ -20,13 +20,17 @@ let data, works, museum;
 
 // ── media ────────────────────────────────────────────
 
-function mediaEl(w, { eager = false } = {}) {
+// sizes: how wide the image is shown, so the browser can pick the 720px thumb
+// or the full 1600px file. A blurred 20px stand-in sits underneath until it loads.
+function mediaEl(w, { eager = false, sizes = '(max-width: 720px) 50vw, 25vw' } = {}) {
   const cls = w.pixelated ? ' class="pixelated"' : '';
+  const lqip = w.media.lqip ? `<img class="lqip" src="${esc(w.media.lqip)}" alt="" aria-hidden="true">` : '';
   if (w.motion?.src) {
-    return `<video${cls} src="${esc(w.motion.src)}" poster="${esc(w.media.src)}" muted loop playsinline preload="none" data-autoplay aria-label="${esc(w.title)}"></video>`;
+    return `${lqip}<video${cls} src="${esc(w.motion.src)}" poster="${esc(w.media.thumb || w.media.src)}" muted loop playsinline preload="none" data-autoplay aria-label="${esc(w.title)}"></video>`;
   }
   const size = w.media.w && w.media.h ? ` width="${w.media.w}" height="${w.media.h}"` : '';
-  return `<img${cls} src="${esc(w.media.src)}" alt="${esc(w.title)}"${size} loading="${eager ? 'eager' : 'lazy'}" decoding="async">`;
+  const srcset = w.media.thumb ? ` srcset="${esc(w.media.thumb)} 720w, ${esc(w.media.src)} ${w.media.w || 1600}w" sizes="${sizes}"` : '';
+  return `${lqip}<img${cls} src="${esc(w.media.src)}"${srcset} alt="${esc(w.title)}"${size} loading="${eager ? 'eager' : 'lazy'}" decoding="async">`;
 }
 
 const io = new IntersectionObserver((entries) => {
@@ -37,7 +41,7 @@ const io = new IntersectionObserver((entries) => {
 }, { rootMargin: '160px' });
 
 function reveal(root = document) {
-  for (const el of $$('.plate img:not(.ready), .frame img:not(.ready), .plate video:not(.ready), .frame video:not(.ready)', root)) {
+  for (const el of $$('.plate img:not(.ready):not(.lqip), .frame img:not(.ready):not(.lqip), .plate video:not(.ready), .frame video:not(.ready)', root)) {
     const done = () => el.classList.add('ready');
     if (el.tagName === 'IMG') { el.complete && el.naturalWidth ? done() : (el.onload = done, el.onerror = done); }
     else done();
@@ -66,7 +70,7 @@ function renderMuseum() {
     const ar = w.media.w && w.media.h ? (w.media.w / w.media.h).toFixed(4) : 1;
     const m = w.museum;
     return `<article class="piece ${esc(m.size)} ${esc(m.align)}">
-      <a class="frame" href="${link(w)}" data-ar="${ar}" aria-label="${esc(w.title)} by ${esc(by(w))}">${mediaEl(w, { eager: i < 2 })}</a>
+      <a class="frame" href="${link(w)}" data-ar="${ar}" aria-label="${esc(w.title)} by ${esc(by(w))}">${mediaEl(w, { eager: i < 2, sizes: m.size === 'small' ? '(max-width: 720px) 72vw, 30vw' : m.size === 'large' ? '(max-width: 720px) 100vw, 68vw' : '(max-width: 720px) 100vw, 46vw' })}</a>
       <div class="label">
         <span class="no">${pad(i + 1)} / ${pad(n)}</span>
         <span class="t">${esc(w.title)}</span>
@@ -84,12 +88,12 @@ function renderMuseum() {
   const rest = works.filter((w) => !w.museum);
   $('[data-enter-sub]').textContent = `Every work in the collection, ${works.length} in all, including the ${rest.length} not on the walls.`;
   $('[data-enter-strip]').innerHTML = rest.slice(0, 10).map((w) =>
-    `<img src="${esc(w.media.src)}" alt="" loading="lazy" decoding="async"${w.pixelated ? ' class="pixelated"' : ''}>`).join('');
+    `<img src="${esc(w.media.thumb || w.media.src)}" alt="" loading="lazy" decoding="async"${w.pixelated ? ' class="pixelated"' : ''}>`).join('');
 
   // a small rotating specimen above the headline
   const box = $('.hero-specimen');
   const pool = (museum.length ? museum : works).slice(0, 10);
-  box.innerHTML = pool.map((w) => `<img src="${esc(w.media.src)}" alt=""${w.pixelated ? ' class="pixelated"' : ''} decoding="async">`).join('');
+  box.innerHTML = pool.map((w) => `<img src="${esc(w.media.thumb || w.media.src)}" alt=""${w.pixelated ? ' class="pixelated"' : ''} decoding="async">`).join('');
   const imgs = $$('img', box);
   let i = 0;
   imgs[0]?.classList.add('on');
@@ -386,7 +390,7 @@ document.addEventListener('pointermove', (e) => {
   if (row.dataset.id !== peekId) {
     peekId = row.dataset.id;
     const w = works.find((x) => x.id === peekId);
-    peek.innerHTML = `<img src="${esc(w.media.src)}" alt=""${w.pixelated ? ' class="pixelated"' : ''}>`;
+    peek.innerHTML = `<img src="${esc(w.media.thumb || w.media.src)}" alt=""${w.pixelated ? ' class="pixelated"' : ''}>`;
   }
   peek.style.left = `${Math.min(e.clientX + 150, innerWidth - 120)}px`;
   peek.style.top = `${e.clientY}px`;
