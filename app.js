@@ -157,6 +157,8 @@ function renderAbout() {
   const p = data.profile;
   $$('[data-name]').forEach((el) => (el.textContent = p.name));
   $('[data-statement]').textContent = p.statement;
+  $('[data-bio]').textContent = p.bio || '';
+  $('[data-bio]').hidden = !p.bio;
   $$('[data-x]').forEach((a) => { a.href = `https://x.com/${p.x}`; if (a.textContent.startsWith('@')) a.textContent = `@${p.x} ↗`; });
   $('[data-updated]').textContent = `Updated ${day(data.updated)}`;
   $('[data-wallets]').innerHTML = CHAIN_ORDER.filter((c) => data.wallets[c]).map((c) =>

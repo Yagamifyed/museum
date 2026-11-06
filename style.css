@@ -339,6 +339,10 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 .artists button:hover { color: var(--ink); }
 
 /* ── about ───────────────────────────────────────── */
+.wordmark { display: inline-flex; align-items: center; gap: 10px; }
+.mark-pfp { width: 22px; height: 22px; image-rendering: pixelated; }
+.about-pfp { display: block; width: clamp(96px, 9vw, 140px); height: auto; image-rendering: pixelated; margin-bottom: 22px; }
+.about-bio { margin: 0 0 18px; color: var(--mute); }
 .about { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: var(--gap); }
 .about-statement {
   font-family: var(--serif); font-size: clamp(26px, 2.6vw, 40px);
