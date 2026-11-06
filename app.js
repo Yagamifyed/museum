@@ -41,7 +41,7 @@ const io = new IntersectionObserver((entries) => {
 }, { rootMargin: '160px' });
 
 function reveal(root = document) {
-  for (const el of $$('.plate img:not(.ready):not(.lqip), .frame img:not(.ready):not(.lqip), .plate video:not(.ready), .frame video:not(.ready)', root)) {
+  for (const el of $$('.plate img:not(.ready):not(.lqip), .frame img:not(.ready):not(.lqip), .work > img:not(.ready):not(.lqip), .plate video:not(.ready), .frame video:not(.ready), .work > video:not(.ready)', root)) {
     const done = () => el.classList.add('ready');
     if (el.tagName === 'IMG') { el.complete && el.naturalWidth ? done() : (el.onload = done, el.onerror = done); }
     else done();
@@ -60,30 +60,32 @@ function card(w) {
 }
 
 // ── the museum ───────────────────────────────────────
-// one page, every work: first those placed in curation.json → museum, in that order, then the rest, newest first
-const SIZES = { small: 0.72, medium: 1, large: 1.45 };
+// One wall, every work: first those placed in curation.json → museum, in that
+// order, then the rest, newest first. Works are tiled edge to edge in rows;
+// each keeps its proportions, and its size (medium, large, xl) sets how tall
+// its row hangs. Title and artist show on hover; a click opens the details.
+const SIZES = { small: 0.75, medium: 1, large: 1.8, xl: 2.6 };
+let wallItems = [];
 
 function renderMuseum() {
   const chains = CHAIN_ORDER.filter((c) => works.some((w) => w.chain === c));
   const ink = chains.map((c) => `<span class="ink">${CHAINS[c]}</span>`);
   $('[data-hero-title]').innerHTML = `<span class="ink">The Museum.</span> The art I collect, ${works.length} works on ${and(ink)}${chains.includes('bitcoin') ? '' : ', with Bitcoin to come'}.`;
 
-  // One continuous wall: each work at its own proportions, hung on a shared
-  // eye-line. Every row is filled edge to edge; a work's width in its row
-  // follows its aspect ratio times its size (curation.json: small, medium, large).
-  $('[data-wall]').innerHTML = order.map((w, i) => {
+  const holder = document.createElement('div');
+  holder.innerHTML = order.map((w, i) => {
     const ar = w.media.w && w.media.h ? (w.media.w / w.media.h).toFixed(4) : 1;
-    return `<a class="work" href="${link(w)}" data-ar="${ar}" data-size="${SIZES[w.museum?.size] || 1}" aria-label="${esc(w.title)} by ${esc(by(w))}">
-      <span class="frame">${mediaEl(w, { eager: i < 6, sizes: '(max-width: 720px) 60vw, 34vw' })}</span>
-      <span class="cap">
-        <span class="cap-title">${esc(w.title)}</span>
-        <span class="cap-meta">${esc(by(w))}</span>
-      </span>
+    const size = SIZES[w.museum?.size] ? w.museum.size : 'medium';
+    return `<a class="work" href="${link(w)}" data-ar="${ar}" data-size="${size}" aria-label="${esc(w.title)} by ${esc(by(w))}">
+      ${mediaEl(w, { eager: i < 6, sizes: size === 'medium' ? '(max-width: 720px) 50vw, 26vw' : '(max-width: 720px) 100vw, 60vw' })}
+      <span class="cap"><span class="cap-title">${esc(w.title)}</span><span class="cap-meta">${esc(by(w))}</span></span>
     </a>`;
-  }).join('') + '<span class="wall-end" aria-hidden="true"></span>';
-
+  }).join('');
+  wallItems = [...holder.children];
   // set via the CSSOM: the Content-Security-Policy forbids inline style attributes
-  $$('[data-wall] [data-ar]').forEach((el) => { el.style.setProperty('--ar', el.dataset.ar); el.style.setProperty('--size', el.dataset.size); });
+  wallItems.forEach((el) => el.style.setProperty('--ar', el.dataset.ar));
+  layoutWall();
+  new ResizeObserver(() => requestAnimationFrame(layoutWall)).observe($('[data-wall]'));
 
   // a small rotating specimen above the headline
   const box = $('.hero-specimen');
@@ -95,6 +97,54 @@ function renderMuseum() {
   if (imgs.length > 1 && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     setInterval(() => { imgs[i].classList.remove('on'); i = (i + 1) % imgs.length; imgs[i].classList.add('on'); }, 2600);
   }
+}
+
+// Rows are built per run of works with the same size. A run is split into as
+// many rows as fill the width at that size's height, with the works shared out
+// so each row is about equally full; flex-grow = aspect ratio then makes every
+// work in a row exactly the same height, with no gaps.
+let wallWidth = 0;
+function layoutWall() {
+  const wall = $('[data-wall]');
+  const W = wall.clientWidth;
+  if (!W || W === wallWidth) return;
+  wallWidth = W;
+  const gap = parseFloat(getComputedStyle(wall).rowGap) || 0;
+  const H = W < 720 ? W / 2.4 : Math.min(320, W / 4.8);
+  const tallest = innerHeight * 0.86;
+
+  const runs = [];
+  for (const el of wallItems) {
+    const run = runs.at(-1);
+    if (run && run.size === el.dataset.size && run.size !== 'xl') run.items.push(el);
+    else runs.push({ size: el.dataset.size, items: [el] }); // an xl work always hangs alone
+  }
+
+  const rows = [];
+  for (const { size, items } of runs) {
+    const target = H * SIZES[size];
+    const ars = items.map((el) => Number(el.dataset.ar));
+    const total = ars.reduce((a, b) => a + b, 0);
+    const k = Math.max(1, Math.min(items.length, Math.round((total * target + gap * (items.length - 1)) / W)));
+    let acc = 0, row = [], cut = 1;
+    items.forEach((el, j) => {
+      row.push(el);
+      acc += ars[j];
+      if (cut < k && acc >= (total * cut) / k - ars[j] / 2) { rows.push({ size, target, items: row }); row = []; cut++; }
+    });
+    if (row.length) rows.push({ size, target, items: row });
+  }
+
+  wall.replaceChildren(...rows.map(({ size, target, items }) => {
+    const div = document.createElement('div');
+    div.className = 'row';
+    div.append(...items);
+    const sum = items.reduce((a, el) => a + Number(el.dataset.ar), 0);
+    const gaps = gap * (items.length - 1);
+    const cap = Math.min(tallest, size === 'xl' ? tallest : target * 1.35);
+    if ((W - gaps) / sum > cap) div.style.maxWidth = `${Math.round(cap * sum + gaps)}px`; // too few works to fill it: hang centred
+    return div;
+  }));
 }
 
 // ── artist of the week ───────────────────────────────

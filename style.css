@@ -142,42 +142,46 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 @media (max-width: 1100px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 720px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
-/* ── the museum: one continuous wall ───────────── */
-/* Each row is filled edge to edge. A work's share of its row is its aspect
-   ratio times its size, so every work keeps its proportions, medium works in
-   a row come out the same height, and small and large ones hang shorter or
-   taller, all centred on one eye-line. */
+/* ── the museum: one tiled wall ───────────────── */
+/* Rows are laid out by layoutWall() in app.js: each work's flex-grow is its
+   aspect ratio, so every work in a row is the same height and the row is
+   filled edge to edge. */
 .wall {
-  --h: clamp(118px, 17vw, 320px);
-  display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
-  gap: clamp(44px, 5.5vw, 96px) clamp(24px, 3.2vw, 60px);
+  --tile: clamp(4px, .55vw, 10px);
+  display: flex; flex-direction: column; gap: var(--tile);
   padding: clamp(40px, 8vh, 96px) var(--gutter) 0;
 }
+.wall .row { display: flex; gap: var(--tile); width: 100%; margin-inline: auto; }
 .work {
-  --k: calc(var(--ar, 1) * var(--size, 1));
-  flex: var(--k) 1 calc(var(--k) * var(--h));
-  max-width: calc(var(--k) * var(--h) * 1.7);
+  flex: var(--ar, 1) 1 0;
   min-width: 0;
-  display: flex; flex-direction: column; gap: 10px;
-  cursor: pointer;
-}
-.wall-end { flex: 12 1 0; height: 0; } /* keeps the last row from stretching */
-.work .frame {
-  display: block; position: relative;
+  position: relative; overflow: hidden;
   aspect-ratio: var(--ar, 1);
   background: var(--plate);
-  box-shadow: 0 1px 1px rgba(0,0,0,.03), 0 18px 44px -24px rgba(0,0,0,.24);
-  transition: transform 1s var(--ease), box-shadow 1s var(--ease);
+  cursor: pointer;
 }
-.work .frame img:not(.lqip), .work .frame video {
+.work > img:not(.lqip), .work > video {
   position: absolute; inset: 0; width: 100%; height: 100%;
   object-fit: cover;
-  opacity: 0; transition: opacity .9s var(--ease);
+  opacity: 0; transition: opacity .9s var(--ease), transform 1.2s var(--ease);
 }
-.work .frame img.ready, .work .frame video.ready { opacity: 1; }
-.work:hover .frame { transform: translateY(-3px); box-shadow: 0 1px 1px rgba(0,0,0,.03), 0 26px 56px -26px rgba(0,0,0,.28); }
-.work .cap { padding: 0; font-size: var(--t-small); min-width: 0; }
-.work .cap > span { display: block; }
+.work > img.ready, .work > video.ready { opacity: 1; }
+.work .lqip { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(14px) saturate(1.1); transform: scale(1.02); pointer-events: none; transition: opacity .8s var(--ease); }
+.work:has(> .ready) .lqip { opacity: 0; }
+.work:hover > img:not(.lqip), .work:hover > video { transform: scale(1.025); }
+.work .cap {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 48px 14px 12px;
+  background: linear-gradient(to top, rgba(18, 19, 22, .62), rgba(18, 19, 22, 0));
+  color: #fff; font-size: var(--t-small);
+  opacity: 0; transform: translateY(6px);
+  transition: opacity .35s var(--ease), transform .45s var(--ease);
+  pointer-events: none;
+}
+.work .cap > span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.work .cap-meta { color: rgba(255, 255, 255, .72); }
+.work:hover .cap, .work:focus-visible .cap { opacity: 1; transform: none; }
+@media (hover: none) { .work .cap { display: none; } }
 
 /* ── page header (watch list) ───────────────────── */
 .page-head { padding: clamp(120px, 22vh, 220px) var(--gutter) 0; }
@@ -210,8 +214,9 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 
 /* ── about ───────────────────────────────────────── */
 .wordmark { display: inline-flex; align-items: center; gap: 10px; }
-.mark-pfp { width: 22px; height: 22px; image-rendering: pixelated; }
-.about-pfp { display: block; width: clamp(96px, 9vw, 140px); height: auto; image-rendering: pixelated; margin-bottom: 22px; }
+.mark-pfp { width: 24px; height: 24px; background: #749ba0; image-rendering: pixelated; }
+.about-pfp { display: block; width: 96px; height: 96px; background: #749ba0; image-rendering: pixelated; margin-bottom: 22px; }
+@media (min-width: 1200px) { .about-pfp { width: 144px; height: 144px; } }
 .about-bio { margin: 0 0 18px; color: var(--mute); }
 .about { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: var(--gap); }
 .about-statement {
