@@ -258,7 +258,7 @@
       "tokenId": "4",
       "title": "Distorted Patterns",
       "collection": "Lord's Mind",
-      "artist": null,
+      "artist": "whoslord",
       "description": "Distorted Patterns\n\nCreated in 2026.\n\nA piece about losing touch with your true identity through ego and false versions of yourself. It explores distorted realities, self-observation, and how my mind understands patterns while dealing with all the different versions of who I am.\n\n1/1 digital painting by Lord, 2026.",
       "editions": 1,
       "owned": 1,
@@ -368,7 +368,7 @@
       "tokenId": "6",
       "title": "All Hallows' Evening",
       "collection": "undying",
-      "artist": null,
+      "artist": "AKORA",
       "description": "H'ween ´26\n\nFree Mint open edition.",
       "editions": null,
       "owned": 1,
@@ -774,7 +774,7 @@
       "tokenId": "3",
       "title": "The Floating Silence",
       "collection": "Echo Archive",
-      "artist": null,
+      "artist": "vorocraft",
       "description": "Somewhere between what is and what could be, silence becomes its own kind of freedom. For a moment, everything feels still. Far from the noise, lost in a silence that feels like home",
       "editions": null,
       "owned": 1,
@@ -998,7 +998,7 @@
       "tokenId": "1",
       "title": "Backbone",
       "collection": "Emitters - Editions",
-      "artist": null,
+      "artist": "AKORA",
       "description": "The very first radioactive NFT painting. Concept testing.",
       "editions": null,
       "owned": 1,
@@ -1193,7 +1193,7 @@
       "tokenId": "1",
       "title": "Beach Day At the Natives",
       "collection": "From Life",
-      "artist": null,
+      "artist": "Artifex",
       "description": "This artwork is an ongoing experimentation of a Biomorphic Impressionism  \n\nCaptured this scene at a beach 10 mins from my place in India. \nI was really captivated by the sky here, it had so much texture and life. \n\nbeautiful day",
       "editions": 1,
       "owned": 1,
@@ -2077,6 +2077,42 @@
         "src": "media/7b8eec3bb868.mp4"
       },
       "original": "https://arweave.net/LYIxfaxyOn6uzmvHCNs1FMsQRCS9WitU4wLfRzZ6AmE",
+      "museum": null
+    },
+    {
+      "status": "owned",
+      "id": "ethereum:0xd3da7776569b24260a073e9dea575bc7208fb50b:2",
+      "chain": "ethereum",
+      "contract": "0xd3da7776569b24260a073e9dea575bc7208fb50b",
+      "tokenId": "2",
+      "title": "Creation of Time",
+      "collection": "And all I loved, I loved alone",
+      "artist": "Muhju",
+      "description": "\"Creation of Time\" – a piece that showcases the essence, style language and expression of Muhju Art. ",
+      "editions": 233,
+      "owned": 1,
+      "minted": null,
+      "acquired": "2022-12-05",
+      "interactive": null,
+      "links": [
+        [
+          "OpenSea",
+          "https://opensea.io/item/ethereum/0xd3da7776569b24260a073e9dea575bc7208fb50b/2"
+        ],
+        [
+          "Etherscan",
+          "https://etherscan.io/nft/0xd3da7776569b24260a073e9dea575bc7208fb50b/2"
+        ]
+      ],
+      "media": {
+        "src": "media/82eca39710e8.webp",
+        "w": 1244,
+        "h": 1600,
+        "thumb": "media/thumb/82eca39710e8.webp",
+        "lqip": "data:image/webp;base64,UklGRpIAAABXRUJQVlA4IIYAAAAQBACdASoQABQAPu1iqU2ppaOiMAgBMB2JaQAFiLF8C/epxQ+ixhZmAAD+1eviqzwupgJCajbRubXaS/e0isIoYloRsgQWU7mVBNJSvQeIEOjt2DSJC1ln01WDUAkbVAEoatt7bsYUpRPD9nhfGQX0/f84265hz/iXEfWAGgghdYsGpkAAAA=="
+      },
+      "motion": null,
+      "original": "https://i2c.seadn.io/ethereum/0xd3da7776569b24260a073e9dea575bc7208fb50b/ccb64a3fb91533e7495a110fa4d2ac5a.jpeg?w=2000",
       "museum": null
     },
     {
