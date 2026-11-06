@@ -40,20 +40,13 @@
         <div class="hero-specimen" aria-hidden="true"></div>
         <h1 class="hero-title" data-hero-title><span class="ink">The Museum.</span></h1>
         <div class="hero-foot">
-          <span data-count></span>
+          <span data-updated></span>
           <a data-x href="#" target="_blank" rel="noopener">@ ↗</a>
         </div>
       </section>
 
-      <section class="hang" data-hang aria-label="On the walls"></section>
-
-      <section class="block" id="collection" data-rest-block>
-        <div class="block-head">
-          <h2>Everything else</h2>
-          <span class="quiet" data-rest-count></span>
-        </div>
-        <div class="grid" data-rest></div>
-      </section>
+      <!-- every work, in the order of curation.json → museum, then newest first -->
+      <section class="wall" data-wall aria-label="The collection"></section>
 
       <!-- Artist of the Week, hidden until the first pick -->
       <section class="block" id="week" data-week hidden>

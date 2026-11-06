@@ -60,42 +60,34 @@ function card(w) {
 }
 
 // ── the museum ───────────────────────────────────────
-// one page: the hand-hung works from curation.json first, every other work below
+// one page, every work: first those placed in curation.json → museum, in that order, then the rest, newest first
+const SIZES = { small: 0.72, medium: 1, large: 1.45 };
 
 function renderMuseum() {
   const chains = CHAIN_ORDER.filter((c) => works.some((w) => w.chain === c));
   const ink = chains.map((c) => `<span class="ink">${CHAINS[c]}</span>`);
   $('[data-hero-title]').innerHTML = `<span class="ink">The Museum.</span> The art I collect, ${works.length} works on ${and(ink)}${chains.includes('bitcoin') ? '' : ', with Bitcoin to come'}.`;
-  $('[data-count]').textContent = museum.length && rest.length ? `${museum.length} on the walls, ${rest.length} below ↓` : plural(works.length, 'work');
 
-  const n = museum.length;
-  $('[data-hang]').innerHTML = museum.map((w, i) => {
+  // One continuous wall: each work at its own proportions, hung on a shared
+  // eye-line. Every row is filled edge to edge; a work's width in its row
+  // follows its aspect ratio times its size (curation.json: small, medium, large).
+  $('[data-wall]').innerHTML = order.map((w, i) => {
     const ar = w.media.w && w.media.h ? (w.media.w / w.media.h).toFixed(4) : 1;
-    const m = w.museum;
-    return `<article class="piece ${esc(m.size)} ${esc(m.align)}">
-      <a class="frame" href="${link(w)}" data-ar="${ar}" aria-label="${esc(w.title)} by ${esc(by(w))}">${mediaEl(w, { eager: i < 2, sizes: m.size === 'small' ? '(max-width: 720px) 72vw, 30vw' : m.size === 'large' ? '(max-width: 720px) 100vw, 68vw' : '(max-width: 720px) 100vw, 46vw' })}</a>
-      <div class="label">
-        <span class="no">${pad(i + 1)} / ${pad(n)}</span>
-        <span class="t">${esc(w.title)}</span>
-        <span class="a">${esc(by(w))}</span>
-        <span>${CHAINS[w.chain]}${w.editions ? `, ${edition(w).toLowerCase()}` : ''}</span>
-        ${w.collection ? `<span>${esc(w.collection)}</span>` : ''}
-        ${m.note ? `<span class="note">${esc(m.note)}</span>` : ''}
-      </div>
-    </article>`;
-  }).join('');
+    return `<a class="work" href="${link(w)}" data-ar="${ar}" data-size="${SIZES[w.museum?.size] || 1}" aria-label="${esc(w.title)} by ${esc(by(w))}">
+      <span class="frame">${mediaEl(w, { eager: i < 6, sizes: '(max-width: 720px) 60vw, 34vw' })}</span>
+      <span class="cap">
+        <span class="cap-title">${esc(w.title)}</span>
+        <span class="cap-meta">${esc(by(w))}</span>
+      </span>
+    </a>`;
+  }).join('') + '<span class="wall-end" aria-hidden="true"></span>';
 
   // set via the CSSOM: the Content-Security-Policy forbids inline style attributes
-  $$('[data-ar]').forEach((el) => el.style.setProperty('--ar', el.dataset.ar));
-
-  $('[data-rest-block]').hidden = !rest.length;
-  $('[data-rest-block] h2').textContent = museum.length ? 'Everything else' : 'The collection';
-  $('[data-rest-count]').textContent = rest.length;
-  $('[data-rest]').innerHTML = rest.map(card).join('');
+  $$('[data-wall] [data-ar]').forEach((el) => { el.style.setProperty('--ar', el.dataset.ar); el.style.setProperty('--size', el.dataset.size); });
 
   // a small rotating specimen above the headline
   const box = $('.hero-specimen');
-  const pool = (museum.length ? museum : works).slice(0, 10);
+  const pool = order.slice(0, 10);
   box.innerHTML = pool.map((w) => `<img src="${esc(w.media.thumb || w.media.src)}" alt=""${w.pixelated ? ' class="pixelated"' : ''} decoding="async">`).join('');
   const imgs = $$('img', box);
   let i = 0;
@@ -195,7 +187,7 @@ function renderAbout() {
   $('[data-bio]').textContent = p.bio || '';
   $('[data-bio]').hidden = !p.bio;
   $$('[data-x]').forEach((a) => { a.href = `https://x.com/${p.x}`; if (a.textContent.startsWith('@')) a.textContent = `@${p.x} ↗`; });
-  $('[data-updated]').textContent = `Updated ${day(data.updated)}`;
+  $$('[data-updated]').forEach((el) => (el.textContent = `Updated ${day(data.updated)}`));
   $('[data-wallets]').innerHTML = CHAIN_ORDER.filter((c) => data.wallets[c]).map((c) =>
     `<dt>${CHAINS[c]}</dt><dd><code title="${esc(data.wallets[c])}">${esc(short(data.wallets[c]))}</code><button type="button" data-copy="${esc(data.wallets[c])}">Copy</button></dd>`).join('');
 }
@@ -317,7 +309,7 @@ $('[data-lock]').addEventListener('submit', (e) => {
 });
 
 // ── detail sheet ─────────────────────────────────────
-// ← → walk through every work in page order: the hang, then everything else
+// ← → walk through every work in page order
 
 const sheet = $('[data-sheet]');
 let current = null;

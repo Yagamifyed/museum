@@ -142,69 +142,42 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 @media (max-width: 1100px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 720px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
-/* ── the museum: one wall per piece ──────────────── */
-.hang {
-  display: flex; flex-direction: column;
-  gap: clamp(120px, 24vh, 260px);
+/* ── the museum: one continuous wall ───────────── */
+/* Each row is filled edge to edge. A work's share of its row is its aspect
+   ratio times its size, so every work keeps its proportions, medium works in
+   a row come out the same height, and small and large ones hang shorter or
+   taller, all centred on one eye-line. */
+.wall {
+  --h: clamp(118px, 17vw, 320px);
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+  gap: clamp(44px, 5.5vw, 96px) clamp(24px, 3.2vw, 60px);
   padding: clamp(40px, 8vh, 96px) var(--gutter) 0;
 }
-.piece {
-  --w: 46vw;
-  display: flex; align-items: flex-end; gap: clamp(20px, 3vw, 48px);
+.work {
+  --k: calc(var(--ar, 1) * var(--size, 1));
+  flex: var(--k) 1 calc(var(--k) * var(--h));
+  max-width: calc(var(--k) * var(--h) * 1.7);
+  min-width: 0;
+  display: flex; flex-direction: column; gap: 10px;
   cursor: pointer;
 }
-.piece.small { --w: 30vw; }
-.piece.medium { --w: 46vw; }
-.piece.large { --w: 68vw; }
-.piece.right { flex-direction: row-reverse; }
-.piece.center { flex-direction: column; align-items: center; }
-.piece .frame {
-  /* never taller than the viewport: width follows the work's aspect ratio */
-  width: min(var(--w), calc(84svh * var(--ar, 1)));
-  flex: none;
-  position: relative;
+.wall-end { flex: 12 1 0; height: 0; } /* keeps the last row from stretching */
+.work .frame {
+  display: block; position: relative;
+  aspect-ratio: var(--ar, 1);
   background: var(--plate);
-  box-shadow: 0 1px 1px rgba(0,0,0,.03), 0 18px 48px -22px rgba(0,0,0,.22);
+  box-shadow: 0 1px 1px rgba(0,0,0,.03), 0 18px 44px -24px rgba(0,0,0,.24);
   transition: transform 1s var(--ease), box-shadow 1s var(--ease);
 }
-.piece .frame img, .piece .frame video {
-  width: 100%; height: auto; aspect-ratio: var(--ar, 1);
+.work .frame img:not(.lqip), .work .frame video {
+  position: absolute; inset: 0; width: 100%; height: 100%;
   object-fit: cover;
   opacity: 0; transition: opacity .9s var(--ease);
 }
-.piece .frame img.ready, .piece .frame video.ready { opacity: 1; }
-.piece:hover .frame { transform: translateY(-3px); box-shadow: 0 1px 1px rgba(0,0,0,.03), 0 26px 60px -24px rgba(0,0,0,.26); }
-.label {
-  width: min(22em, 100%);
-  font-size: var(--t-small);
-  color: var(--mute);
-  padding-bottom: 2px;
-}
-.label > span { display: block; }
-.piece.center .label { text-align: center; }
-.piece.right .label { text-align: right; }
-.label .no { display: block; margin-bottom: 14px; letter-spacing: 0; }
-.label .t {
-  display: block;
-  font-family: var(--serif);
-  font-size: clamp(22px, 1.9vw, 30px);
-  letter-spacing: -0.04em; line-height: 1.05;
-  color: var(--ink);
-  margin-bottom: 6px;
-}
-.label .a { display: block; color: var(--ink); margin-bottom: 12px; }
-.label .note { display: block; margin-top: 12px; font-style: normal; color: var(--ink); max-width: 20em; }
-.piece.center .label .note { margin-inline: auto; }
-.piece.right .label .note { margin-left: auto; }
-@media (max-width: 720px) {
-  .piece, .piece.right, .piece.center { flex-direction: column; align-items: stretch; }
-  .piece .frame { width: 100%; }
-  .piece.small .frame { width: 72%; }
-  .piece.small.right .frame { align-self: flex-end; }
-  .piece.small.center .frame { align-self: center; }
-  .piece .label, .piece.right .label, .piece.center .label { text-align: left; width: 100%; }
-  .piece .label .note { margin-left: 0; }
-}
+.work .frame img.ready, .work .frame video.ready { opacity: 1; }
+.work:hover .frame { transform: translateY(-3px); box-shadow: 0 1px 1px rgba(0,0,0,.03), 0 26px 56px -26px rgba(0,0,0,.28); }
+.work .cap { padding: 0; font-size: var(--t-small); min-width: 0; }
+.work .cap > span { display: block; }
 
 /* ── page header (watch list) ───────────────────── */
 .page-head { padding: clamp(120px, 22vh, 220px) var(--gutter) 0; }
