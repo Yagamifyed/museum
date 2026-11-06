@@ -11,6 +11,7 @@ const day = (d) => (d ? new Date(d + 'T00:00:00Z').toLocaleDateString('en-GB', {
 const edition = (w) => (w.editions === 1 ? '1 of 1' : w.editions ? `Edition of ${w.editions}` : '—');
 const by = (w) => w.artist || w.collection || 'Unknown';
 const link = (w) => `#/work/${encodeURIComponent(w.id)}`;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const plural = (n, one, many = one + 's') => `${n} ${n === 1 ? one : many}`;
 
 const PAGE_TITLES = { museum: 'The Museum', vault: 'The Vault', watchlist: 'Watch List' };
@@ -65,7 +66,7 @@ function renderMuseum() {
     const ar = w.media.w && w.media.h ? (w.media.w / w.media.h).toFixed(4) : 1;
     const m = w.museum;
     return `<article class="piece ${esc(m.size)} ${esc(m.align)}">
-      <a class="frame" href="${link(w)}" style="--ar:${ar}" aria-label="${esc(w.title)} by ${esc(by(w))}">${mediaEl(w, { eager: i < 2 })}</a>
+      <a class="frame" href="${link(w)}" data-ar="${ar}" aria-label="${esc(w.title)} by ${esc(by(w))}">${mediaEl(w, { eager: i < 2 })}</a>
       <div class="label">
         <span class="no">${pad(i + 1)} / ${pad(n)}</span>
         <span class="t">${esc(w.title)}</span>
@@ -76,6 +77,9 @@ function renderMuseum() {
       </div>
     </article>`;
   }).join('');
+
+  // set via the CSSOM: the Content-Security-Policy forbids inline style attributes
+  $$('[data-ar]').forEach((el) => el.style.setProperty('--ar', el.dataset.ar));
 
   const rest = works.filter((w) => !w.museum);
   $('[data-enter-sub]').textContent = `Every work in the collection, ${works.length} in all, including the ${rest.length} not on the walls.`;
@@ -169,25 +173,51 @@ function showPage(page) {
 }
 
 // ── the watch list (private) ─────────────────────────
-// data/watchlist.json is AES-GCM ciphertext; the password never leaves the browser.
+// data/watchlist.json is AES-GCM ciphertext: nothing readable is ever published,
+// so skipping the form gets you nowhere. The password never leaves the browser.
+// "Remember" keeps only the derived key, stored non-extractable in IndexedDB:
+// this device can use it, but nobody can read it back out as a password.
 
-const REMEMBER = 'museum.watchlist';
 let watchOpened = false;
+let failures = 0;
+let envelope = null;
+const unb64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+const getEnvelope = async () => (envelope ||= await (await fetch('data/watchlist.json', { cache: 'no-cache' })).json());
 
-async function decryptWatchlist(pw) {
-  const env = await (await fetch('data/watchlist.json', { cache: 'no-cache' })).json();
-  const b = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+async function deriveKey(pw) {
+  const env = await getEnvelope();
   const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveKey']);
-  const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: b(env.salt), iterations: env.iterations, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
-  return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b(env.iv) }, key, b(env.data))));
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: unb64(env.salt), iterations: env.iterations, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
 }
+
+async function decryptWith(key) {
+  const env = await getEnvelope();
+  return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(env.iv) }, key, unb64(env.data))));
+}
+
+function keyStore(mode, op) {
+  return new Promise((resolve, reject) => {
+    const open = indexedDB.open('museum', 1);
+    open.onupgradeneeded = () => open.result.createObjectStore('keys');
+    open.onerror = () => reject(open.error);
+    open.onsuccess = () => {
+      const tx = open.result.transaction('keys', mode);
+      const req = op(tx.objectStore('keys'));
+      tx.oncomplete = () => { open.result.close(); resolve(req.result); };
+      tx.onerror = () => reject(tx.error);
+    };
+  });
+}
+const saveKey = (k) => keyStore('readwrite', (s) => s.put(k, 'watchlist')).catch(() => {});
+const loadKey = () => keyStore('readonly', (s) => s.get('watchlist')).catch(() => null);
+const forgetKey = () => keyStore('readwrite', (s) => s.delete('watchlist')).catch(() => {});
 
 function renderWatchlist(list) {
   const grid = $('[data-watch-grid]');
   grid.innerHTML = list.items.map((w) => {
     const href = w.url || w.links?.[0];
-    const tag = href ? `a href="${esc(href)}" target="_blank" rel="noopener"` : 'div';
-    const img = w.image ? `<img src="${w.image.src}" alt="${esc(w.title)}" width="${w.image.w}" height="${w.image.h}" decoding="async">` : '';
+    const tag = href ? `a href="${esc(href)}" target="_blank" rel="noopener noreferrer"` : 'div';
+    const img = w.image ? `<img src="${esc(w.image.src)}" alt="${esc(w.title)}" width="${w.image.w}" height="${w.image.h}" decoding="async">` : '';
     const meta = [w.artist, w.detail, w.venue].filter(Boolean).join(', ');
     return `<${tag} class="card">
       <div class="plate">${w.chain ? `<span class="badge">${CHAINS[w.chain]}</span>` : ''}${img}</div>
@@ -199,31 +229,50 @@ function renderWatchlist(list) {
     </${tag.split(' ')[0]}>`;
   }).join('');
   $('[data-watch-sub]').textContent = `Private. ${plural(list.items.length, 'work')} I'm watching, from Mother Flame.`;
-  $('[data-watch-foot]').textContent = `Updated ${day(list.updated)}`;
+  $('[data-watch-foot]').innerHTML = `Updated ${esc(day(list.updated))}. <button type="button" data-forget>Lock and forget this device</button>`;
   $('[data-lock]').hidden = true;
   grid.hidden = $('[data-watch-foot]').hidden = false;
   reveal(grid);
 }
 
+function lockWatchlist() {
+  $('[data-watch-grid]').innerHTML = '';
+  $('[data-watch-grid]').hidden = $('[data-watch-foot]').hidden = true;
+  $('[data-watch-sub]').textContent = 'Private.';
+  $('[data-lock]').hidden = false;
+}
+
 async function unlock(pw, remember) {
   const err = $('[data-lock-error]');
+  const go = $('.lock-go');
   err.hidden = true;
+  go.disabled = true;
+  // each wrong guess makes the next one wait longer (1, 2, 4, 8 s)
+  if (failures) await sleep(Math.min(1000 * 2 ** (failures - 1), 8000));
   try {
-    renderWatchlist(await decryptWatchlist(pw));
-    try { remember ? localStorage.setItem(REMEMBER, pw) : localStorage.removeItem(REMEMBER); } catch {}
+    const key = await deriveKey(pw);
+    const list = await decryptWith(key);
+    failures = 0;
+    $('[data-lock-input]').value = '';
+    renderWatchlist(list);
+    remember ? saveKey(key) : forgetKey();
   } catch {
+    failures++;
     err.hidden = false;
-    try { localStorage.removeItem(REMEMBER); } catch {}
+  } finally {
+    go.disabled = false;
   }
 }
 
-function openWatchlist() {
+async function openWatchlist() {
   if (watchOpened) return;
   watchOpened = true;
-  let saved = null;
-  try { saved = localStorage.getItem(REMEMBER); } catch {}
-  if (saved) unlock(saved, true);
-  else $('[data-lock-input]').focus({ preventScroll: true });
+  try { localStorage.removeItem('museum.watchlist'); } catch {} // older versions kept the password itself
+  const key = await loadKey();
+  if (key) {
+    try { return renderWatchlist(await decryptWith(key)); } catch { forgetKey(); }
+  }
+  $('[data-lock-input]').focus({ preventScroll: true });
 }
 
 $('[data-lock]').addEventListener('submit', (e) => {
@@ -274,7 +323,7 @@ function openSheet(w) {
     <span class="sheet-chain">${CHAINS[w.chain]}</span>
     <h2 class="sheet-title" id="sheet-title">${esc(w.title)}</h2>
     <p class="sheet-artist">${esc(by(w))}</p>
-    ${w.museum?.note ? `<p class="desc" style="color:var(--ink)">${esc(w.museum.note)}</p>` : ''}
+    ${w.museum?.note ? `<p class="desc desc-ink">${esc(w.museum.note)}</p>` : ''}
     <dl class="facts">${facts.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
     ${desc ? `<p class="desc${desc.length > 420 ? ' clamped' : ''}">${esc(desc)}</p>${desc.length > 420 ? '<button type="button" class="desc-more" data-more>Read more</button>' : ''}` : ''}
     <div class="links">${links.map(([label, href]) => `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(label)} ↗</a>`).join('')}</div>`;
@@ -369,6 +418,7 @@ document.addEventListener('click', (e) => {
   else if (t.hasAttribute('data-close')) leaveSheet();
   else if (t.hasAttribute('data-prev')) step(-1);
   else if (t.hasAttribute('data-next')) step(1);
+  else if (t.hasAttribute('data-forget')) { forgetKey(); lockWatchlist(); toast('Locked'); }
   else if (t.hasAttribute('data-top')) { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
   else if (t.hasAttribute('data-about-link')) { e.preventDefault(); $('#about').scrollIntoView({ behavior: 'smooth' }); }
 });

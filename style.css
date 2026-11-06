@@ -416,6 +416,10 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 .facts dd button { color: inherit; }
 .facts dd button:hover { text-decoration: underline; text-underline-offset: 3px; }
 .desc { font-size: var(--t-small); color: var(--mute); white-space: pre-line; margin: 0 0 28px; overflow-wrap: anywhere; }
+.desc-ink { color: var(--ink); }
+.lock-foot button { color: var(--mute); text-decoration: underline; text-underline-offset: 3px; }
+.lock-foot button:hover { color: var(--ink); }
+.lock-go:disabled { color: var(--faint); cursor: progress; }
 .desc.clamped { display: -webkit-box; -webkit-line-clamp: 8; -webkit-box-orient: vertical; overflow: hidden; }
 .desc-more { color: var(--ink); font-size: var(--t-small); margin: -18px 0 28px; align-self: flex-start; }
 .links { margin-top: auto; display: flex; flex-wrap: wrap; gap: 8px 22px; }
