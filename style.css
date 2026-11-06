@@ -92,7 +92,7 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 }
 .hero-title .ink { color: var(--ink); }
 .hero-foot {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gap);
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap);
   color: var(--mute);
 }
 .hero-foot > :nth-child(2) { text-align: center; }
@@ -149,9 +149,9 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
   font-size: 12px; letter-spacing: 0; color: var(--ink);
 }
 
-.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--gap); row-gap: clamp(32px, 4vw, 52px); }
-@media (max-width: 1100px) { .grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 720px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+.grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gap); row-gap: clamp(32px, 4vw, 52px); }
+@media (max-width: 1100px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 720px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 /* ── the museum: one wall per piece ──────────────── */
 .hang {
@@ -243,7 +243,7 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
   transition: filter .6s var(--ease), opacity .6s var(--ease);
 }
 .enter-link:hover .enter-strip img { filter: none; opacity: 1; }
-@media (max-width: 720px) { .enter-strip { grid-template-columns: repeat(5, 1fr); } }
+@media (max-width: 720px) { .enter-strip { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
 
 /* ── vault header ────────────────────────────────── */
 .vault-head { padding: clamp(120px, 22vh, 220px) var(--gutter) 0; }
@@ -368,7 +368,7 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
   line-height: .82;
   margin-left: -0.04em;
 }
-.foot-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gap); margin-top: 28px; color: var(--mute); }
+.foot-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); margin-top: 28px; color: var(--mute); }
 .foot-row > :nth-child(2) { text-align: center; }
 .foot-row > :last-child { text-align: right; }
 .foot-row a:hover { color: var(--ink); }
@@ -537,3 +537,4 @@ body.walking #about, body.walking .foot { display: none; }
 .walk-link { color: var(--ink); }
 .walk-link:hover { text-decoration: underline; text-underline-offset: 3px; }
 @media (max-width: 560px) { .walk-ui { flex-direction: column; align-items: stretch; } .walk-buttons { justify-content: space-between; } }
+@media (max-width: 720px) { .plate .badge, .plate .on-view { display: none; } }

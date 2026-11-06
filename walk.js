@@ -278,6 +278,7 @@ async function build(host, works, onOpen, onFocus) {
     const w = host.clientWidth, h = host.clientHeight;
     renderer.setSize(w, h, false);
     camera.aspect = w / Math.max(1, h);
+    camera.fov = camera.aspect < 0.8 ? 78 : 58; // portrait phones need a wider view
     camera.updateProjectionMatrix();
   }
   addEventListener('resize', () => ctx?.active && resize());
