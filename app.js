@@ -12,11 +12,10 @@ const by = (w) => w.artist || w.collection || 'Unknown';
 const link = (w) => `#/work/${encodeURIComponent(w.id)}`;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const plural = (n, one, many = one + 's') => `${n} ${n === 1 ? one : many}`;
-const and = (xs) => (xs.length < 2 ? xs.join('') : `${xs.slice(0, -1).join(', ')} and ${xs.at(-1)}`);
 
-const PAGE_TITLES = { museum: 'The Museum', watchlist: 'Watch List' };
+const PAGE_TITLES = { museum: 'The Museum', further: 'Further works', watchlist: 'Watch List' };
 const state = { page: null };
-let data, works, museum, rest, order, spot;
+let data, works, museum, rest, order, further, spot;
 
 // ── media ────────────────────────────────────────────
 
@@ -60,32 +59,37 @@ function card(w) {
 }
 
 // ── the museum ───────────────────────────────────────
-// One wall, every work: first those placed in curation.json → museum, in that
-// order, then the rest, newest first. Works are tiled edge to edge in rows;
-// each keeps its proportions, and its size (medium, large, xl) sets how tall
-// its row hangs. Title and artist show on hover; a click opens the details.
+// One wall, every work except the Further works: first those placed in
+// curation.json → museum, in that order, then the rest, newest first. Works are
+// tiled edge to edge in rows; each keeps its proportions, and its size (small,
+// medium, large, xl) sets how tall its row hangs. Title and artist show on
+// hover; a click opens the details.
 const SIZES = { small: 0.75, medium: 1, large: 1.8, xl: 2.6 };
-let wallItems = [];
+const walls = [];
 
-function renderMuseum() {
-  const chains = CHAIN_ORDER.filter((c) => works.some((w) => w.chain === c));
-  const ink = chains.map((c) => `<span class="ink">${CHAINS[c]}</span>`);
-  $('[data-hero-title]').innerHTML = `<span class="ink">The Museum.</span> The art I collect, ${works.length} works on ${and(ink)}${chains.includes('bitcoin') ? '' : ', with Bitcoin to come'}.`;
-
+function hangWall(el, list) {
   const holder = document.createElement('div');
-  holder.innerHTML = order.map((w, i) => {
+  holder.innerHTML = list.map((w, i) => {
     const ar = w.media.w && w.media.h ? (w.media.w / w.media.h).toFixed(4) : 1;
     const size = SIZES[w.museum?.size] ? w.museum.size : 'medium';
-    return `<a class="work" href="${link(w)}" data-ar="${ar}" data-size="${size}" aria-label="${esc(w.title)} by ${esc(by(w))}">
-      ${mediaEl(w, { eager: i < 6, sizes: size === 'medium' ? '(max-width: 720px) 50vw, 26vw' : '(max-width: 720px) 100vw, 60vw' })}
+    return `<a class="work" href="${link(w)}" data-ar="${ar}" data-size="${size}"${w.museum?.newRow ? ' data-new-row' : ''} aria-label="${esc(w.title)} by ${esc(by(w))}">
+      ${mediaEl(w, { eager: i < 6, sizes: size === 'medium' || size === 'small' ? '(max-width: 720px) 50vw, 26vw' : '(max-width: 720px) 100vw, 60vw' })}
       <span class="cap"><span class="cap-title">${esc(w.title)}</span><span class="cap-meta">${esc(by(w))}</span></span>
     </a>`;
   }).join('');
-  wallItems = [...holder.children];
+  const wall = { el, items: [...holder.children], width: 0 };
   // set via the CSSOM: the Content-Security-Policy forbids inline style attributes
-  wallItems.forEach((el) => el.style.setProperty('--ar', el.dataset.ar));
-  layoutWall();
-  new ResizeObserver(() => requestAnimationFrame(layoutWall)).observe($('[data-wall]'));
+  wall.items.forEach((item) => item.style.setProperty('--ar', item.dataset.ar));
+  walls.push(wall);
+  layoutWall(wall);
+  new ResizeObserver(() => requestAnimationFrame(() => layoutWall(wall))).observe(el);
+}
+
+function renderMuseum() {
+  hangWall($('[data-wall]'), order);
+  $('[data-further-link]').hidden = !further.length;
+
+  hangWall($('[data-wall-further]'), further);
 
   // a small rotating specimen above the headline
   const box = $('.hero-specimen');
@@ -99,24 +103,23 @@ function renderMuseum() {
   }
 }
 
-// Rows are built per run of works with the same size. A run is split into as
-// many rows as fill the width at that size's height, with the works shared out
-// so each row is about equally full; flex-grow = aspect ratio then makes every
-// work in a row exactly the same height, with no gaps.
-let wallWidth = 0;
-function layoutWall() {
-  const wall = $('[data-wall]');
-  const W = wall.clientWidth;
-  if (!W || W === wallWidth) return;
-  wallWidth = W;
-  const gap = parseFloat(getComputedStyle(wall).rowGap) || 0;
+// Rows are built per run of works with the same size (a work marked newRow in
+// curation.json starts a new run). A run is split into as many rows as fill the
+// width at that size's height, with the works shared out so each row is about
+// equally full; flex-grow = aspect ratio then makes every work in a row exactly
+// the same height, with no gaps.
+function layoutWall(wall) {
+  const W = wall.el.clientWidth;
+  if (!W || W === wall.width) return; // hidden, or nothing changed
+  wall.width = W;
+  const gap = parseFloat(getComputedStyle(wall.el).rowGap) || 0;
   const H = W < 720 ? W / 2.4 : Math.min(320, W / 4.8);
   const tallest = innerHeight * 0.86;
 
   const runs = [];
-  for (const el of wallItems) {
+  for (const el of wall.items) {
     const run = runs.at(-1);
-    if (run && run.size === el.dataset.size && run.size !== 'xl') run.items.push(el);
+    if (run && run.size === el.dataset.size && run.size !== 'xl' && !('newRow' in el.dataset)) run.items.push(el);
     else runs.push({ size: el.dataset.size, items: [el] }); // an xl work always hangs alone
   }
 
@@ -130,12 +133,14 @@ function layoutWall() {
     items.forEach((el, j) => {
       row.push(el);
       acc += ars[j];
-      if (cut < k && acc >= (total * cut) / k - ars[j] / 2) { rows.push({ size, target, items: row }); row = []; cut++; }
+      // close the row where the running total comes closest to its share
+      const goal = (total * cut) / k;
+      if (cut < k && j + 1 < items.length && Math.abs(acc - goal) <= Math.abs(acc + ars[j + 1] - goal)) { rows.push({ size, target, items: row }); row = []; cut++; }
     });
     if (row.length) rows.push({ size, target, items: row });
   }
 
-  wall.replaceChildren(...rows.map(({ size, target, items }) => {
+  wall.el.replaceChildren(...rows.map(({ size, target, items }) => {
     const div = document.createElement('div');
     div.className = 'row';
     div.append(...items);
@@ -246,6 +251,7 @@ function showPage(page) {
   if (state.page === page) return;
   state.page = page;
   for (const el of $$('[data-page]')) el.hidden = el.dataset.page !== page;
+  walls.forEach(layoutWall); // a wall on a page that was hidden has no width until now
   document.title = `${data.profile.name} — ${PAGE_TITLES[page]}`;
   window.scrollTo({ top: 0 });
 }
@@ -365,13 +371,17 @@ const sheet = $('[data-sheet]');
 let current = null;
 let lastFocus = null;
 
+// the works the arrows step through: the main wall, or the Further works
+const sequence = () => (current?.further ? further : order);
+
 function openSheet(w) {
   if (!sheet.hidden && current?.id === w.id) return;
   if (sheet.hidden) lastFocus = document.activeElement;
   current = w;
-  const pos = order.indexOf(w);
-  $('[data-sheet-count]').textContent = `${pad(pos + 1, 2)} / ${pad(order.length, 2)}`;
-  $('[data-prev]').hidden = $('[data-next]').hidden = order.length < 2;
+  const seq = sequence();
+  const pos = seq.indexOf(w);
+  $('[data-sheet-count]').textContent = `${pad(pos + 1, 2)} / ${pad(seq.length, 2)}`;
+  $('[data-prev]').hidden = $('[data-next]').hidden = seq.length < 2;
 
   $('[data-sheet-media]').innerHTML = w.motion?.src
     ? `<video${w.pixelated ? ' class="pixelated"' : ''} src="${esc(w.motion.src)}" poster="${esc(w.media.src)}" muted loop playsinline autoplay></video>`
@@ -416,12 +426,13 @@ function closeSheet() {
 }
 
 function leaveSheet() {
-  history.pushState(null, '', '#/');
+  history.pushState(null, '', current?.further ? '#/further' : '#/');
   closeSheet();
 }
 
 function step(d) {
-  const next = order[(order.indexOf(current) + d + order.length) % order.length];
+  const seq = sequence();
+  const next = seq[(seq.indexOf(current) + d + seq.length) % seq.length];
   history.replaceState(null, '', link(next));
   openSheet(next);
 }
@@ -434,12 +445,13 @@ function route() {
     const id = decodeURIComponent(m[1]);
     const w = works.find((x) => x.id === id);
     if (w) {
-      showPage('museum');
+      showPage(w.further ? 'further' : 'museum');
       return openSheet(w);
     }
   }
   closeSheet();
   if (h === '#/watchlist') { showPage('watchlist'); openWatchlist(); }
+  else if (h === '#/further') showPage('further');
   else if (/^#\/artist-of-the-week(\/\d+)?$/.test(h)) {
     showPage('museum');
     renderWeek(Number(h.split('/')[2]) || null);
@@ -486,8 +498,9 @@ window.addEventListener('hashchange', route);
 
 data = await (await fetch('data/collection.json', { cache: 'no-cache' })).json();
 works = data.works;
-museum = works.filter((w) => w.museum).sort((a, b) => a.museum.rank - b.museum.rank);
-rest = works.filter((w) => !w.museum); // newest first
+further = works.filter((w) => w.further);
+museum = works.filter((w) => w.museum && !w.further).sort((a, b) => a.museum.rank - b.museum.rank);
+rest = works.filter((w) => !w.museum && !w.further); // newest first
 order = [...museum, ...rest];
 
 spot = await fetch('data/spotlight.json', { cache: 'no-cache' }).then((r) => r.json()).catch(() => null);

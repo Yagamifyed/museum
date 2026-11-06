@@ -18,7 +18,8 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@levinlevin__">
 
-  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="favicon.png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="preload" href="fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/hedvig-letters-serif-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
@@ -26,7 +27,7 @@
 </head>
 <body>
   <header class="bar">
-    <a class="wordmark" href="#/"><img class="mark-pfp" src="pfp.png" width="48" height="48" alt=""><span data-name>LevinLevin</span></a>
+    <a class="wordmark" href="#/"><img class="mark-pfp" src="pfp@4x.png" width="48" height="48" alt=""><span data-name>LevinLevin</span></a>
     <nav>
       <a href="#/artist-of-the-week" data-week-nav hidden>Artist of the Week</a>
       <a href="#about" data-about-link>About</a>
@@ -38,7 +39,7 @@
     <div data-page="museum">
       <section class="hero">
         <div class="hero-specimen" aria-hidden="true"></div>
-        <h1 class="hero-title" data-hero-title><span class="ink">The Museum.</span></h1>
+        <h1 class="hero-title"><span class="ink">The Museum.</span></h1>
         <div class="hero-foot">
           <span data-updated></span>
           <a data-x href="#" target="_blank" rel="noopener">@ ↗</a>
@@ -47,6 +48,7 @@
 
       <!-- every work, in the order of curation.json → museum, then newest first -->
       <section class="wall" data-wall aria-label="The collection"></section>
+      <a class="further-link" href="#/further" data-further-link hidden>Further works <span class="arrow">→</span></a>
 
       <!-- Artist of the Week, hidden until the first pick -->
       <section class="block" id="week" data-week hidden>
@@ -63,6 +65,15 @@
           <div class="grid" data-week-past></div>
         </div>
       </section>
+    </div>
+
+    <!-- ── Further works: off the main wall, linked from its end ── -->
+    <div data-page="further" hidden>
+      <section class="page-head">
+        <h1 class="page-title">Further works</h1>
+        <p class="page-sub"><a class="quiet" href="#/">← The Museum</a></p>
+      </section>
+      <section class="wall" data-wall-further aria-label="Further works"></section>
     </div>
 
     <!-- ── The Watch List (private, not linked) ───── -->
@@ -94,7 +105,7 @@
       </div>
       <div class="about">
         <div class="about-who">
-          <img class="about-pfp" src="pfp.png" width="48" height="48" alt="LevinLevin's punk">
+          <img class="about-pfp" src="pfp@4x.png" width="48" height="48" alt="LevinLevin's punk">
           <p class="about-bio" data-bio></p>
           <p class="about-statement" data-statement></p>
         </div>

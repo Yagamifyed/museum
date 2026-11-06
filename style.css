@@ -182,6 +182,13 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 .work .cap-meta { color: rgba(255, 255, 255, .72); }
 .work:hover .cap, .work:focus-visible .cap { opacity: 1; transform: none; }
 @media (hover: none) { .work .cap { display: none; } }
+.further-link {
+  display: block; width: max-content; margin: clamp(56px, 8vw, 120px) auto 0;
+  color: var(--mute); transition: color .2s;
+}
+.further-link:hover { color: var(--ink); }
+.further-link .arrow { display: inline-block; transition: transform .5s var(--ease); }
+.further-link:hover .arrow { transform: translateX(.2em); }
 
 /* ── page header (watch list) ───────────────────── */
 .page-head { padding: clamp(120px, 22vh, 220px) var(--gutter) 0; }
