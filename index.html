@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>LevinLevin — The Museum</title>
+  <meta name="description" content="The Museum and the Vault of LevinLevin: digital works held on Tezos, Ethereum, Solana and Bitcoin.">
+  <meta name="theme-color" content="#ffffff">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="LevinLevin — The Museum">
+  <meta property="og:description" content="A small, deliberate hang of works, and a Vault for everything else.">
+  <meta property="og:image" content="og.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@levinlevin__">
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23fff'/%3E%3Crect x='9' y='9' width='14' height='14' fill='%233A3C42'/%3E%3C/svg%3E">
+  <link rel="preload" href="fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/hedvig-letters-serif-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="bar">
+    <a class="wordmark" href="#/" data-name>LevinLevin</a>
+    <nav>
+      <a href="#/" data-nav="museum">The Museum</a>
+      <a href="#/vault" data-nav="vault">The Vault</a>
+      <a href="#about" data-about-link>About</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ── The Museum ─────────────────────────────── -->
+    <div data-page="museum">
+      <section class="hero">
+        <div class="hero-specimen" aria-hidden="true"></div>
+        <h1 class="hero-title">
+          <span class="ink">The Museum.</span> A small, deliberate hang of works
+          from a collection held on <span class="ink">Tezos</span>, <span class="ink">Ethereum</span>,
+          <span class="ink">Solana</span> and soon <span class="ink">Bitcoin</span>.
+        </h1>
+        <div class="hero-foot">
+          <span data-on-view>—</span>
+          <a href="#/vault" data-vault-count>The Vault ↗</a>
+          <a data-x href="#" target="_blank" rel="noopener">@ ↗</a>
+        </div>
+      </section>
+
+      <section class="hang" data-hang aria-label="On view"></section>
+
+      <section class="block enter">
+        <a class="enter-link" href="#/vault">
+          <span class="enter-eyebrow">Beyond the walls</span>
+          <span class="enter-title">The Vault <span class="arrow">→</span></span>
+          <span class="enter-sub" data-enter-sub></span>
+          <span class="enter-strip" data-enter-strip aria-hidden="true"></span>
+        </a>
+      </section>
+    </div>
+
+    <!-- ── The Vault ──────────────────────────────── -->
+    <div data-page="vault" hidden>
+      <section class="vault-head">
+        <h1 class="vault-title">The Vault</h1>
+        <p class="vault-sub" data-vault-sub></p>
+      </section>
+
+      <section class="block block-tight" id="works">
+        <div class="block-head">
+          <div class="filters" data-filters></div>
+          <div class="views" role="tablist" aria-label="View">
+            <button type="button" data-view="grid" aria-pressed="true">Grid</button>
+            <button type="button" data-view="index" aria-pressed="false">Index</button>
+          </div>
+        </div>
+        <div class="grid" data-grid></div>
+        <div class="index" data-index hidden></div>
+      </section>
+
+      <section class="block" id="artists">
+        <div class="block-head">
+          <h2>Artists</h2>
+          <span class="quiet" data-count-artists></span>
+        </div>
+        <ol class="artists" data-artists></ol>
+      </section>
+    </div>
+
+    <!-- ── The Watch List (private, not linked) ───── -->
+    <div data-page="watchlist" hidden>
+      <section class="vault-head">
+        <h1 class="vault-title">Watch List</h1>
+        <p class="vault-sub" data-watch-sub>Private.</p>
+      </section>
+      <section class="block block-tight">
+        <form class="lock" data-lock autocomplete="on">
+          <input type="text" name="username" value="watchlist" autocomplete="username" hidden>
+          <label class="lock-field">
+            <span class="quiet">Password</span>
+            <input type="password" name="password" autocomplete="current-password" required data-lock-input>
+          </label>
+          <label class="lock-remember quiet"><input type="checkbox" data-lock-remember> Remember on this device</label>
+          <button type="submit" class="lock-go">Open →</button>
+          <p class="lock-error" data-lock-error hidden>That isn't it.</p>
+        </form>
+        <div class="grid watch" data-watch-grid hidden></div>
+        <p class="lock-foot quiet" data-watch-foot hidden></p>
+      </section>
+    </div>
+
+    <!-- ── shared ─────────────────────────────────── -->
+    <section class="block" id="about">
+      <div class="block-head">
+        <h2>About</h2>
+      </div>
+      <div class="about">
+        <p class="about-statement" data-statement></p>
+        <dl class="wallets" data-wallets></dl>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span class="foot-mark" data-name>LevinLevin</span>
+    <div class="foot-row">
+      <span data-updated></span>
+      <a data-x href="#" target="_blank" rel="noopener">X ↗</a>
+      <a href="#" data-top>Back to top ↑</a>
+    </div>
+  </footer>
+
+  <div class="sheet" data-sheet hidden role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+    <div class="sheet-bar">
+      <span class="quiet" data-sheet-count></span>
+      <div class="sheet-nav">
+        <button type="button" data-prev>Previous</button>
+        <button type="button" data-next>Next</button>
+        <button type="button" data-close>Close</button>
+      </div>
+    </div>
+    <div class="sheet-body">
+      <figure class="sheet-media" data-sheet-media></figure>
+      <aside class="sheet-info" data-sheet-info></aside>
+    </div>
+  </div>
+
+  <div class="peek" data-peek aria-hidden="true"></div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
