@@ -1413,8 +1413,8 @@
       "contract": "0x21e12c7cb63d99b8030981bbec6abed8bc9855a0",
       "tokenId": "8",
       "title": "You Walked Away - Pho",
-      "collection": "The Canal Street Show Editions",
-      "artist": null,
+      "collection": "The Canal Street Show",
+      "artist": "Pho",
       "description": "Original artwork by Pho. The Canal Street Show Art Pass release, Fall 2026",
       "editions": null,
       "owned": 1,
@@ -1815,6 +1815,42 @@
         "align": "center",
         "note": ""
       }
+    },
+    {
+      "status": "owned",
+      "id": "ethereum:0x7e9b9ba1a3b4873279857056279cef6a4fcdf340:68",
+      "chain": "ethereum",
+      "contract": "0x7e9b9ba1a3b4873279857056279cef6a4fcdf340",
+      "tokenId": "68",
+      "title": "CONTEMPLATING DEATH: MUHJU",
+      "collection": "Contemplating Death",
+      "artist": "Muhju",
+      "description": " Contemplating Death\" is a thought-provoking and visually enthralling artwork that delves into the enigmatic nature of life, death, and the eternal cycle of existence. The piece features an angel, sitting atop an ornately decorated Greek temple. The angel's foot is dipped into the vast cosmic expanse, which remains constant in the background. The observer witnesses the angel's transformation from a pure white form into a striking black silhouette, representing its fusion with the universe. This metamorphosis occurs in cycles, with the angel reverting to its white form, symbolizing rebirth and renewal. The angel's appearance changes according to the time of day, with its white form appearing during daylight hours and its dark form emerging at night.",
+      "editions": 55,
+      "owned": 1,
+      "minted": null,
+      "acquired": "2023-06-21",
+      "interactive": "https://arweave.net/QkZ_dLT_FT4V5JZ-SpIzSDnVsmCqQJ4ns5JURzqekJA",
+      "links": [
+        [
+          "OpenSea",
+          "https://opensea.io/item/ethereum/0x7e9b9ba1a3b4873279857056279cef6a4fcdf340/68"
+        ],
+        [
+          "Etherscan",
+          "https://etherscan.io/nft/0x7e9b9ba1a3b4873279857056279cef6a4fcdf340/68"
+        ]
+      ],
+      "media": {
+        "src": "media/bd508a892d5e.webp",
+        "w": 1200,
+        "h": 1600,
+        "thumb": "media/thumb/bd508a892d5e.webp",
+        "lqip": "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAACQAwCdASoPABQAPu1iqk2ppaQiMAgBMB2JaQAAW4M+cq7iTZgAAP70ImdKgnsR+XaY7CK8RBkFUClNqeG7QULP8c40AnbOUqp34IjCQ36M41cXEJbzXgQqkAAAAA=="
+      },
+      "motion": null,
+      "original": "https://arweave.net/ZJczOzoXAHh-Us9AKgdrRXQuzFdkXTshk638zBjdsqg",
+      "museum": null
     },
     {
       "status": "owned",
