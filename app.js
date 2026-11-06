@@ -15,7 +15,10 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const plural = (n, one, many = one + 's') => `${n} ${n === 1 ? one : many}`;
 
 const PAGE_TITLES = { museum: 'The Museum', vault: 'The Vault', watchlist: 'Watch List' };
-const state = { page: null, chain: 'all', artist: null, view: 'grid' };
+const state = { page: null, chain: 'all', artist: null, view: 'grid', sort: 'recent' };
+const SORTS = [['recent', 'Recent'], ['artist', 'Artist'], ['title', 'Title'], ['chain', 'Chain']];
+const artistLink = (name) => `#/artist/${encodeURIComponent(name)}`;
+const cmp = (a, b) => a.localeCompare(b, 'en', { sensitivity: 'base', numeric: true });
 let data, works, museum;
 
 // ── media ────────────────────────────────────────────
@@ -105,22 +108,42 @@ function renderMuseum() {
 // ── the vault ────────────────────────────────────────
 
 function filtered() {
-  return works.filter((w) => (state.chain === 'all' || w.chain === state.chain) && (!state.artist || by(w) === state.artist));
+  const list = works.filter((w) => (state.chain === 'all' || w.chain === state.chain) && (!state.artist || by(w) === state.artist));
+  const recent = (a, b) => works.indexOf(a) - works.indexOf(b); // works arrive newest first
+  const order = {
+    recent,
+    artist: (a, b) => cmp(by(a), by(b)) || recent(a, b),
+    title: (a, b) => cmp(a.title, b.title),
+    chain: (a, b) => CHAIN_ORDER.indexOf(a.chain) - CHAIN_ORDER.indexOf(b.chain) || recent(a, b),
+  }[state.sort];
+  return list.sort(order);
 }
 
 function renderVaultHead() {
   const artists = new Set(works.map(by)).size;
-  const chains = new Set(works.map((w) => w.chain)).size;
-  $('[data-vault-sub]').textContent = `Everything in the collection: ${plural(works.length, 'work')} by ${plural(artists, 'artist')} across ${plural(chains, 'chain')}. Works marked On view hang in the Museum.`;
   $('[data-count-artists]').textContent = artists;
+  if (state.artist) {
+    const mine = works.filter((w) => by(w) === state.artist);
+    const chains = [...new Set(mine.map((w) => CHAINS[w.chain]))].join(' and ');
+    $('.vault-title').textContent = state.artist;
+    $('[data-vault-sub]').innerHTML = `${esc(plural(mine.length, 'work'))} in the collection, on ${esc(chains)}. <a class="quiet" href="#/vault">All of the Vault ↗</a>`;
+    document.title = `${state.artist} — ${data.profile.name}`;
+  } else {
+    const chains = new Set(works.map((w) => w.chain)).size;
+    $('.vault-title').textContent = 'The Vault';
+    $('[data-vault-sub]').textContent = `Everything in the collection: ${plural(works.length, 'work')} by ${plural(artists, 'artist')} across ${plural(chains, 'chain')}. Works marked On view hang in the Museum.`;
+  }
 }
 
 function renderFilters() {
   const counts = Object.fromEntries(CHAIN_ORDER.map((c) => [c, works.filter((w) => w.chain === c).length]));
-  const btn = (key, label, n) => `<button type="button" data-chain="${key}" aria-pressed="${state.chain === key}">${label}<sup>${n}</sup></button>`;
-  let html = btn('all', 'All', works.length) + CHAIN_ORDER.filter((c) => counts[c]).map((c) => btn(c, CHAINS[c], counts[c])).join('');
-  if (state.artist) html += `<button type="button" class="artist-chip" data-clear-artist>${esc(state.artist)} ×</button>`;
-  $('[data-filters]').innerHTML = html;
+  const pool = state.artist ? works.filter((w) => by(w) === state.artist) : works;
+  const n = (c) => pool.filter((w) => c === 'all' || w.chain === c).length;
+  const btn = (key, label) => `<button type="button" data-chain="${key}" aria-pressed="${state.chain === key}">${label}<sup>${n(key)}</sup></button>`;
+  $('[data-filters]').innerHTML = btn('all', 'All') + CHAIN_ORDER.filter((c) => n(c)).map((c) => btn(c, CHAINS[c])).join('');
+  $('[data-filters]').hidden = CHAIN_ORDER.filter((c) => n(c)).length < 2;
+  $('[data-sorts]').innerHTML = SORTS.filter(([k]) => !(k === 'artist' && state.artist))
+    .map(([k, label]) => `<button type="button" data-sort="${k}" aria-pressed="${state.sort === k}">${label}</button>`).join('');
 }
 
 function renderWorks() {
@@ -132,7 +155,14 @@ function renderWorks() {
   $$('[data-view]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.view === state.view));
 
   if (state.view === 'grid') {
-    grid.innerHTML = list.map((w) => card(w, { badge: state.chain === 'all' })).join('');
+    // sorted by artist: a heading above each artist's works, linking to their page
+    let last = null;
+    grid.innerHTML = list.map((w) => {
+      const head = state.sort === 'artist' && !state.artist && by(w) !== last
+        ? `<a class="group" href="${artistLink(by(w))}"><span>${esc(by(w))}</span><span class="quiet">${works.filter((x) => by(x) === by(w) && (state.chain === 'all' || x.chain === state.chain)).length}</span></a>` : '';
+      last = by(w);
+      return head + card(w, { badge: state.chain === 'all' });
+    }).join('');
     reveal(grid);
   } else {
     index.innerHTML = `<div class="row head"><span>No.</span><span>Title</span><span>Artist</span><span>Chain</span><span>Edition</span><span>Acquired</span></div>`
@@ -152,7 +182,7 @@ function renderArtists() {
   for (const w of works) tally.set(by(w), (tally.get(by(w)) || 0) + 1);
   const rows = [...tally].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'en', { sensitivity: 'base' }));
   $('[data-artists]').innerHTML = rows.map(([name, n]) =>
-    `<li><button type="button" data-artist="${esc(name)}"><span>${esc(name)}</span><span>${n}</span></button></li>`).join('');
+    `<li><a href="${artistLink(name)}"><span>${esc(name)}</span><span>${n}</span></a></li>`).join('');
 }
 
 // ── shared ───────────────────────────────────────────
@@ -328,7 +358,7 @@ function openSheet(w) {
   $('[data-sheet-info]').innerHTML = `
     <span class="sheet-chain">${CHAINS[w.chain]}</span>
     <h2 class="sheet-title" id="sheet-title">${esc(w.title)}</h2>
-    <p class="sheet-artist">${esc(by(w))}</p>
+    <p class="sheet-artist"><a href="${artistLink(by(w))}">${esc(by(w))} ↗</a></p>
     ${w.museum?.note ? `<p class="desc desc-ink">${esc(w.museum.note)}</p>` : ''}
     <dl class="facts">${facts.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
     ${desc ? `<p class="desc${desc.length > 420 ? ' clamped' : ''}">${esc(desc)}</p>${desc.length > 420 ? '<button type="button" class="desc-more" data-more>Read more</button>' : ''}` : ''}
@@ -351,7 +381,7 @@ function closeSheet() {
 }
 
 function leaveSheet() {
-  history.pushState(null, '', state.page === 'vault' ? '#/vault' : '#/');
+  history.pushState(null, '', state.page === 'vault' ? (state.artist ? artistLink(state.artist) : '#/vault') : '#/');
   closeSheet();
 }
 
@@ -374,7 +404,16 @@ function route() {
     }
   }
   closeSheet();
-  if (h === '#/vault') showPage('vault');
+  const a = h.match(/^#\/artist\/(.+)$/);
+  if (a || h === '#/vault') {
+    const artist = a ? decodeURIComponent(a[1]) : null;
+    const changed = artist !== state.artist;
+    state.artist = artist;
+    if (changed) { state.chain = 'all'; if (artist && state.sort === 'artist') state.sort = 'recent'; }
+    const wasVault = state.page === 'vault';
+    showPage('vault');
+    if (changed || !wasVault) { renderVaultHead(); renderFilters(); renderWorks(); if (wasVault) window.scrollTo({ top: 0 }); }
+  }
   else if (h === '#/watchlist') { showPage('watchlist'); openWatchlist(); }
   else if (h === '' || h === '#' || h === '#/') showPage('museum');
   else if (!state.page) showPage('museum'); // plain anchors like #about keep the current page
@@ -410,12 +449,7 @@ document.addEventListener('click', (e) => {
   if (!t) return;
   if (t.dataset.chain) { state.chain = t.dataset.chain; renderFilters(); renderWorks(); }
   else if (t.dataset.view) { state.view = t.dataset.view; renderWorks(); }
-  else if (t.hasAttribute('data-clear-artist')) { state.artist = null; renderFilters(); renderWorks(); }
-  else if (t.dataset.artist) {
-    state.artist = t.dataset.artist; state.chain = 'all';
-    renderFilters(); renderWorks();
-    $('#works').scrollIntoView({ behavior: 'smooth' });
-  }
+  else if (t.dataset.sort) { state.sort = t.dataset.sort; renderFilters(); renderWorks(); }
   else if (t.dataset.copy) {
     e.preventDefault();
     navigator.clipboard?.writeText(t.dataset.copy).then(() => toast('Copied'), () => toast(t.dataset.copy));

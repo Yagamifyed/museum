@@ -70,11 +70,14 @@
       </section>
 
       <section class="block block-tight" id="works">
-        <div class="block-head">
-          <div class="filters" data-filters></div>
-          <div class="views" role="tablist" aria-label="View">
-            <button type="button" data-view="grid" aria-pressed="true">Grid</button>
-            <button type="button" data-view="index" aria-pressed="false">Index</button>
+        <div class="block-head controls">
+          <div class="seg seg-scroll" data-filters role="group" aria-label="Chain"></div>
+          <div class="controls-right">
+            <div class="seg" data-sorts role="group" aria-label="Sort"></div>
+            <div class="seg" role="group" aria-label="View">
+              <button type="button" data-view="grid" aria-pressed="true">Grid</button>
+              <button type="button" data-view="index" aria-pressed="false">Index</button>
+            </div>
           </div>
         </div>
         <div class="grid" data-grid></div>
@@ -141,9 +144,11 @@
     <div class="sheet-bar">
       <span class="quiet" data-sheet-count></span>
       <div class="sheet-nav">
-        <button type="button" data-prev>Previous</button>
-        <button type="button" data-next>Next</button>
-        <button type="button" data-close>Close</button>
+        <div class="seg" role="group" aria-label="Browse">
+          <button type="button" data-prev aria-label="Previous work">←</button>
+          <button type="button" data-next aria-label="Next work">→</button>
+        </div>
+        <button type="button" class="pill" data-close>Close</button>
       </div>
     </div>
     <div class="sheet-body">

@@ -328,15 +328,15 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
   columns: 3 16em; column-gap: var(--gap);
 }
 .artists li { break-inside: avoid; }
-.artists button {
+.artists a {
   display: flex; justify-content: space-between; gap: 12px; width: 100%;
   text-align: left; padding: 9px 0 8px;
   border-bottom: 1px solid var(--rule);
   transition: color .2s;
 }
-.artists button span:last-child { color: var(--mute); }
-.artists:hover button { color: var(--faint); }
-.artists button:hover { color: var(--ink); }
+.artists a span:last-child { color: var(--mute); }
+.artists:hover a { color: var(--faint); }
+.artists a:hover { color: var(--ink); }
 
 /* ── about ───────────────────────────────────────── */
 .wordmark { display: inline-flex; align-items: center; gap: 10px; }
@@ -470,3 +470,50 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 .frame .lqip { padding: 0; object-fit: cover; }
 .plate:has(> .ready) .lqip, .frame:has(> .ready) .lqip { opacity: 0 !important; }
 .plate > img:not(.lqip), .plate > video, .frame > img:not(.lqip), .frame > video { position: relative; }
+
+/* ── controls: one button family ──────────────────── */
+/* segmented groups (filters, sort, view, browse) and single pills share
+   a hairline outline; the chosen option is filled with ink */
+.seg {
+  display: inline-flex; align-items: center; gap: 2px;
+  padding: 3px; border: 1px solid var(--rule); border-radius: 999px;
+  background: var(--bg);
+}
+.seg button, .pill {
+  font-size: var(--t-small); line-height: 1;
+  padding: 8px 14px 9px; border-radius: 999px;
+  color: var(--mute); white-space: nowrap;
+  transition: color .2s, background-color .25s var(--ease);
+}
+.pill { border: 1px solid var(--rule); color: var(--ink); }
+.seg button:hover, .pill:hover { color: var(--ink); }
+.pill:hover { border-color: var(--faint); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.seg sup { font-size: .72em; margin-left: 4px; vertical-align: .45em; opacity: .7; letter-spacing: 0; }
+.seg-scroll { max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+.seg-scroll::-webkit-scrollbar { display: none; }
+
+.controls { align-items: center; flex-wrap: wrap; gap: 12px 16px; padding-top: 16px; }
+.controls-right { display: flex; gap: 10px; flex-wrap: wrap; }
+@media (max-width: 720px) { .controls-right { width: 100%; justify-content: space-between; } }
+
+/* artist headings in the grid when sorted by artist */
+.group {
+  grid-column: 1 / -1;
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-family: var(--serif); font-size: clamp(26px, 2.4vw, 38px);
+  letter-spacing: -0.045em; line-height: 1;
+  border-top: 1px solid var(--rule); padding-top: 14px;
+  margin-top: clamp(8px, 2vw, 24px);
+}
+.group .quiet { font-family: var(--sans); font-size: var(--t-small); letter-spacing: -0.02em; }
+.group:first-child { margin-top: 0; }
+.group:hover span:first-child { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 6px; }
+
+.sheet-nav { align-items: center; gap: 10px; }
+.sheet-nav .seg button { padding: 8px 16px 9px; }
+.sheet-artist a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.wallets dd button { border: 1px solid var(--rule); border-radius: 999px; padding: 4px 10px 5px; font-size: 13px; }
+.wallets dd button:hover { border-color: var(--faint); }
+.lock-go { border: 1px solid var(--ink); border-radius: 999px; padding: 9px 18px 10px; background: var(--ink); color: var(--bg); }
+.lock-go:hover { text-decoration: none; background: var(--bg); color: var(--ink); }
