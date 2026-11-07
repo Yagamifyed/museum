@@ -52,7 +52,8 @@
         "rank": 2,
         "size": "large",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -95,7 +96,8 @@
         "rank": 5,
         "size": "small",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -138,7 +140,8 @@
         "rank": 14,
         "size": "large",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -181,7 +184,8 @@
         "rank": 7,
         "size": "small",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -222,7 +226,8 @@
         "rank": 4,
         "size": "large",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -265,7 +270,8 @@
         "rank": 26,
         "size": "medium",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -306,7 +312,8 @@
         "rank": 12,
         "size": "large",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -349,7 +356,8 @@
         "rank": 9,
         "size": "small",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -390,7 +398,8 @@
         "rank": 11,
         "size": "small",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -472,7 +481,8 @@
         "rank": 42,
         "size": "large",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -515,7 +525,8 @@
         "rank": 49,
         "size": "medium",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -558,7 +569,8 @@
         "rank": 50,
         "size": "medium",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -599,7 +611,8 @@
         "rank": 52,
         "size": "medium",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -640,7 +653,8 @@
         "rank": 53,
         "size": "medium",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -681,7 +695,8 @@
         "rank": 51,
         "size": "medium",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -722,7 +737,8 @@
         "rank": 43,
         "size": "large",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -763,7 +779,8 @@
         "rank": 15,
         "size": "large",
         "note": "",
-        "newRow": true
+        "newRow": true,
+        "room": ""
       }
     },
     {
@@ -806,7 +823,8 @@
         "rank": 44,
         "size": "large",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -847,7 +865,8 @@
         "rank": 39,
         "size": "medium",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -890,7 +909,8 @@
         "rank": 19,
         "size": "large",
         "note": "",
-        "newRow": true
+        "newRow": true,
+        "room": ""
       }
     },
     {
@@ -931,7 +951,8 @@
         "rank": 23,
         "size": "medium",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -972,7 +993,8 @@
         "rank": 17,
         "size": "large",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -1013,7 +1035,8 @@
         "rank": 1,
         "size": "large",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -1054,7 +1077,8 @@
         "rank": 37,
         "size": "medium",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -1095,7 +1119,8 @@
         "rank": 54,
         "size": "medium",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -1139,7 +1164,8 @@
         "rank": 36,
         "size": "medium",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -1180,7 +1206,8 @@
         "rank": 34,
         "size": "medium",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -1223,7 +1250,8 @@
         "rank": 6,
         "size": "small",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -1266,7 +1294,8 @@
         "rank": 8,
         "size": "small",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -1309,7 +1338,8 @@
         "rank": 10,
         "size": "small",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -1350,7 +1380,8 @@
         "rank": 20,
         "size": "large",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -1391,7 +1422,8 @@
         "rank": 16,
         "size": "large",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -1434,7 +1466,8 @@
         "rank": 28,
         "size": "medium",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -1475,7 +1508,8 @@
         "rank": 0,
         "size": "large",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -1518,7 +1552,8 @@
         "rank": 38,
         "size": "medium",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -1559,7 +1594,8 @@
         "rank": 18,
         "size": "large",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -1600,7 +1636,8 @@
         "rank": 32,
         "size": "large",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -1643,7 +1680,8 @@
         "rank": 27,
         "size": "medium",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -1686,7 +1724,8 @@
         "rank": 21,
         "size": "medium",
         "note": "",
-        "newRow": false
+        "newRow": true,
+        "room": ""
       }
     },
     {
@@ -1727,7 +1766,8 @@
         "rank": 22,
         "size": "medium",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -1766,7 +1806,8 @@
         "rank": 40,
         "size": "medium",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -1807,7 +1848,8 @@
         "rank": 3,
         "size": "large",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -1848,7 +1890,8 @@
         "rank": 31,
         "size": "large",
         "note": "",
-        "newRow": true
+        "newRow": true,
+        "room": ""
       }
     },
     {
@@ -1891,7 +1934,8 @@
         "rank": 24,
         "size": "medium",
         "note": "",
-        "newRow": true
+        "newRow": true,
+        "room": ""
       }
     },
     {
@@ -1932,7 +1976,8 @@
         "rank": 25,
         "size": "medium",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -1973,7 +2018,8 @@
         "rank": 29,
         "size": "large",
         "note": "",
-        "newRow": false
+        "newRow": true,
+        "room": ""
       }
     },
     {
@@ -2014,7 +2060,8 @@
         "rank": 41,
         "size": "medium",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -2055,7 +2102,8 @@
         "rank": 33,
         "size": "large",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -2096,7 +2144,8 @@
         "rank": 35,
         "size": "medium",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -2137,7 +2186,8 @@
         "rank": 13,
         "size": "large",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -2178,7 +2228,8 @@
         "rank": 30,
         "size": "large",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -2221,7 +2272,8 @@
         "rank": 48,
         "size": "large",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -2262,7 +2314,8 @@
         "rank": 46,
         "size": "large",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -2305,7 +2358,8 @@
         "rank": 45,
         "size": "large",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {
@@ -2346,7 +2400,8 @@
         "rank": 47,
         "size": "large",
         "note": "",
-        "newRow": false
+        "newRow": false,
+        "room": ""
       }
     },
     {

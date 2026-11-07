@@ -145,8 +145,18 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
   padding: 0 var(--gutter);
 }
 .wall .row { display: flex; gap: var(--tile); width: 100%; margin-inline: auto; }
+/* a room: a title over a group of works, set in edit mode */
+.wall .room {
+  font-family: var(--serif); font-weight: 400;
+  font-size: clamp(26px, 2.4vw, 40px); line-height: 1; letter-spacing: -0.04em;
+  margin: clamp(36px, 5vw, 72px) 0 clamp(8px, 1vw, 14px);
+}
+.wall .room:first-child { margin-top: 0; }
 .work {
-  flex: var(--ar, 1) 1 0;
+  /* grow in proportion to the aspect ratio, scaled up: flex shares out only part
+     of a row when the grow factors add up to less than 1, which left a lone tall
+     work (Radiance on a phone, say) narrower than its row and stuck to the left */
+  flex: calc(var(--ar, 1) * 100) 1 0;
   min-width: 0;
   position: relative; overflow: hidden;
   aspect-ratio: var(--ar, 1);
@@ -304,8 +314,20 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 .desc.clamped { display: -webkit-box; -webkit-line-clamp: 8; -webkit-box-orient: vertical; overflow: hidden; }
 .desc-more { color: var(--ink); font-size: var(--t-small); margin: -18px 0 28px; align-self: flex-start; }
 .links { margin-top: auto; display: flex; flex-wrap: wrap; gap: 8px 22px; }
-.links a { color: var(--mute); transition: color .2s; }
-.links a:hover { color: var(--ink); }
+.links a, .links button { color: var(--mute); transition: color .2s; }
+.links a:hover, .links button:hover { color: var(--ink); }
+.sheet-artist a { text-decoration: underline; text-decoration-color: var(--faint, rgba(0,0,0,.2)); text-underline-offset: 4px; transition: text-decoration-color .2s; }
+.sheet-artist a:hover { text-decoration-color: currentColor; }
+.sheet-media img, .sheet-media video { cursor: zoom-in; }
+
+/* ── close-up ────────────────────────────────────── */
+.zoom {
+  position: fixed; inset: 0; z-index: 45; overflow: auto;
+  background: var(--plate); cursor: zoom-out; touch-action: none;
+  display: flex; /* with margin: auto the work stays centred yet scrollable to every edge */
+  animation: sheet-in .3s var(--ease);
+}
+.zoom img, .zoom video { display: block; margin: auto; max-width: none; flex: none; user-select: none; -webkit-user-drag: none; }
 
 @media (max-width: 860px) {
   .sheet { overflow-y: auto; display: block; }

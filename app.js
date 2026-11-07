@@ -1,4 +1,4 @@
-const CHAINS = { tezos: 'Tezos', ethereum: 'Ethereum', solana: 'Solana', bitcoin: 'Bitcoin' };
+const CHAINS = { tezos: 'Tezos', ethereum: 'Ethereum', solana: 'Solana', bitcoin: 'Bitcoin', physical: 'Physical work' };
 const CHAIN_ORDER = ['tezos', 'ethereum', 'solana', 'bitcoin'];
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -13,9 +13,9 @@ const link = (w) => `#/work/${encodeURIComponent(w.id)}`;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const plural = (n, one, many = one + 's') => `${n} ${n === 1 ? one : many}`;
 
-const PAGE_TITLES = { museum: 'The Museum', further: 'Further works', text: '', watchlist: 'Watch List' };
+const PAGE_TITLES = { museum: 'The Museum', further: 'Further works', text: '', watchlist: 'Watch List', artist: '' };
 const state = { page: null };
-let data, works, museum, rest, order, further, spot;
+let data, works, museum, arrivals, order, further, spot;
 
 // ── media ────────────────────────────────────────────
 
@@ -59,9 +59,9 @@ function card(w) {
 }
 
 // ── the museum ───────────────────────────────────────
-// One wall, every work except the Further works: first those placed in
-// curation.json → museum, in that order, then the rest, newest first. Works are
-// tiled edge to edge in rows; each keeps its proportions, and its size (small,
+// One wall: the works placed in curation.json → museum, in that order (new
+// arrivals wait for edit mode; the Further works have their own page), with
+// optional room titles between groups. Works are tiled edge to edge in rows; each keeps its proportions, and its size (small,
 // medium, large, xl) sets how tall its row hangs. Title and artist show on
 // hover; a click opens the details.
 const SIZES = { small: 0.75, medium: 1, large: 1.8, xl: 2.6 };
@@ -91,6 +91,7 @@ function tile(w, i) {
   }
   a.dataset.size = size;
   a.toggleAttribute('data-new-row', !!w.museum?.newRow);
+  if (w.museum?.room) a.dataset.room = w.museum.room; else delete a.dataset.room;
   return a;
 }
 
@@ -139,12 +140,13 @@ function layoutWall(wall) {
   const runs = [];
   for (const el of wall.items) {
     const run = runs.at(-1);
-    if (run && run.size === el.dataset.size && run.size !== 'xl' && !('newRow' in el.dataset)) run.items.push(el);
-    else runs.push({ size: el.dataset.size, items: [el] }); // an xl work always hangs alone
+    if (run && run.size === el.dataset.size && run.size !== 'xl' && !('newRow' in el.dataset) && !el.dataset.room) run.items.push(el);
+    else runs.push({ size: el.dataset.size, room: el.dataset.room || '', items: [el] }); // an xl work always hangs alone
   }
 
   const rows = [];
-  for (const { size, items } of runs) {
+  for (const { size, room, items } of runs) {
+    const first = rows.length;
     const target = H * SIZES[size];
     const ars = items.map((el) => Number(el.dataset.ar));
     const total = ars.reduce((a, b) => a + b, 0);
@@ -158,12 +160,13 @@ function layoutWall(wall) {
       if (cut < k && j + 1 < items.length && Math.abs(acc - goal) <= Math.abs(acc + ars[j + 1] - goal)) { rows.push({ size, target, items: row }); row = []; cut++; }
     });
     if (row.length) rows.push({ size, target, items: row });
+    if (room) rows[first].room = room; // a room's title hangs above its first row
   }
 
   // the first row fits on the first screen, below the title
   const firstRoom = innerHeight - (wall.el.getBoundingClientRect().top + scrollY) - 20;
 
-  wall.el.replaceChildren(...rows.map(({ size, target, items }, i) => {
+  wall.el.replaceChildren(...rows.flatMap(({ size, target, items, room }, i) => {
     const div = document.createElement('div');
     div.className = 'row';
     div.append(...items);
@@ -172,7 +175,9 @@ function layoutWall(wall) {
     let cap = Math.min(tallest, size === 'xl' || W < 720 ? tallest : target * 1.35); // on a phone every row fills the width
     if (i === 0 && W >= 720 && firstRoom > 200) cap = Math.min(cap, firstRoom);
     if ((W - gaps) / sum > cap) div.style.maxWidth = `${Math.round(cap * sum + gaps)}px`; // too few works to fill it: hang centred
-    return div;
+    if (!room) return [div];
+    const h = Object.assign(document.createElement('h2'), { className: 'room', textContent: room });
+    return [h, div];
   }));
 }
 
@@ -214,7 +219,7 @@ function renderWeek(no) {
   const open = p.workId ? `href="${link({ id: p.workId })}"` : p.work ? `href="${esc(p.work)}" target="_blank" rel="noopener noreferrer"` : '';
   const facts = [
     p.x && ['On X', `<a href="${esc(p.x)}" target="_blank" rel="noopener noreferrer">@${esc(p.handle)} ↗</a>`],
-    ['I own', mine.length ? plural(mine.length, 'work') : 'Nothing yet'],
+    ['I own', mine.length && order.includes(mine[0]) ? `<a href="${artistLink(by(mine[0]))}">${plural(mine.length, 'work')}</a>` : mine.length ? plural(mine.length, 'work') : 'Nothing yet'],
     p.date && ['Picked', day(p.date)],
   ].filter(Boolean);
   $('[data-pick]').innerHTML = `
@@ -407,6 +412,60 @@ $('[data-lock]').addEventListener('submit', (e) => {
   unlock($('[data-lock-input]').value, $('[data-lock-remember]').checked);
 });
 
+// ── artist pages ─────────────────────────────────────
+// #/artist/<name>: everything by one artist on the wall, linked from a work's
+// details and from Artist of the Month
+
+let artistName = null;
+let artistWorks = [];
+const artistLink = (name) => `#/artist/${encodeURIComponent(name)}`;
+
+function renderArtist(name) {
+  artistName = name;
+  artistWorks = order.filter((w) => sameName(by(w), name));
+  PAGE_TITLES.artist = name;
+  $('[data-artist-title]').textContent = name;
+  $('[data-artist-count]').textContent = plural(artistWorks.length, 'work') + ' in the collection';
+  $('[data-artist-grid]').innerHTML = artistWorks.map(card).join('');
+  reveal($('[data-artist-grid]'));
+}
+
+// ── close-up ─────────────────────────────────────────
+// Click a work in its details to see it up close: full size, or for pixel art
+// enlarged by a whole number so every pixel stays square. Drag to look around;
+// a click or Esc goes back.
+
+let zoom = null;
+
+function openZoom(w) {
+  const nw = w.media.w || 1600, nh = w.media.h || 1600;
+  const fit = Math.min(innerWidth / nw, innerHeight / nh);
+  const k = w.pixelated ? 2 * Math.max(1, Math.floor(fit)) : Math.max(1, fit);
+  zoom = document.createElement('div');
+  zoom.className = 'zoom';
+  zoom.setAttribute('role', 'dialog');
+  zoom.setAttribute('aria-label', `${w.title}, close up`);
+  zoom.innerHTML = w.motion?.src
+    ? `<video${w.pixelated ? ' class="pixelated"' : ''} src="${esc(w.motion.src)}" muted loop playsinline autoplay></video>`
+    : `<img${w.pixelated ? ' class="pixelated"' : ''} src="${esc(w.media.src)}" alt="${esc(w.title)}">`;
+  const m = zoom.firstElementChild;
+  m.style.width = `${Math.round(nw * k)}px`;
+  m.style.height = `${Math.round(nh * k)}px`;
+  document.body.append(zoom);
+  zoom.scrollTo((zoom.scrollWidth - innerWidth) / 2, (zoom.scrollHeight - innerHeight) / 2);
+  let press = null;
+  zoom.addEventListener('pointerdown', (e) => { press = { x: e.clientX, y: e.clientY, l: zoom.scrollLeft, t: zoom.scrollTop, moved: false }; zoom.setPointerCapture(e.pointerId); e.preventDefault(); });
+  zoom.addEventListener('pointermove', (e) => {
+    if (!press) return;
+    const dx = e.clientX - press.x, dy = e.clientY - press.y;
+    if (Math.hypot(dx, dy) > 4) press.moved = true;
+    zoom.scrollTo(press.l - dx, press.t - dy);
+  });
+  zoom.addEventListener('pointerup', () => { if (press && !press.moved) closeZoom(); press = null; });
+}
+
+function closeZoom() { zoom?.remove(); zoom = null; }
+
 // ── detail sheet ─────────────────────────────────────
 // ← → walk through every work in page order
 
@@ -414,8 +473,8 @@ const sheet = $('[data-sheet]');
 let current = null;
 let lastFocus = null;
 
-// the works the arrows step through: the main wall, or the Further works
-const sequence = () => (current?.further ? further : order);
+// the works the arrows step through: the main wall, the Further works, or one artist's
+const sequence = () => (current?.further ? further : state.page === 'artist' ? artistWorks : order);
 
 function openSheet(w) {
   if (!sheet.hidden && current?.id === w.id) return;
@@ -430,7 +489,12 @@ function openSheet(w) {
     ? `<video${w.pixelated ? ' class="pixelated"' : ''} src="${esc(w.motion.src)}" poster="${esc(w.media.src)}" muted loop playsinline autoplay></video>`
     : `<img${w.pixelated ? ' class="pixelated"' : ''} src="${esc(w.media.src)}" alt="${esc(w.title)}">`;
 
-  const facts = [
+  const facts = w.chain === 'physical' ? [
+    w.year && ['Year', esc(w.year)],
+    w.medium && ['Medium', esc(w.medium)],
+    w.dimensions && ['Size', esc(w.dimensions)],
+    w.acquired && ['Acquired', day(w.acquired)],
+  ].filter(Boolean) : [
     w.collection && ['Collection', esc(w.collection)],
     ['Edition', edition(w)],
     ['Acquired', day(w.acquired)],
@@ -446,11 +510,11 @@ function openSheet(w) {
   $('[data-sheet-info]').innerHTML = `
     <span class="sheet-chain">${CHAINS[w.chain]}</span>
     <h2 class="sheet-title" id="sheet-title">${esc(w.title)}</h2>
-    <p class="sheet-artist">${esc(by(w))}</p>
+    <p class="sheet-artist">${w.artist || w.collection ? `<a href="${artistLink(by(w))}" title="Everything by ${esc(by(w))} in the collection">${esc(by(w))}</a>` : esc(by(w))}</p>
     ${w.museum?.note ? `<p class="desc desc-ink">${esc(w.museum.note)}</p>` : ''}
     <dl class="facts">${facts.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
     ${desc ? `<p class="desc${desc.length > 420 ? ' clamped' : ''}">${esc(desc)}</p>${desc.length > 420 ? '<button type="button" class="desc-more" data-more>Read more</button>' : ''}` : ''}
-    <div class="links">${links.map(([label, href]) => `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(label)} ↗</a>`).join('')}</div>`;
+    <div class="links">${links.map(([label, href]) => `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(label)} ↗</a>`).join('')}${w.arrival ? '' : '<button type="button" data-share>Share</button>'}</div>`;
 
   sheet.hidden = false;
   document.body.classList.add('locked');
@@ -458,8 +522,18 @@ function openSheet(w) {
   $('[data-close]').focus({ preventScroll: true });
 }
 
+// the work's own page (scripts/og.py), so a shared link shows that work's card
+const shareLink = (w) => `https://museum.levinlevin.xyz/w/${w.media.src.split('/').pop().replace(/\.\w+$/, '')}`;
+
+async function share(w) {
+  const url = shareLink(w);
+  if (navigator.share && matchMedia('(pointer: coarse)').matches) { try { await navigator.share({ title: `${w.title} — ${by(w)}`, url }); return; } catch {} }
+  navigator.clipboard?.writeText(url).then(() => toast('Link copied'), () => toast(url));
+}
+
 function closeSheet() {
   if (sheet.hidden) return;
+  closeZoom();
   sheet.hidden = true;
   $('[data-sheet-media]').innerHTML = '';
   document.body.classList.remove('locked');
@@ -469,7 +543,7 @@ function closeSheet() {
 }
 
 function leaveSheet() {
-  history.pushState(null, '', current?.further ? '#/further' : '#/');
+  history.pushState(null, '', current?.further ? '#/further' : state.page === 'artist' ? artistLink(artistName) : '#/');
   closeSheet();
 }
 
@@ -480,7 +554,7 @@ function step(d) {
   openSheet(next);
 }
 
-// Old links (#/vault, #/walk, #/artist/…) land on the Museum.
+// Old links (#/vault, #/walk) and unknown artists land on the Museum.
 function route() {
   const h = location.hash;
   const m = h.match(/^#\/work\/(.+)$/);
@@ -488,11 +562,19 @@ function route() {
     const id = decodeURIComponent(m[1]);
     const w = works.find((x) => x.id === id);
     if (w) {
-      showPage(w.further ? 'further' : 'museum');
+      if (!(state.page === 'artist' && artistWorks.includes(w))) showPage(w.further ? 'further' : 'museum');
       return openSheet(w);
     }
   }
   closeSheet();
+  const a = h.match(/^#\/artist\/(.+)$/);
+  if (a && order.some((w) => sameName(by(w), decodeURIComponent(a[1])))) {
+    const name = by(order.find((w) => sameName(by(w), decodeURIComponent(a[1]))));
+    if (state.page === 'artist' && artistName !== name) state.page = null; // a different artist: back to the top
+    renderArtist(name);
+    showPage('artist');
+    return;
+  }
   if (h === '#/watchlist') { showPage('watchlist'); openWatchlist(); }
   else if (h === '#/further') showPage('further');
   else if (h === '#/philosophy') {
@@ -527,6 +609,7 @@ document.addEventListener('click', (e) => {
     navigator.clipboard?.writeText(t.dataset.copy).then(() => toast('Copied'), () => toast(t.dataset.copy));
   }
   else if (t.hasAttribute('data-more')) { $('.sheet .desc.clamped')?.classList.remove('clamped'); t.remove(); }
+  else if (t.hasAttribute('data-share') && current) share(current);
   else if (t.hasAttribute('data-close')) leaveSheet();
   else if (t.hasAttribute('data-prev')) step(-1);
   else if (t.hasAttribute('data-next')) step(1);
@@ -535,7 +618,10 @@ document.addEventListener('click', (e) => {
   else if (t.hasAttribute('data-about-link')) { e.preventDefault(); $('#about').scrollIntoView({ behavior: 'smooth' }); }
 });
 
+$('[data-sheet-media]').addEventListener('click', (e) => { if (current && e.target.closest('img, video')) openZoom(current); });
+
 document.addEventListener('keydown', (e) => {
+  if (zoom) { if (e.key === 'Escape') closeZoom(); return; }
   if (sheet.hidden) return;
   if (e.key === 'Escape') leaveSheet();
   else if (e.key === 'ArrowLeft') step(-1);
@@ -550,8 +636,9 @@ data = await (await fetch('data/collection.json', { cache: 'no-cache' })).json()
 works = data.works;
 further = works.filter((w) => w.further);
 museum = works.filter((w) => w.museum && !w.further).sort((a, b) => a.museum.rank - b.museum.rank);
-rest = works.filter((w) => !w.museum && !w.further); // newest first
-order = [...museum, ...rest];
+// new arrivals wait off the wall until they're placed in edit mode
+arrivals = works.filter((w) => !w.museum && !w.further);
+order = museum;
 
 spot = await fetch('data/spotlight.json', { cache: 'no-cache' }).then((r) => r.json()).catch(() => null);
 spot = { weeks: spot?.weeks || [], posts: spot?.posts || [], texts: spot?.texts || [] };
@@ -564,7 +651,7 @@ renderHeroLinks();
 reveal();
 route();
 
-export { works, order, further };
+export { works, order, further, arrivals };
 
 // edit mode: only when the page is served by scripts/editor.mjs on this Mac
 if (new URLSearchParams(location.search).has('edit') && ['localhost', '127.0.0.1'].includes(location.hostname)) {
