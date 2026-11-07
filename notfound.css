@@ -2,7 +2,7 @@
 @font-face { font-family: 'Inter'; src: url(/fonts/inter-latin-wght-normal.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
 body { margin: 0; min-height: 100svh; display: grid; place-items: end start; background: #fff; color: #3a3c42; font: clamp(16px, 1.25vw, 20px)/1.35 Inter, system-ui, sans-serif; letter-spacing: -0.02em; -webkit-font-smoothing: antialiased; }
 main { padding: 0 clamp(16px, 2.2vw, 32px) clamp(48px, 12vh, 120px); }
-img { width: 88px; height: auto; image-rendering: pixelated; }
+img { width: 100px; height: 100px; background: #749ba0; image-rendering: pixelated; }
 h1 { font: 400 clamp(40px, 6vw, 96px)/1 'Hedvig Letters Serif', Georgia, serif; letter-spacing: -0.05em; margin: 28px 0 16px; }
 p { margin: 0; color: rgba(58, 60, 66, 0.5); }
 a { color: #3a3c42; }

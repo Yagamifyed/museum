@@ -214,9 +214,9 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 
 /* ── about ───────────────────────────────────────── */
 .wordmark { display: inline-flex; align-items: center; gap: 10px; }
-.mark-pfp { width: 24px; height: 24px; background: #749ba0; image-rendering: pixelated; }
-.about-pfp { display: block; width: 96px; height: 96px; background: #749ba0; image-rendering: pixelated; margin-bottom: 22px; }
-@media (min-width: 1200px) { .about-pfp { width: 144px; height: 144px; } }
+.mark-pfp { width: 25px; height: 25px; background: #749ba0; image-rendering: pixelated; }
+.about-pfp { display: block; width: 100px; height: 100px; background: #749ba0; image-rendering: pixelated; margin-bottom: 22px; }
+@media (min-width: 1200px) { .about-pfp { width: 150px; height: 150px; } }
 .about-bio { margin: 0 0 18px; color: var(--mute); }
 .about { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: var(--gap); }
 .about-statement {
