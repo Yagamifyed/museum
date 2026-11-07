@@ -21,7 +21,7 @@ let data, works, museum, arrivals, order, further, spot;
 
 // sizes: how wide the image is shown, so the browser can pick the 720px thumb
 // or the full 1600px file. A blurred 20px stand-in sits underneath until it loads.
-function mediaEl(w, { eager = false, sizes = '(max-width: 720px) 50vw, 25vw' } = {}) {
+function mediaEl(w, { eager = false, first = false, sizes = '(max-width: 720px) 50vw, 25vw' } = {}) {
   const cls = w.pixelated ? ' class="pixelated"' : '';
   const lqip = w.media.lqip ? `<img class="lqip" src="${esc(w.media.lqip)}" alt="" aria-hidden="true">` : '';
   if (w.motion?.src) {
@@ -29,13 +29,16 @@ function mediaEl(w, { eager = false, sizes = '(max-width: 720px) 50vw, 25vw' } =
   }
   const size = w.media.w && w.media.h ? ` width="${w.media.w}" height="${w.media.h}"` : '';
   const srcset = w.media.thumb ? ` srcset="${esc(w.media.thumb)} 720w, ${esc(w.media.src)} ${w.media.w || 1600}w" sizes="${sizes}"` : '';
-  return `${lqip}<img${cls} src="${esc(w.media.src)}"${srcset} alt="${esc(w.title)}"${size} loading="${eager ? 'eager' : 'lazy'}" decoding="async">`;
+  return `${lqip}<img${cls} src="${esc(w.media.src)}"${srcset} alt="${esc(w.title)}"${size} loading="${eager ? 'eager' : 'lazy'}"${first ? ' fetchpriority="high"' : ''} decoding="async">`;
 }
 
+// moving works play only while on screen, and not at all for people who have
+// asked their device for less motion (they see the still)
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const io = new IntersectionObserver((entries) => {
   for (const e of entries) {
     const v = e.target;
-    if (e.isIntersecting) { v.preload = 'auto'; v.play().catch(() => {}); } else v.pause();
+    if (e.isIntersecting && !reduceMotion) { v.preload = 'auto'; v.play().catch(() => {}); } else v.pause();
   }
 }, { rootMargin: '160px' });
 
@@ -79,7 +82,7 @@ function tile(w, i) {
     const ar = w.media.w && w.media.h ? (w.media.w / w.media.h).toFixed(4) : 1;
     const holder = document.createElement('div');
     holder.innerHTML = `<a class="work" href="${link(w)}" data-ar="${ar}" aria-label="${esc(w.title)} by ${esc(by(w))}">
-      ${mediaEl(w, { eager: i < 6, sizes: tileSizes(size) })}
+      ${mediaEl(w, { eager: i < 6, first: i < 2, sizes: tileSizes(size) })}
       <span class="cap"><span class="cap-title">${esc(w.title)}</span><span class="cap-meta">${esc(by(w))}</span></span>
     </a>`;
     a = holder.firstElementChild;
@@ -431,40 +434,118 @@ function renderArtist(name) {
 }
 
 // ── close-up ─────────────────────────────────────────
-// Click a work in its details to see it up close: full size, or for pixel art
-// enlarged by a whole number so every pixel stays square. Drag to look around;
-// a click or Esc goes back.
+// Click or tap a work in its details to see it on its own, fitted to the
+// screen. Pinch, scroll or double-tap to zoom (pixel art stays crisp), drag to
+// look around. ×, Esc, the back button, or a tap while it's fitted close it.
 
 let zoom = null;
+const coarse = matchMedia('(pointer: coarse)').matches;
 
 function openZoom(w) {
+  closeZoom(true);
   const nw = w.media.w || 1600, nh = w.media.h || 1600;
-  const fit = Math.min(innerWidth / nw, innerHeight / nh);
-  const k = w.pixelated ? 2 * Math.max(1, Math.floor(fit)) : Math.max(1, fit);
-  zoom = document.createElement('div');
-  zoom.className = 'zoom';
-  zoom.setAttribute('role', 'dialog');
-  zoom.setAttribute('aria-label', `${w.title}, close up`);
-  zoom.innerHTML = w.motion?.src
-    ? `<video${w.pixelated ? ' class="pixelated"' : ''} src="${esc(w.motion.src)}" muted loop playsinline autoplay></video>`
-    : `<img${w.pixelated ? ' class="pixelated"' : ''} src="${esc(w.media.src)}" alt="${esc(w.title)}">`;
-  const m = zoom.firstElementChild;
-  m.style.width = `${Math.round(nw * k)}px`;
-  m.style.height = `${Math.round(nh * k)}px`;
-  document.body.append(zoom);
-  zoom.scrollTo((zoom.scrollWidth - innerWidth) / 2, (zoom.scrollHeight - innerHeight) / 2);
-  let press = null;
-  zoom.addEventListener('pointerdown', (e) => { press = { x: e.clientX, y: e.clientY, l: zoom.scrollLeft, t: zoom.scrollTop, moved: false }; zoom.setPointerCapture(e.pointerId); e.preventDefault(); });
-  zoom.addEventListener('pointermove', (e) => {
-    if (!press) return;
-    const dx = e.clientX - press.x, dy = e.clientY - press.y;
-    if (Math.hypot(dx, dy) > 4) press.moved = true;
-    zoom.scrollTo(press.l - dx, press.t - dy);
+  const el = document.createElement('div');
+  el.className = 'zoom';
+  el.setAttribute('role', 'dialog');
+  el.setAttribute('aria-label', `${w.title}, close up`);
+  el.innerHTML = `${w.motion?.src
+    ? `<video${w.pixelated ? ' class="pixelated"' : ''} src="${esc(w.motion.src)}" poster="${esc(w.media.src)}" muted loop playsinline${reduceMotion ? '' : ' autoplay'}></video>`
+    : `<img${w.pixelated ? ' class="pixelated"' : ''} src="${esc(w.media.src)}" alt="${esc(w.title)}" draggable="false">`}
+    <button type="button" class="zoom-close" aria-label="Close">×</button>
+    <p class="zoom-hint">${coarse ? 'Pinch or double-tap to zoom · tap to close' : 'Scroll or double-click to zoom · click to close'}</p>`;
+  const m = el.firstElementChild;
+  m.style.width = `${nw}px`;
+  m.style.height = `${nh}px`;
+  document.body.append(el);
+  const z = zoom = { el, m, nw, nh, s: 1, x: 0, y: 0, pointers: new Map(), pixel: !!w.pixelated };
+  const fit = () => Math.min((innerWidth - 32) / nw, (innerHeight - 32) / nh);
+  z.refit = () => { z.fit = fit(); z.max = Math.max(z.fit * 6, z.pixel ? 24 : 2); zoomTo(z.fit, innerWidth / 2, innerHeight / 2); };
+  z.refit();
+  history.pushState({ zoom: true }, ''); // the back button (or a swipe back) closes it
+  el.focus?.();
+
+  let tap = null, lastTap = 0, pinch = null, single = null;
+  el.addEventListener('pointerdown', (e) => {
+    if (e.target.closest('.zoom-close')) return;
+    e.preventDefault();
+    try { el.setPointerCapture(e.pointerId); } catch {}
+    z.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (z.pointers.size === 1) tap = { x: e.clientX, y: e.clientY, t: performance.now(), moved: false };
+    if (z.pointers.size === 2) {
+      const [a, b] = [...z.pointers.values()];
+      pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), s: z.s, mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 };
+      if (tap) tap.moved = true;
+    }
   });
-  zoom.addEventListener('pointerup', () => { if (press && !press.moved) closeZoom(); press = null; });
+  el.addEventListener('pointermove', (e) => {
+    const p = z.pointers.get(e.pointerId);
+    if (!p) return;
+    const dx = e.clientX - p.x, dy = e.clientY - p.y;
+    p.x = e.clientX; p.y = e.clientY;
+    if (tap && Math.hypot(e.clientX - tap.x, e.clientY - tap.y) > 10) tap.moved = true;
+    if (z.pointers.size >= 2 && pinch) {
+      const [a, b] = [...z.pointers.values()];
+      const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+      z.x += mx - pinch.mx; z.y += my - pinch.my; // follow the fingers
+      pinch.mx = mx; pinch.my = my;
+      zoomTo(pinch.s * Math.hypot(a.x - b.x, a.y - b.y) / pinch.d, mx, my);
+    } else if (z.pointers.size === 1) {
+      z.x += dx; z.y += dy;
+      place();
+    }
+  });
+  const up = (e) => {
+    if (!z.pointers.delete(e.pointerId)) return;
+    if (z.pointers.size < 2) pinch = null;
+    if (z.pointers.size || !tap) return;
+    const t = tap; tap = null;
+    if (t.moved || performance.now() - t.t > 350) return;
+    const now = performance.now();
+    if (now - lastTap < 320) { // double tap: in, or back to fitted
+      clearTimeout(single); lastTap = 0;
+      zoomTo(z.s > z.fit * 1.05 ? z.fit : z.fit * (z.pixel ? 3 : 2.5), t.x, t.y, true);
+      return;
+    }
+    lastTap = now;
+    single = setTimeout(() => { if (zoom === z && z.s <= z.fit * 1.05) closeZoom(); }, 320);
+  };
+  el.addEventListener('pointerup', up);
+  el.addEventListener('pointercancel', up);
+  el.addEventListener('wheel', (e) => {
+    e.preventDefault(); // trackpad pinch arrives as a wheel with ctrlKey
+    zoomTo(z.s * Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0025)), e.clientX, e.clientY);
+  }, { passive: false });
+  el.querySelector('.zoom-close').addEventListener('click', () => closeZoom());
 }
 
-function closeZoom() { zoom?.remove(); zoom = null; }
+// keep the work on screen: centred while it's smaller than the screen
+function place(smooth = false) {
+  const z = zoom, w = z.nw * z.s, h = z.nh * z.s;
+  z.x = w <= innerWidth ? (innerWidth - w) / 2 : Math.min(0, Math.max(innerWidth - w, z.x));
+  z.y = h <= innerHeight ? (innerHeight - h) / 2 : Math.min(0, Math.max(innerHeight - h, z.y));
+  z.m.classList.toggle('easing', smooth);
+  z.m.style.transform = `translate(${z.x}px, ${z.y}px) scale(${z.s})`;
+  z.el.classList.toggle('zoomed', z.s > z.fit * 1.05);
+}
+
+function zoomTo(s, cx, cy, smooth = false) {
+  const z = zoom;
+  s = Math.min(z.max, Math.max(z.fit, s));
+  z.x = cx - (cx - z.x) * (s / z.s);
+  z.y = cy - (cy - z.y) * (s / z.s);
+  z.s = s;
+  place(smooth);
+}
+
+// fromHistory: the back button already left the close-up's history entry
+function closeZoom(fromHistory = false) {
+  if (!zoom) return;
+  zoom.el.remove();
+  zoom = null;
+  if (!fromHistory && history.state?.zoom) history.back();
+}
+addEventListener('popstate', () => closeZoom(true));
+addEventListener('resize', () => zoom?.refit());
 
 // ── detail sheet ─────────────────────────────────────
 // ← → walk through every work in page order
@@ -485,8 +566,10 @@ function openSheet(w) {
   $('[data-sheet-count]').textContent = `${pad(pos + 1, 2)} / ${pad(seq.length, 2)}`;
   $('[data-prev]').hidden = $('[data-next]').hidden = seq.length < 2;
 
+  // on a phone the frame takes the work's own shape (see style.css)
+  $('[data-sheet-media]').style.setProperty('--ar', w.media.w && w.media.h ? (w.media.w / w.media.h).toFixed(4) : 1);
   $('[data-sheet-media]').innerHTML = w.motion?.src
-    ? `<video${w.pixelated ? ' class="pixelated"' : ''} src="${esc(w.motion.src)}" poster="${esc(w.media.src)}" muted loop playsinline autoplay></video>`
+    ? `<video${w.pixelated ? ' class="pixelated"' : ''} src="${esc(w.motion.src)}" poster="${esc(w.media.src)}" muted loop playsinline${reduceMotion ? '' : ' autoplay'}></video>`
     : `<img${w.pixelated ? ' class="pixelated"' : ''} src="${esc(w.media.src)}" alt="${esc(w.title)}">`;
 
   const facts = w.chain === 'physical' ? [
@@ -517,6 +600,7 @@ function openSheet(w) {
     <div class="links">${links.map(([label, href]) => `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(label)} ↗</a>`).join('')}${w.arrival ? '' : '<button type="button" data-share>Share</button>'}</div>`;
 
   sheet.hidden = false;
+  sheet.scrollTop = 0; // on a phone the details scroll: start each work at its top
   document.body.classList.add('locked');
   document.title = `${w.title} — ${data.profile.name}`;
   $('[data-close]').focus({ preventScroll: true });
@@ -533,7 +617,7 @@ async function share(w) {
 
 function closeSheet() {
   if (sheet.hidden) return;
-  closeZoom();
+  closeZoom(true);
   sheet.hidden = true;
   $('[data-sheet-media]').innerHTML = '';
   document.body.classList.remove('locked');
@@ -618,10 +702,29 @@ document.addEventListener('click', (e) => {
   else if (t.hasAttribute('data-about-link')) { e.preventDefault(); $('#about').scrollIntoView({ behavior: 'smooth' }); }
 });
 
-$('[data-sheet-media]').addEventListener('click', (e) => { if (current && e.target.closest('img, video')) openZoom(current); });
+$('[data-sheet-media]').addEventListener('click', (e) => { if (current && !swiped && e.target.closest('img, video')) openZoom(current); });
+
+// on a touch screen, swipe the work left or right for the next or previous one
+let swipe = null, swiped = false;
+$('[data-sheet-media]').addEventListener('touchstart', (e) => {
+  swiped = false;
+  swipe = e.touches.length === 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null;
+}, { passive: true });
+$('[data-sheet-media]').addEventListener('touchend', (e) => {
+  if (!swipe) return;
+  const t = e.changedTouches[0], dx = t.clientX - swipe.x, dy = t.clientY - swipe.y;
+  swipe = null;
+  if (Math.abs(dx) > 50 && Math.abs(dx) > 1.5 * Math.abs(dy)) { swiped = true; step(dx < 0 ? 1 : -1); setTimeout(() => (swiped = false), 400); }
+}, { passive: true });
 
 document.addEventListener('keydown', (e) => {
-  if (zoom) { if (e.key === 'Escape') closeZoom(); return; }
+  if (zoom) {
+    if (e.key === 'Escape') closeZoom();
+    else if (e.key === '+' || e.key === '=') zoomTo(zoom.s * 1.5, innerWidth / 2, innerHeight / 2, true);
+    else if (e.key === '-') zoomTo(zoom.s / 1.5, innerWidth / 2, innerHeight / 2, true);
+    else if (e.key === '0') zoomTo(zoom.fit, innerWidth / 2, innerHeight / 2, true);
+    return;
+  }
   if (sheet.hidden) return;
   if (e.key === 'Escape') leaveSheet();
   else if (e.key === 'ArrowLeft') step(-1);
@@ -652,6 +755,10 @@ reveal();
 route();
 
 export { works, order, further, arrivals };
+
+// a cache in the browser (sw.js): repeat visits load from it, and works seen
+// once still show without a connection. Only on the live site, not in edit mode.
+if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
 
 // edit mode: only when the page is served by scripts/editor.mjs on this Mac
 if (new URLSearchParams(location.search).has('edit') && ['localhost', '127.0.0.1'].includes(location.hostname)) {

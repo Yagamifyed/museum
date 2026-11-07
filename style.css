@@ -25,7 +25,8 @@
 }
 
 * { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 72px; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 72px; touch-action: manipulation; /* no double-tap zoom delay on taps */ }
+a, button { -webkit-tap-highlight-color: transparent; }
 body {
   margin: 0;
   background: var(--bg);
@@ -37,6 +38,9 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
+  /* a phone on its side: keep clear of the notch (0 everywhere else) */
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 }
 body.locked { overflow: hidden; }
 a { color: inherit; text-decoration: none; }
@@ -320,21 +324,46 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 .sheet-artist a:hover { text-decoration-color: currentColor; }
 .sheet-media img, .sheet-media video { cursor: zoom-in; }
 
-/* ── close-up ────────────────────────────────────── */
+/* ── close-up (pinch, scroll, double-tap; see openZoom in app.js) ── */
 .zoom {
-  position: fixed; inset: 0; z-index: 45; overflow: auto;
-  background: var(--plate); cursor: zoom-out; touch-action: none;
-  display: flex; /* with margin: auto the work stays centred yet scrollable to every edge */
-  animation: sheet-in .3s var(--ease);
+  position: fixed; inset: 0; z-index: 45; overflow: hidden;
+  background: var(--plate); touch-action: none; cursor: zoom-in;
+  animation: zoom-in .25s var(--ease);
 }
-.zoom img, .zoom video { display: block; margin: auto; max-width: none; flex: none; user-select: none; -webkit-user-drag: none; }
+.zoom.zoomed { cursor: grab; }
+.zoom.zoomed:active { cursor: grabbing; }
+@keyframes zoom-in { from { opacity: 0; } to { opacity: 1; } }
+.zoom img, .zoom video {
+  position: absolute; left: 0; top: 0; max-width: none;
+  transform-origin: 0 0; will-change: transform;
+  user-select: none; -webkit-user-select: none; -webkit-user-drag: none;
+}
+.zoom .easing { transition: transform .28s var(--ease); }
+.zoom-close {
+  position: fixed; z-index: 1;
+  top: max(14px, env(safe-area-inset-top)); right: max(14px, env(safe-area-inset-right));
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(255, 255, 255, .92); color: var(--ink);
+  font-size: 26px; line-height: 1; box-shadow: 0 6px 20px -8px rgba(0, 0, 0, .35);
+  cursor: pointer;
+}
+.zoom-hint {
+  position: fixed; left: 50%; bottom: max(18px, env(safe-area-inset-bottom)); margin: 0;
+  transform: translateX(-50%); white-space: nowrap; pointer-events: none;
+  padding: 7px 13px 8px; border-radius: 999px;
+  background: rgba(18, 19, 22, .72); color: #fff; font-size: 13px;
+  animation: hint 3.2s var(--ease) forwards;
+}
+@keyframes hint { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
 
 @media (max-width: 860px) {
-  .sheet { overflow-y: auto; display: block; }
-  .sheet-bar { position: sticky; top: 0; background: var(--bg); z-index: 1; }
-  .sheet-body { grid-template-columns: 1fr; }
-  .sheet-media { aspect-ratio: 1; }
-  .sheet-media img, .sheet-media video { padding: 8%; }
+  .sheet { overflow-y: auto; display: block; overscroll-behavior: contain; }
+  .sheet-bar { position: sticky; top: 0; background: var(--bg); z-index: 1; padding-top: max(18px, env(safe-area-inset-top)); }
+  .sheet-body { grid-template-columns: 1fr; padding-bottom: max(var(--gutter), env(safe-area-inset-bottom)); }
+  /* the frame takes the work's own shape, up to two thirds of the screen's
+     height; a tall work then sits centred on the plate */
+  .sheet-media { aspect-ratio: var(--ar, 1); max-height: 68vh; max-height: 68svh; }
+  .sheet-media img, .sheet-media video { padding: 0; }
 }
 
 /* ── toast ───────────────────────────────────────── */
