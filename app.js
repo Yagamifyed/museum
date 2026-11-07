@@ -144,22 +144,26 @@ function layoutWall(wall) {
     if (row.length) rows.push({ size, target, items: row });
   }
 
-  wall.el.replaceChildren(...rows.map(({ size, target, items }) => {
+  // the first row fits on the first screen, below the title
+  const firstRoom = innerHeight - (wall.el.getBoundingClientRect().top + scrollY) - 20;
+
+  wall.el.replaceChildren(...rows.map(({ size, target, items }, i) => {
     const div = document.createElement('div');
     div.className = 'row';
     div.append(...items);
     const sum = items.reduce((a, el) => a + Number(el.dataset.ar), 0);
     const gaps = gap * (items.length - 1);
-    const cap = Math.min(tallest, size === 'xl' || W < 720 ? tallest : target * 1.35); // on a phone every row fills the width
+    let cap = Math.min(tallest, size === 'xl' || W < 720 ? tallest : target * 1.35); // on a phone every row fills the width
+    if (i === 0 && W >= 720 && firstRoom > 200) cap = Math.min(cap, firstRoom);
     if ((W - gaps) / sum > cap) div.style.maxWidth = `${Math.round(cap * sum + gaps)}px`; // too few works to fill it: hang centred
     return div;
   }));
 }
 
 // ── artist of the week ───────────────────────────────
-// from Mother Flame's "Artist of the Week" list, newest first (data/spotlight.json)
+// from Mother Flame's "Artist of the Month" list, newest first (data/spotlight.json)
 
-const weekLink = (p) => `#/artist-of-the-week/${p.no}`;
+const weekLink = (p) => `#/artist-of-the-month/${p.no}`;
 const sameName = (a, b) => a && b && a.toLowerCase() === b.toLowerCase();
 const collected = (p) => works.filter((w) => sameName(by(w), p.name) || sameName(by(w), p.handle));
 const weekLine = (p) => [`No. ${pad(p.no)}`, p.date && day(p.date)].filter(Boolean).join(' · ');
@@ -181,10 +185,13 @@ function pickImg(p, { sizes = '(max-width: 720px) 50vw, 25vw', eager = false } =
 
 function renderWeek(no) {
   const p = spot.weeks.find((x) => x.no === no) || spot.weeks[0];
-  $('[data-week]').hidden = !p;
-  $$('[data-week-nav]').forEach((a) => (a.hidden = !p));
-  if (!p) return;
+  $('[data-week]').hidden = !p; // without a pick it shows only when its link is followed
   $('[data-week-sub]').innerHTML = `Send me your work on X: <a class="quiet" href="https://x.com/${esc(data.profile.x)}" target="_blank" rel="noopener">@${esc(data.profile.x)} ↗</a>`;
+  if (!p) {
+    $('[data-pick]').innerHTML = '<p class="quiet">The first pick is coming soon.</p>';
+    $('[data-week-past-block]').hidden = true;
+    return;
+  }
   const mine = collected(p);
   const im = pickImage(p);
   const ar = im?.w && im?.h ? (im.w / im.h).toFixed(4) : 1;
@@ -226,19 +233,16 @@ function renderWeek(no) {
 // Each appears only once there's something behind it.
 
 function renderHeroLinks() {
-  const links = [
-    ...spot.texts.map((t) => [`#/${t.slug}`, t.title]),
-    spot.weeks.length && ['#/artist-of-the-week', 'Artist of the Week'],
-  ].filter(Boolean);
-  $('[data-hero-links]').innerHTML = links.length
-    ? links.map(([href, label]) => `<a href="${href}">${esc(label)} <span class="arrow">→</span></a>`).join('')
-    : `<span data-updated>Updated ${esc(day(data.updated))}</span>`;
+  $('[data-hero-links]').innerHTML = [['#/philosophy', 'Philosophy'], ['#/artist-of-the-month', 'Artist of the Month']]
+    .map(([href, label]) => `<a href="${href}">${label} <span class="arrow">→</span></a>`).join('');
 }
 
 function renderText(t) {
   PAGE_TITLES.text = t.title;
   $('[data-text-title]').textContent = t.title;
-  $('[data-text-body]').innerHTML = t.blocks.map((b) => (b.h ? `<h2>${esc(b.h)}</h2>` : `<p>${esc(b.p)}</p>`)).join('');
+  $('[data-text-body]').innerHTML = t.blocks.length
+    ? t.blocks.map((b) => (b.h ? `<h2>${esc(b.h)}</h2>` : `<p>${esc(b.p)}</p>`)).join('')
+    : '<p class="quiet">Coming soon.</p>';
   document.title = `${data.profile.name} — ${t.title}`;
 }
 
@@ -266,7 +270,6 @@ function renderAbout() {
   $('[data-bio]').textContent = p.bio || '';
   $('[data-bio]').hidden = !p.bio;
   $$('[data-x]').forEach((a) => { a.href = `https://x.com/${p.x}`; if (a.textContent.startsWith('@')) a.textContent = `@${p.x} ↗`; });
-  $$('[data-updated]').forEach((el) => (el.textContent = `Updated ${day(data.updated)}`));
   $('[data-wallets]').innerHTML = CHAIN_ORDER.filter((c) => data.wallets[c]).map((c) =>
     `<dt>${CHAINS[c]}</dt><dd><code title="${esc(data.wallets[c])}">${esc(short(data.wallets[c]))}</code><button type="button" data-copy="${esc(data.wallets[c])}">Copy</button></dd>`).join('');
 }
@@ -476,16 +479,17 @@ function route() {
   closeSheet();
   if (h === '#/watchlist') { showPage('watchlist'); openWatchlist(); }
   else if (h === '#/further') showPage('further');
-  else if (spot.texts.some((t) => `#/${t.slug}` === h)) {
+  else if (h === '#/philosophy') {
     const was = state.page === 'text';
-    renderText(spot.texts.find((t) => `#/${t.slug}` === h));
+    renderText(spot.texts.find((t) => t.slug === 'philosophy') || { title: 'Philosophy', blocks: [] });
     showPage('text');
     if (was) window.scrollTo({ top: 0 });
   }
-  else if (/^#\/artist-of-the-week(\/\d+)?$/.test(h)) {
+  else if (/^#\/artist-of-the-(month|week)(\/\d+)?$/.test(h)) {
     showPage('museum');
     renderWeek(Number(h.split('/')[2]) || null);
-    if (spot.weeks.length) requestAnimationFrame(() => $('#week').scrollIntoView({ behavior: 'smooth' }));
+    $('[data-week]').hidden = false; // with no pick yet it says so
+    requestAnimationFrame(() => $('#week').scrollIntoView({ behavior: 'smooth' }));
   }
   else if (h.startsWith('#/') || h === '' || h === '#') showPage('museum');
   else if (!state.page) showPage('museum'); // plain anchors like #about keep the current page

@@ -62,14 +62,14 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 
 /* ── hero ────────────────────────────────────────── */
 /* short, so the wall starts on the first screen */
-.hero { padding: clamp(112px, 20vh, 200px) var(--gutter) clamp(28px, 4vh, 44px); }
+.hero { padding: clamp(92px, 13vh, 140px) var(--gutter) clamp(20px, 3vh, 32px); }
 .hero-title {
   font-family: var(--serif);
   font-weight: 400;
-  font-size: var(--t-hero);
-  line-height: 1.02;
+  font-size: clamp(40px, 4.6vw, 76px);
+  line-height: 1;
   letter-spacing: -0.048em;
-  margin: 0 0 clamp(20px, 3vh, 32px) -0.03em;
+  margin: 0 0 clamp(16px, 2.4vh, 26px) -0.03em;
 }
 .hero-foot {
   display: flex; justify-content: space-between; align-items: baseline; gap: var(--gap);
@@ -243,8 +243,7 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
   line-height: .82;
   margin-left: -0.04em;
 }
-.foot-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); margin-top: 28px; color: var(--mute); }
-.foot-row > :nth-child(2) { text-align: center; }
+.foot-row { display: flex; justify-content: space-between; gap: var(--gap); margin-top: 28px; color: var(--mute); }
 .foot-row > :last-child { text-align: right; }
 .foot-row a:hover { color: var(--ink); }
 
@@ -325,8 +324,6 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 
 @media (max-width: 560px) {
   .bar nav a[data-about-link] { display: none; }
-  .foot-row { grid-template-columns: 1fr 1fr; }
-  .foot-row > :nth-child(2) { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
