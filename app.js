@@ -254,10 +254,10 @@ function renderWeek(no) {
 }
 
 // ── the links under the title, and Levin's texts ─────
-// Each appears only once there's something behind it.
+// Artist of the Month is in the bar at the top, so only once on the screen.
 
 function renderHeroLinks() {
-  $('[data-hero-links]').innerHTML = [['#/philosophy', 'Philosophy'], ['#/artist-of-the-month', 'Artist of the Month']]
+  $('[data-hero-links]').innerHTML = [['#/philosophy', 'Philosophy']]
     .map(([href, label]) => `<a href="${href}">${label} <span class="arrow">→</span></a>`).join('');
 }
 
@@ -441,6 +441,15 @@ function renderArtist(name) {
 let zoom = null;
 const coarse = matchMedia('(pointer: coarse)').matches;
 
+// the how-to line shows on the first close-up only (remembered in this browser)
+function seenHint() {
+  try {
+    if (localStorage.getItem('museum.hint')) return true;
+    localStorage.setItem('museum.hint', '1');
+  } catch {}
+  return false;
+}
+
 function openZoom(w) {
   closeZoom(true);
   const nw = w.media.w || 1600, nh = w.media.h || 1600;
@@ -452,13 +461,14 @@ function openZoom(w) {
     ? `<video${w.pixelated ? ' class="pixelated"' : ''} src="${esc(w.motion.src)}" poster="${esc(w.media.src)}" muted loop playsinline${reduceMotion ? '' : ' autoplay'}></video>`
     : `<img${w.pixelated ? ' class="pixelated"' : ''} src="${esc(w.media.src)}" alt="${esc(w.title)}" draggable="false">`}
     <button type="button" class="zoom-close" aria-label="Close">×</button>
-    <p class="zoom-hint">${coarse ? 'Pinch or double-tap to zoom · tap to close' : 'Scroll or double-click to zoom · click to close'}</p>`;
+    ${seenHint() ? '' : `<p class="zoom-hint">${coarse ? 'Pinch or double-tap to zoom · tap to close' : 'Scroll or double-click to zoom · click to close'}</p>`}`;
   const m = el.firstElementChild;
   m.style.width = `${nw}px`;
   m.style.height = `${nh}px`;
   document.body.append(el);
   const z = zoom = { el, m, nw, nh, s: 1, x: 0, y: 0, pointers: new Map(), pixel: !!w.pixelated };
-  const fit = () => Math.min((innerWidth - 32) / nw, (innerHeight - 32) / nh);
+  const edge = innerWidth < 720 ? 0 : 32; // a phone: the work fills the screen edge to edge
+  const fit = () => Math.min((innerWidth - edge) / nw, (innerHeight - edge) / nh);
   z.refit = () => { z.fit = fit(); z.max = Math.max(z.fit * 6, z.pixel ? 24 : 2); zoomTo(z.fit, innerWidth / 2, innerHeight / 2); };
   z.refit();
   history.pushState({ zoom: true }, ''); // the back button (or a swipe back) closes it
@@ -553,24 +563,38 @@ addEventListener('resize', () => zoom?.refit());
 const sheet = $('[data-sheet]');
 let current = null;
 let lastFocus = null;
+let opened = null; // the work the details were opened on
 
 // the works the arrows step through: the main wall, the Further works, or one artist's
 const sequence = () => (current?.further ? further : state.page === 'artist' ? artistWorks : order);
 
 function openSheet(w) {
+  flush();
   if (!sheet.hidden && current?.id === w.id) return;
-  if (sheet.hidden) lastFocus = document.activeElement;
+  if (sheet.hidden) { lastFocus = document.activeElement; opened = w; }
   current = w;
   const seq = sequence();
   const pos = seq.indexOf(w);
   $('[data-sheet-count]').textContent = `${pad(pos + 1, 2)} / ${pad(seq.length, 2)}`;
-  $('[data-prev]').hidden = $('[data-next]').hidden = seq.length < 2;
+  $('[data-prev]').hidden = $('[data-next]').hidden = $('[data-play]').hidden = seq.length < 2;
 
   // on a phone the frame takes the work's own shape (see style.css)
-  $('[data-sheet-media]').style.setProperty('--ar', w.media.w && w.media.h ? (w.media.w / w.media.h).toFixed(4) : 1);
-  $('[data-sheet-media]').innerHTML = w.motion?.src
-    ? `<video${w.pixelated ? ' class="pixelated"' : ''} src="${esc(w.motion.src)}" poster="${esc(w.media.src)}" muted loop playsinline${reduceMotion ? '' : ' autoplay'}></video>`
-    : `<img${w.pixelated ? ' class="pixelated"' : ''} src="${esc(w.media.src)}" alt="${esc(w.title)}">`;
+  // The picture the wall already has shows at once, the full-size file is laid
+  // over it as soon as it arrives (and the stand-in then goes, in case the work
+  // has transparent parts).
+  const px = w.pixelated ? ' pixelated' : '';
+  const shown = tiles.get(w.id)?.querySelector(':scope > img.ready') || $(`.card[data-id="${CSS.escape(w.id)}"] .plate > img.ready`);
+  const stand = shown?.currentSrc || w.media.lqip;
+  const media = $('[data-sheet-media]');
+  media.style.setProperty('--ar', w.media.w && w.media.h ? (w.media.w / w.media.h).toFixed(4) : 1);
+  media.innerHTML = `<div class="sheet-art">${stand ? `<img class="stand${px}${shown ? '' : ' blur'}" src="${esc(stand)}" alt="" aria-hidden="true">` : ''}${w.motion?.src
+    ? `<video class="art${px}" src="${esc(w.motion.src)}" poster="${esc(w.media.src)}" muted loop playsinline${reduceMotion ? '' : ' autoplay'}></video>`
+    : `<img class="art${px}" src="${esc(w.media.src)}" alt="${esc(w.title)}">`}</div>`;
+  const art = media.querySelector('img.art');
+  if (art) { const drop = () => art.previousElementSibling?.remove(); art.complete ? drop() : (art.onload = drop); }
+  // the works either side load in the background, so the arrows are instant
+  warm(seq[(pos + 1) % seq.length]);
+  warm(seq[(pos - 1 + seq.length) % seq.length]);
 
   const facts = w.chain === 'physical' ? [
     w.year && ['Year', esc(w.year)],
@@ -582,8 +606,11 @@ function openSheet(w) {
     ['Edition', edition(w)],
     ['Acquired', day(w.acquired)],
     w.minted && ['Minted', day(w.minted)],
-    w.contract && ['Contract', `<button type="button" data-copy="${esc(w.contract)}" title="Copy">${esc(short(w.contract))}</button>`],
-    w.tokenId && ['Token', `<button type="button" data-copy="${esc(w.tokenId)}" title="Copy">${esc(short(String(w.tokenId)))}</button>`],
+    // contract and token in one line: for collectors, so kept quiet
+    (w.contract || w.tokenId) && ['On-chain', [
+      w.contract && `<button type="button" data-copy="${esc(w.contract)}" title="Copy the contract address">${esc(short(w.contract))}</button>`,
+      w.tokenId && `<button type="button" data-copy="${esc(w.tokenId)}" title="Copy the token ID">#${esc(short(String(w.tokenId)))}</button>`,
+    ].filter(Boolean).join(' · ')],
   ].filter(Boolean);
 
   const desc = (w.description || '').trim();
@@ -615,23 +642,109 @@ async function share(w) {
   navigator.clipboard?.writeText(url).then(() => toast('Link copied'), () => toast(url));
 }
 
-function closeSheet() {
+// Closing lands on the work you were looking at, even after stepping through
+// twenty more: the wall scrolls to it and marks it for a moment.
+function closeSheet({ morph = false } = {}) {
+  flush();
   if (sheet.hidden) return;
-  closeZoom(true);
-  sheet.hidden = true;
-  $('[data-sheet-media]').innerHTML = '';
-  document.body.classList.remove('locked');
-  document.title = `${data.profile.name} — ${PAGE_TITLES[state.page]}`;
-  current = null;
-  lastFocus?.focus?.({ preventScroll: true });
+  const w = current;
+  const close = () => {
+    closeZoom(true);
+    endShow();
+    sheet.hidden = true;
+    $('[data-sheet-media]').innerHTML = '';
+    document.body.classList.remove('locked');
+    document.title = `${data.profile.name} — ${PAGE_TITLES[state.page]}`;
+    current = null;
+    const t = onPage(w);
+    if (!t) { lastFocus?.focus?.({ preventScroll: true }); return null; }
+    const r = t.getBoundingClientRect();
+    if (r.bottom < 60 || r.top > innerHeight) t.scrollIntoView({ block: 'center' });
+    t.focus({ preventScroll: true });
+    if (w !== opened) { t.classList.remove('seen'); void t.offsetWidth; t.classList.add('seen'); setTimeout(() => t.classList.remove('seen'), 1700); }
+    return t.querySelector(':scope > img:not(.lqip), :scope > video');
+  };
+  if (morph) transition($('.sheet-art'), close); else close();
 }
 
 function leaveSheet() {
   history.pushState(null, '', current?.further ? '#/further' : state.page === 'artist' ? artistLink(artistName) : '#/');
-  closeSheet();
+  closeSheet({ morph: true });
 }
 
+// the work's tile on the page now showing (the wall or Further works), if any
+function onPage(w) {
+  const t = w && tiles.get(w.id);
+  return t?.isConnected && t.offsetParent ? t : null;
+}
+
+// ── moving between the wall and a work ───────────────
+// The work grows out of its place on the wall into the details, and shrinks
+// back into it on closing (a view transition, where the browser has them; not
+// for anyone who has asked their device to reduce motion).
+const canMorph = !!document.startViewTransition && !reduceMotion;
+let pending = null, morphing = 0;
+
+// The browser makes the change a frame later; anything else that opens, closes
+// or steps first makes it straight away (flush), so a quick second click can
+// never act on a half-made change.
+function flush() {
+  const p = pending;
+  pending = null;
+  p?.();
+}
+
+function transition(from, change) {
+  if (!canMorph) return change();
+  flush();
+  if (from) from.style.viewTransitionName = 'work';
+  document.documentElement.classList.add('vt');
+  morphing++;
+  let to = null;
+  pending = () => {
+    if (from) from.style.viewTransitionName = '';
+    to = change();
+    if (to && from) to.style.viewTransitionName = 'work';
+  };
+  document.startViewTransition(flush).finished.finally(() => {
+    if (to) to.style.viewTransitionName = '';
+    if (!--morphing) document.documentElement.classList.remove('vt');
+  });
+}
+
+// open from the wall: grow out of the tile when it's on screen
+function openFromWall(w) {
+  const t = sheet.hidden && onPage(w);
+  const m = t?.querySelector(':scope > img:not(.lqip), :scope > video');
+  const r = t?.getBoundingClientRect();
+  if (!m || r.bottom < 0 || r.top > innerHeight) return openSheet(w);
+  transition(m, () => { openSheet(w); return $('.sheet-art'); });
+}
+
+// load a work's full-size picture ahead of time (the browser keeps it)
+const warmed = new Set();
+function warm(w) {
+  if (!w || warmed.has(w.media.src)) return;
+  warmed.add(w.media.src);
+  const im = new Image();
+  im.decoding = 'async';
+  im.src = w.media.src;
+}
+
+// with a mouse, a work starts loading when the pointer rests on it a moment,
+// so it's usually there before the click
+let hover = 0;
+document.addEventListener('pointerover', (e) => {
+  if (e.pointerType !== 'mouse') return;
+  const a = e.target.closest?.('a[href^="#/work/"]');
+  clearTimeout(hover);
+  if (!a) return;
+  const id = decodeURIComponent(a.getAttribute('href').slice(7));
+  hover = setTimeout(() => warm(works.find((w) => w.id === id)), 120);
+});
+
 function step(d) {
+  flush();
   const seq = sequence();
   const next = seq[(seq.indexOf(current) + d + seq.length) % seq.length];
   history.replaceState(null, '', link(next));
@@ -640,6 +753,7 @@ function step(d) {
 
 // Old links (#/vault, #/walk) and unknown artists land on the Museum.
 function route() {
+  flush();
   const h = location.hash;
   const m = h.match(/^#\/work\/(.+)$/);
   if (m) {
@@ -647,10 +761,10 @@ function route() {
     const w = works.find((x) => x.id === id);
     if (w) {
       if (!(state.page === 'artist' && artistWorks.includes(w))) showPage(w.further ? 'further' : 'museum');
-      return openSheet(w);
+      return openFromWall(w);
     }
   }
-  closeSheet();
+  closeSheet({ morph: true });
   const a = h.match(/^#\/artist\/(.+)$/);
   if (a && order.some((w) => sameName(by(w), decodeURIComponent(a[1])))) {
     const name = by(order.find((w) => sameName(by(w), decodeURIComponent(a[1]))));
@@ -697,27 +811,140 @@ document.addEventListener('click', (e) => {
   else if (t.hasAttribute('data-close')) leaveSheet();
   else if (t.hasAttribute('data-prev')) step(-1);
   else if (t.hasAttribute('data-next')) step(1);
+  else if (t.hasAttribute('data-play') && current) startShow();
   else if (t.hasAttribute('data-forget')) { forgetKey(); lockWatchlist(); toast('Locked'); }
   else if (t.hasAttribute('data-top')) { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
   else if (t.hasAttribute('data-about-link')) { e.preventDefault(); $('#about').scrollIntoView({ behavior: 'smooth' }); }
 });
 
-$('[data-sheet-media]').addEventListener('click', (e) => { if (current && !swiped && e.target.closest('img, video')) openZoom(current); });
+$('[data-sheet-media]').addEventListener('click', (e) => { if (current && !swiped && e.target.closest('.sheet-art')) openZoom(current); });
 
-// on a touch screen, swipe the work left or right for the next or previous one
+// on a touch screen, swipe the work left or right for the next or previous one,
+// or pull it down to close (as in Photos); the work follows the finger down
 let swipe = null, swiped = false;
 $('[data-sheet-media]').addEventListener('touchstart', (e) => {
   swiped = false;
-  swipe = e.touches.length === 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null;
+  swipe = e.touches.length === 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY, top: sheet.scrollTop <= 0 } : null;
+}, { passive: true });
+$('[data-sheet-media]').addEventListener('touchmove', (e) => {
+  if (!swipe?.top || e.touches.length !== 1) return;
+  const dx = e.touches[0].clientX - swipe.x, dy = e.touches[0].clientY - swipe.y;
+  const art = $('.sheet-art');
+  if (!art) return;
+  if (dy > 10 && dy > 1.5 * Math.abs(dx)) {
+    swipe.pull = true;
+    art.style.transform = `translateY(${dy * 0.6}px) scale(${Math.max(0.85, 1 - dy / 1600)})`;
+  } else if (swipe.pull) art.style.transform = '';
 }, { passive: true });
 $('[data-sheet-media]').addEventListener('touchend', (e) => {
   if (!swipe) return;
   const t = e.changedTouches[0], dx = t.clientX - swipe.x, dy = t.clientY - swipe.y;
+  const s = swipe;
   swipe = null;
+  if (s.pull) {
+    swiped = true; setTimeout(() => (swiped = false), 400);
+    if (dy > 90 && dy > 1.5 * Math.abs(dx)) return leaveSheet();
+    const art = $('.sheet-art');
+    art?.classList.add('settle');
+    if (art) art.style.transform = '';
+    setTimeout(() => art?.classList.remove('settle'), 300);
+    return;
+  }
   if (Math.abs(dx) > 50 && Math.abs(dx) > 1.5 * Math.abs(dy)) { swiped = true; step(dx < 0 ? 1 : -1); setTimeout(() => (swiped = false), 400); }
 }, { passive: true });
 
+// ── slideshow ────────────────────────────────────────
+// Play, in a work's details: the works go full screen one after another, with
+// no words, a new one every ten seconds. Any tap, click or key stops it (← →
+// skip), and you're back in the details of the work that was showing. The
+// screen is kept awake while it plays, so it can hang on a TV or a spare screen.
+
+let show = null;
+const SHOW_EVERY = 10000;
+
+function startShow() {
+  closeZoom(true);
+  const seq = sequence();
+  const el = document.createElement('div');
+  el.className = 'show';
+  el.setAttribute('role', 'dialog');
+  el.setAttribute('aria-label', 'Slideshow: tap or press any key to stop');
+  el.tabIndex = -1;
+  document.body.append(el);
+  show = { el, seq, i: seq.indexOf(current), timer: 0, lock: null, idle: 0 };
+  el.requestFullscreen?.().catch(() => {});
+  navigator.wakeLock?.request('screen').then((l) => (show ? (show.lock = l) : l.release())).catch(() => {});
+  history.pushState({ show: true }, ''); // the back button stops it
+  el.focus({ preventScroll: true });
+  el.addEventListener('click', () => stopShow());
+  el.addEventListener('mousemove', () => { // the pointer shows while it moves
+    el.classList.add('pointer');
+    clearTimeout(show?.idle);
+    if (show) show.idle = setTimeout(() => el.classList.remove('pointer'), 1500);
+  });
+  frame(0);
+}
+
+// show the work d steps on; the new one fades in over the last once it has loaded
+function frame(d) {
+  const s = show;
+  clearTimeout(s.timer);
+  s.i = (s.i + d + s.seq.length) % s.seq.length;
+  const w = s.seq[s.i];
+  const moving = w.motion?.src && !reduceMotion;
+  const m = document.createElement(moving ? 'video' : 'img');
+  m.className = `show-frame${w.pixelated ? ' pixelated' : ''}`;
+  if (moving) Object.assign(m, { src: w.motion.src, poster: w.media.src, muted: true, loop: true, playsInline: true, autoplay: true });
+  else Object.assign(m, { src: w.media.src, alt: w.title });
+  const ready = moving
+    ? new Promise((r) => { m.addEventListener('loadeddata', r, { once: true }); m.addEventListener('error', r, { once: true }); setTimeout(r, 6000); })
+    : m.decode().catch(() => {});
+  ready.then(() => {
+    if (show !== s || s.seq[s.i] !== w) return; // stopped, or skipped on meanwhile
+    s.el.append(m);
+    requestAnimationFrame(() => m.classList.add('on'));
+    setTimeout(() => { for (const old of [...s.el.children]) if (old.compareDocumentPosition(m) & Node.DOCUMENT_POSITION_FOLLOWING) old.remove(); }, 1400);
+    warm(s.seq[(s.i + 1) % s.seq.length]);
+    s.timer = setTimeout(() => frame(1), SHOW_EVERY);
+  });
+}
+
+// take the slideshow down (closing the details does this too)
+function endShow() {
+  if (!show) return null;
+  const s = show;
+  show = null;
+  clearTimeout(s.timer);
+  clearTimeout(s.idle);
+  s.lock?.release().catch(() => {});
+  if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  s.el.remove();
+  return s.seq[s.i];
+}
+
+// stop, and land in the details of the work that was showing
+function stopShow(fromHistory = false) {
+  const w = endShow();
+  if (!w) return;
+  const land = () => { if (w !== current && !sheet.hidden) { history.replaceState(null, '', link(w)); openSheet(w); } };
+  if (!fromHistory && history.state?.show) { addEventListener('popstate', land, { once: true }); history.back(); }
+  else land();
+}
+
+addEventListener('popstate', () => stopShow(true));
+document.addEventListener('fullscreenchange', () => { if (show && !document.fullscreenElement) stopShow(); });
+document.addEventListener('visibilitychange', () => { // the wake lock lapses when the page is hidden
+  if (show && document.visibilityState === 'visible') navigator.wakeLock?.request('screen').then((l) => (show ? (show.lock = l) : l.release())).catch(() => {});
+});
+
 document.addEventListener('keydown', (e) => {
+  if (show) {
+    e.preventDefault();
+    if (e.key === 'ArrowRight') frame(1);
+    else if (e.key === 'ArrowLeft') frame(-1);
+    else if (!['Shift', 'Control', 'Alt', 'Meta'].includes(e.key)) stopShow();
+    return;
+  }
   if (zoom) {
     if (e.key === 'Escape') closeZoom();
     else if (e.key === '+' || e.key === '=') zoomTo(zoom.s * 1.5, innerWidth / 2, innerHeight / 2, true);

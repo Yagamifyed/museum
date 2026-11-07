@@ -273,6 +273,20 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 .sheet-nav { display: flex; gap: clamp(16px, 2vw, 32px); }
 .sheet-nav button { color: var(--mute); transition: color .2s; }
 .sheet-nav button:hover { color: var(--ink); }
+.sheet-play { padding: 8px 4px 9px; }
+
+/* ── slideshow (startShow in app.js) ─────────────── */
+.show {
+  position: fixed; inset: 0; z-index: 48;
+  background: #0e0e0f; cursor: none; outline: none;
+}
+.show.pointer { cursor: default; }
+.show-frame {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: contain; padding: clamp(16px, 4vmin, 56px);
+  opacity: 0; transition: opacity 1.2s var(--ease);
+}
+.show-frame.on { opacity: 1; }
 .sheet-body {
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 30vw);
   gap: var(--gap);
@@ -281,18 +295,44 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
   min-height: 0;
 }
 /* the work is laid over its frame rather than inside it, so a tall work can't
-   stretch the frame past the screen; object-fit then shows all of it */
+   stretch the frame past the screen. .sheet-art is exactly the size the work is
+   shown at (the frame less its mat, in the work's proportions), so the picture
+   from the wall and the full-size file sit on top of each other, and the work
+   can grow out of its tile into it (see transition in app.js) */
 .sheet-media {
+  --mat: clamp(20px, 5vw, 72px);
   margin: 0; background: var(--plate);
   position: relative;
   min-height: 0; overflow: hidden;
+  container-type: size;
 }
-.sheet-media img, .sheet-media video {
+.sheet-art {
+  --w: min(100cqw - 2 * var(--mat), (100cqh - 2 * var(--mat)) * var(--ar, 1));
+  position: absolute; inset: 0; margin: auto;
+  width: var(--w); height: calc(var(--w) / var(--ar, 1));
+  cursor: zoom-in;
+}
+.sheet-art.settle { transition: transform .3s var(--ease); }
+.sheet-art > img, .sheet-art > video {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
   object-fit: contain;
-  padding: clamp(20px, 5vw, 72px);
 }
+.sheet-art > .stand.blur { filter: blur(14px) saturate(1.1); }
+
+/* opening and closing a work (a view transition): the work moves, the rest fades */
+.vt .sheet { animation: none; }
+::view-transition-group(work) { animation-duration: .5s; animation-timing-function: var(--ease); }
+::view-transition-old(work), ::view-transition-new(work) { height: 100%; object-fit: contain; }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: .35s; }
+
+/* the work you were last looking at, marked for a moment after closing */
+.work.seen::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  box-shadow: inset 0 0 0 2px var(--ink);
+  animation: seen 1.6s var(--ease) forwards;
+}
+@keyframes seen { 0%, 40% { opacity: 1; } 100% { opacity: 0; } }
 .sheet-info { overflow-y: auto; padding: 4px 0 24px; display: flex; flex-direction: column; }
 .sheet-chain { color: var(--mute); font-size: var(--t-small); }
 .sheet-title {
@@ -322,7 +362,6 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 .links a:hover, .links button:hover { color: var(--ink); }
 .sheet-artist a { text-decoration: underline; text-decoration-color: var(--faint, rgba(0,0,0,.2)); text-underline-offset: 4px; transition: text-decoration-color .2s; }
 .sheet-artist a:hover { text-decoration-color: currentColor; }
-.sheet-media img, .sheet-media video { cursor: zoom-in; }
 
 /* ── close-up (pinch, scroll, double-tap; see openZoom in app.js) ── */
 .zoom {
@@ -363,7 +402,7 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
   /* the frame takes the work's own shape, up to two thirds of the screen's
      height; a tall work then sits centred on the plate */
   .sheet-media { aspect-ratio: var(--ar, 1); max-height: 68vh; max-height: 68svh; }
-  .sheet-media img, .sheet-media video { padding: 0; }
+  .sheet-media { --mat: 0px; }
 }
 
 /* ── toast ───────────────────────────────────────── */
