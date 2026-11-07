@@ -67,26 +67,42 @@ function card(w) {
 const SIZES = { small: 0.75, medium: 1, large: 1.8, xl: 2.6 };
 const walls = [];
 
-function hangWall(el, list) {
-  const holder = document.createElement('div');
-  holder.innerHTML = list.map((w, i) => {
+// one tile per work, kept for the life of the page: when edit mode re-hangs the
+// wall the same tiles are only moved, so no image or video loads twice
+const tiles = new Map();
+const tileSizes = (size) => (size === 'medium' || size === 'small' ? '(max-width: 720px) 50vw, 26vw' : '(max-width: 720px) 100vw, 60vw');
+
+function tile(w, i) {
+  const size = SIZES[w.museum?.size] ? w.museum.size : 'medium';
+  let a = tiles.get(w.id);
+  if (!a) {
     const ar = w.media.w && w.media.h ? (w.media.w / w.media.h).toFixed(4) : 1;
-    const size = SIZES[w.museum?.size] ? w.museum.size : 'medium';
-    return `<a class="work" href="${link(w)}" data-ar="${ar}" data-size="${size}"${w.museum?.newRow ? ' data-new-row' : ''} aria-label="${esc(w.title)} by ${esc(by(w))}">
-      ${mediaEl(w, { eager: i < 6, sizes: size === 'medium' || size === 'small' ? '(max-width: 720px) 50vw, 26vw' : '(max-width: 720px) 100vw, 60vw' })}
+    const holder = document.createElement('div');
+    holder.innerHTML = `<a class="work" href="${link(w)}" data-ar="${ar}" aria-label="${esc(w.title)} by ${esc(by(w))}">
+      ${mediaEl(w, { eager: i < 6, sizes: tileSizes(size) })}
       <span class="cap"><span class="cap-title">${esc(w.title)}</span><span class="cap-meta">${esc(by(w))}</span></span>
     </a>`;
-  }).join('');
+    a = holder.firstElementChild;
+    // set via the CSSOM: the Content-Security-Policy forbids inline style attributes
+    a.style.setProperty('--ar', ar);
+    tiles.set(w.id, a);
+  } else if (a.dataset.size !== size) {
+    a.querySelector('img[srcset]')?.setAttribute('sizes', tileSizes(size));
+  }
+  a.dataset.size = size;
+  a.toggleAttribute('data-new-row', !!w.museum?.newRow);
+  return a;
+}
+
+function hangWall(el, list) {
   let wall = walls.find((x) => x.el === el);
   if (!wall) {
     wall = { el };
     walls.push(wall);
     new ResizeObserver(() => requestAnimationFrame(() => layoutWall(wall))).observe(el);
   }
-  wall.items = [...holder.children];
+  wall.items = list.map(tile);
   wall.width = 0;
-  // set via the CSSOM: the Content-Security-Policy forbids inline style attributes
-  wall.items.forEach((item) => item.style.setProperty('--ar', item.dataset.ar));
   layoutWall(wall);
   reveal(el);
 }
