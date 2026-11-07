@@ -12,8 +12,45 @@
     "solana": "8vGmofEerk69yLJeDn9n9ReDsimNXCagMErZCdzHKVpT",
     "bitcoin": null
   },
-  "updated": "2026-11-06",
+  "updated": "2026-11-07",
   "works": [
+    {
+      "status": "owned",
+      "id": "ethereum:0x5894b908017e922f0a3ab59dbbd345961cf198a1:2",
+      "chain": "ethereum",
+      "contract": "0x5894b908017e922f0a3ab59dbbd345961cf198a1",
+      "tokenId": "2",
+      "title": "A Louder Kind of Silence",
+      "collection": "Skerry Editions",
+      "artist": null,
+      "description": "Everything that went unsaid had to go somewhere. It got so loud I could hear the garden growing.\n\n7400 x 9824 px\n300 dpi\n\nYEDAI 2026",
+      "editions": null,
+      "owned": 1,
+      "minted": null,
+      "acquired": "2026-11-07",
+      "interactive": null,
+      "links": [
+        [
+          "OpenSea",
+          "https://opensea.io/item/ethereum/0x5894b908017e922f0a3ab59dbbd345961cf198a1/2"
+        ],
+        [
+          "Etherscan",
+          "https://etherscan.io/nft/0x5894b908017e922f0a3ab59dbbd345961cf198a1/2"
+        ]
+      ],
+      "media": {
+        "src": "media/44721ad5e520.webp",
+        "w": 1206,
+        "h": 1600,
+        "thumb": "media/thumb/44721ad5e520.webp",
+        "lqip": "data:image/webp;base64,UklGRpgAAABXRUJQVlA4IIwAAADQAwCdASoPABQAPu1iqU2ppaOiMAgBMB2JYgCdIKnBsGypz2STiwAA/rLINx7bhSHt039KGZ2KJ+egBwVTVkrh7UOx0ZgwQrJNcWNzAla2ukMC7jz3QnLZaClWaiIvjHS6+rxgyMKLNHSuLizYfYU56Gy2vqA9vbi0DYyUQNqGs7xGe+xMlh2zTAAAAA=="
+      },
+      "motion": null,
+      "original": "ipfs://bafybeifynidnxt7smofkj5r7f3jsfutltjl3f2eca63clchx6ckdmzrxi4/media",
+      "museum": null,
+      "arrival": true
+    },
     {
       "status": "owned",
       "id": "ethereum:0x2d604e90ecac1951aaeff7ce5cafbc862953f67b:4",
