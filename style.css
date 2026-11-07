@@ -61,42 +61,35 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 .bar nav a:hover, .bar nav a[aria-current="page"] { color: var(--ink); }
 
 /* ── hero ────────────────────────────────────────── */
-.hero {
-  min-height: 100svh;
-  display: grid;
-  grid-template-rows: 1fr auto auto;
-  padding: 96px var(--gutter) 28px;
-}
-.hero-specimen {
-  align-self: end;
-  width: clamp(72px, 8vw, 120px);
-  aspect-ratio: 1;
-  margin-bottom: clamp(24px, 4vh, 48px);
-  position: relative;
-}
-.hero-specimen img {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  object-fit: cover;
-  opacity: 0; transition: opacity 1.2s var(--ease);
-}
-.hero-specimen img.on { opacity: 1; }
+/* short, so the wall starts on the first screen */
+.hero { padding: clamp(112px, 20vh, 200px) var(--gutter) clamp(28px, 4vh, 44px); }
 .hero-title {
   font-family: var(--serif);
   font-weight: 400;
   font-size: var(--t-hero);
   line-height: 1.02;
   letter-spacing: -0.048em;
-  color: var(--faint);
-  max-width: 15.5em;
-  margin: 0 0 clamp(40px, 9vh, 96px);
+  margin: 0 0 clamp(20px, 3vh, 32px) -0.03em;
 }
-.hero-title .ink { color: var(--ink); }
 .hero-foot {
-  display: flex; justify-content: space-between; gap: var(--gap);
+  display: flex; justify-content: space-between; align-items: baseline; gap: var(--gap);
+  border-top: 1px solid var(--rule); padding-top: 14px;
   color: var(--mute);
 }
-.hero-foot > * { white-space: nowrap; }
-.hero-foot a:hover { color: var(--ink); }
+.hero-links { display: flex; flex-wrap: wrap; gap: 6px clamp(18px, 2.4vw, 36px); }
+.hero-links a { color: var(--ink); }
+.hero-links a .arrow { display: inline-block; color: var(--mute); transition: transform .5s var(--ease), color .2s; }
+.hero-links a:hover .arrow { transform: translateX(.2em); color: var(--ink); }
+.hero-foot > a:hover { color: var(--ink); }
+.hero-foot > a { white-space: nowrap; }
+
+/* ── texts (collection philosophy, art philosophy) ── */
+.essay { max-width: 34em; }
+.essay p {
+  font-family: var(--serif); font-size: clamp(21px, 1.7vw, 27px);
+  line-height: 1.32; letter-spacing: -0.02em; margin: 0 0 1em;
+}
+.essay h2 { font-size: var(--t-body); font-weight: 500; letter-spacing: -0.01em; margin: 2em 0 .6em; }
 
 /* ── blocks ──────────────────────────────────────── */
 .block { padding: clamp(72px, 12vh, 140px) var(--gutter) 0; }
@@ -149,7 +142,7 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 .wall {
   --tile: clamp(4px, .55vw, 10px);
   display: flex; flex-direction: column; gap: var(--tile);
-  padding: clamp(40px, 8vh, 96px) var(--gutter) 0;
+  padding: 0 var(--gutter);
 }
 .wall .row { display: flex; gap: var(--tile); width: 100%; margin-inline: auto; }
 .work {

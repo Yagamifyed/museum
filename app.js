@@ -13,7 +13,7 @@ const link = (w) => `#/work/${encodeURIComponent(w.id)}`;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const plural = (n, one, many = one + 's') => `${n} ${n === 1 ? one : many}`;
 
-const PAGE_TITLES = { museum: 'The Museum', further: 'Further works', watchlist: 'Watch List' };
+const PAGE_TITLES = { museum: 'The Museum', further: 'Further works', text: '', watchlist: 'Watch List' };
 const state = { page: null };
 let data, works, museum, rest, order, further, spot;
 
@@ -105,17 +105,6 @@ function renderMuseum() {
   $('[data-further-link]').hidden = !further.length;
 
   hangWall($('[data-wall-further]'), further);
-
-  // a small rotating specimen above the headline
-  const box = $('.hero-specimen');
-  const pool = order.slice(0, 10);
-  box.innerHTML = pool.map((w) => `<img src="${esc(w.media.thumb || w.media.src)}" alt=""${w.pixelated ? ' class="pixelated"' : ''} decoding="async">`).join('');
-  const imgs = $$('img', box);
-  let i = 0;
-  imgs[0]?.classList.add('on');
-  if (imgs.length > 1 && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    setInterval(() => { imgs[i].classList.remove('on'); i = (i + 1) % imgs.length; imgs[i].classList.add('on'); }, 2600);
-  }
 }
 
 // Rows are built per run of works with the same size (a work marked newRow in
@@ -161,7 +150,7 @@ function layoutWall(wall) {
     div.append(...items);
     const sum = items.reduce((a, el) => a + Number(el.dataset.ar), 0);
     const gaps = gap * (items.length - 1);
-    const cap = Math.min(tallest, size === 'xl' ? tallest : target * 1.35);
+    const cap = Math.min(tallest, size === 'xl' || W < 720 ? tallest : target * 1.35); // on a phone every row fills the width
     if ((W - gaps) / sum > cap) div.style.maxWidth = `${Math.round(cap * sum + gaps)}px`; // too few works to fill it: hang centred
     return div;
   }));
@@ -231,6 +220,26 @@ function renderWeek(no) {
     </div>
   </a>`).join('');
   reveal($('[data-week]'));
+}
+
+// ── the links under the title, and Levin's texts ─────
+// Each appears only once there's something behind it.
+
+function renderHeroLinks() {
+  const links = [
+    ...spot.texts.map((t) => [`#/${t.slug}`, t.title]),
+    spot.weeks.length && ['#/artist-of-the-week', 'Artist of the Week'],
+  ].filter(Boolean);
+  $('[data-hero-links]').innerHTML = links.length
+    ? links.map(([href, label]) => `<a href="${href}">${esc(label)} <span class="arrow">→</span></a>`).join('')
+    : `<span data-updated>Updated ${esc(day(data.updated))}</span>`;
+}
+
+function renderText(t) {
+  PAGE_TITLES.text = t.title;
+  $('[data-text-title]').textContent = t.title;
+  $('[data-text-body]').innerHTML = t.blocks.map((b) => (b.h ? `<h2>${esc(b.h)}</h2>` : `<p>${esc(b.p)}</p>`)).join('');
+  document.title = `${data.profile.name} — ${t.title}`;
 }
 
 // ── posts from X ─────────────────────────────────────
@@ -467,6 +476,12 @@ function route() {
   closeSheet();
   if (h === '#/watchlist') { showPage('watchlist'); openWatchlist(); }
   else if (h === '#/further') showPage('further');
+  else if (spot.texts.some((t) => `#/${t.slug}` === h)) {
+    const was = state.page === 'text';
+    renderText(spot.texts.find((t) => `#/${t.slug}` === h));
+    showPage('text');
+    if (was) window.scrollTo({ top: 0 });
+  }
   else if (/^#\/artist-of-the-week(\/\d+)?$/.test(h)) {
     showPage('museum');
     renderWeek(Number(h.split('/')[2]) || null);
@@ -519,12 +534,13 @@ rest = works.filter((w) => !w.museum && !w.further); // newest first
 order = [...museum, ...rest];
 
 spot = await fetch('data/spotlight.json', { cache: 'no-cache' }).then((r) => r.json()).catch(() => null);
-spot = { weeks: spot?.weeks || [], posts: spot?.posts || [] };
+spot = { weeks: spot?.weeks || [], posts: spot?.posts || [], texts: spot?.texts || [] };
 
 renderAbout();
 renderPosts();
 renderMuseum();
 renderWeek(null);
+renderHeroLinks();
 reveal();
 route();
 

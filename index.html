@@ -38,10 +38,9 @@
     <!-- ── The Museum: the whole collection on one page ── -->
     <div data-page="museum">
       <section class="hero">
-        <div class="hero-specimen" aria-hidden="true"></div>
-        <h1 class="hero-title"><span class="ink">The Museum.</span></h1>
+        <h1 class="hero-title">The Museum.</h1>
         <div class="hero-foot">
-          <span data-updated></span>
+          <nav class="hero-links" data-hero-links aria-label="More"></nav>
           <a data-x href="#" target="_blank" rel="noopener">@ ↗</a>
         </div>
       </section>
@@ -64,6 +63,17 @@
           </div>
           <div class="grid" data-week-past></div>
         </div>
+      </section>
+    </div>
+
+    <!-- ── Levin's texts (collection philosophy, art philosophy), from Mother Flame ── -->
+    <div data-page="text" hidden>
+      <section class="page-head">
+        <h1 class="page-title" data-text-title></h1>
+        <p class="page-sub"><a class="quiet" href="#/">← The Museum</a></p>
+      </section>
+      <section class="block block-tight">
+        <article class="essay" data-text-body></article>
       </section>
     </div>
 
