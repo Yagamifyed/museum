@@ -77,12 +77,27 @@ function hangWall(el, list) {
       <span class="cap"><span class="cap-title">${esc(w.title)}</span><span class="cap-meta">${esc(by(w))}</span></span>
     </a>`;
   }).join('');
-  const wall = { el, items: [...holder.children], width: 0 };
+  let wall = walls.find((x) => x.el === el);
+  if (!wall) {
+    wall = { el };
+    walls.push(wall);
+    new ResizeObserver(() => requestAnimationFrame(() => layoutWall(wall))).observe(el);
+  }
+  wall.items = [...holder.children];
+  wall.width = 0;
   // set via the CSSOM: the Content-Security-Policy forbids inline style attributes
   wall.items.forEach((item) => item.style.setProperty('--ar', item.dataset.ar));
-  walls.push(wall);
   layoutWall(wall);
-  new ResizeObserver(() => requestAnimationFrame(() => layoutWall(wall))).observe(el);
+  reveal(el);
+}
+
+// edit mode (scripts/editor.mjs) calls this after moving or resizing works
+export function rehang(main, off) {
+  order = main;
+  further = off;
+  hangWall($('[data-wall]'), order);
+  hangWall($('[data-wall-further]'), further);
+  $('[data-further-link]').hidden = !further.length;
 }
 
 function renderMuseum() {
@@ -512,3 +527,10 @@ renderMuseum();
 renderWeek(null);
 reveal();
 route();
+
+export { works, order, further };
+
+// edit mode: only when the page is served by scripts/editor.mjs on this Mac
+if (new URLSearchParams(location.search).has('edit') && ['localhost', '127.0.0.1'].includes(location.hostname)) {
+  import('/editor/edit.js').catch(() => {});
+}
