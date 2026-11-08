@@ -59,12 +59,16 @@
       <section class="wall" data-wall aria-label="The collection"></section>
       <a class="further-link" href="#/further" data-further-link hidden>Further works <span class="arrow">→</span></a>
 
-      <!-- Artist of the Month: shown once there is a pick, or when its link is followed -->
-      <section class="block" id="week" data-week hidden>
-        <div class="block-head">
-          <h2>Artist of the Month</h2>
-          <span class="quiet" data-week-sub></span>
-        </div>
+    </div>
+
+    <!-- ── Philosophy, from Mother Flame ── -->
+    <!-- ── Artist of the Month: its own page, like Philosophy ── -->
+    <div data-page="month" hidden>
+      <section class="page-head">
+        <h1 class="page-title">Artist of the Month</h1>
+        <p class="page-sub"><span class="quiet" data-week-sub></span> · <a class="quiet" href="#/">← The Museum</a></p>
+      </section>
+      <section class="block block-tight">
         <article class="pick" data-pick></article>
         <div class="week-past" data-week-past-block>
           <div class="posts-head">
@@ -76,7 +80,6 @@
       </section>
     </div>
 
-    <!-- ── Philosophy, from Mother Flame ── -->
     <div data-page="text" hidden>
       <section class="page-head">
         <h1 class="page-title" data-text-title></h1>

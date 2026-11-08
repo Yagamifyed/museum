@@ -65,7 +65,7 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 }
 .bar nav { display: flex; gap: clamp(16px, 2vw, 32px); }
 .bar nav a { color: var(--mute); transition: color .2s; }
-.bar nav a:hover, .bar nav a[aria-current="page"] { color: var(--ink); }
+.bar nav a:hover, .bar nav a[aria-current] { color: var(--ink); }
 
 /* ── hero ────────────────────────────────────────── */
 /* short, so the wall starts on the first screen */
@@ -469,6 +469,7 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 
 /* ── artist of the month ─────────────────────────── */
 .pick { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(24px, 4vw, 72px); align-items: start; }
+.pick > .essay { grid-column: 1 / -1; }
 .pick-frame {
   display: block; position: relative;
   width: min(100%, calc(80svh * var(--ar, 1)));

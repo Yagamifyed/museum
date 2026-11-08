@@ -14,7 +14,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const plural = (n, one, many = one + 's') => `${n} ${n === 1 ? one : many}`;
 const decode = (s) => { try { return decodeURIComponent(s); } catch { return ''; } }; // a mangled link lands on the Museum
 
-const PAGE_TITLES = { museum: 'The Museum', further: 'Further works', text: '', watchlist: 'Watch List', artist: '' };
+const PAGE_TITLES = { museum: 'The Museum', further: 'Further works', text: '', month: 'Artist of the Month', watchlist: 'Watch List', artist: '' };
 const state = { page: null };
 let data, works, museum, arrivals, order, further, spot;
 
@@ -212,10 +212,9 @@ function pickImg(p, { sizes = '(max-width: 720px) 50vw, 25vw', eager = false } =
 
 function renderWeek(no) {
   const p = spot.weeks.find((x) => x.no === no) || spot.weeks[0];
-  $('[data-week]').hidden = !p; // without a pick it shows only when its link is followed
   $('[data-week-sub]').innerHTML = `Send me your work on X: <a class="quiet" href="https://x.com/${esc(data.profile.x)}" target="_blank" rel="noopener">@${esc(data.profile.x)} ↗</a>`;
   if (!p) {
-    $('[data-pick]').innerHTML = '<p class="quiet">The first pick is coming soon.</p>';
+    $('[data-pick]').innerHTML = '<div class="essay"><p class="quiet">Coming soon.</p></div>'; // as Philosophy does
     $('[data-week-past-block]').hidden = true;
     return;
   }
@@ -253,7 +252,7 @@ function renderWeek(no) {
       <div class="cap-meta">${esc(weekLine(x))}</div>
     </div>
   </a>`).join('');
-  reveal($('[data-week]'));
+  reveal($('[data-page="month"]'));
 }
 
 // ── the links under the title, and Levin's texts ─────
@@ -308,6 +307,7 @@ function showPage(page) {
   if (state.page === page) return;
   state.page = page;
   for (const el of $$('[data-page]')) el.hidden = el.dataset.page !== page;
+  $$('.bar nav a').forEach((a) => a.toggleAttribute('aria-current', page === 'month' && a.getAttribute('href') === '#/artist-of-the-month'));
   walls.forEach(layoutWall); // a wall on a page that was hidden has no width until now
   document.title = `${data.profile.name} — ${PAGE_TITLES[page]}`;
   window.scrollTo({ top: 0, behavior: 'instant' });
@@ -811,10 +811,10 @@ function route() {
     if (was) window.scrollTo({ top: 0, behavior: 'instant' });
   }
   else if (/^#\/artist-of-the-(month|week)(\/\d+)?$/.test(h)) {
-    showPage('museum');
+    const was = state.page === 'month';
     renderWeek(Number(h.split('/')[2]) || null);
-    $('[data-week]').hidden = false; // with no pick yet it says so
-    requestAnimationFrame(() => $('#week').scrollIntoView({ behavior: glide }));
+    showPage('month');
+    if (was) window.scrollTo({ top: 0, behavior: 'instant' }); // another pick: from its top
   }
   else if (h.startsWith('#/') || h === '' || h === '#') showPage('museum');
   else if (!state.page) showPage('museum'); // plain anchors like #about keep the current page
