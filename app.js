@@ -257,20 +257,22 @@ function renderWeek(no) {
 }
 
 // ── the links under the title, and Levin's texts ─────
-// Philosophy shows once its text is written (Mother Flame → Notes → Philosophy);
-// Artist of the Month is in the bar at the top, so only once on the screen.
+// Both are always linked; until there's something to show, each says it's
+// coming soon (Philosophy: Mother Flame → Notes → Philosophy).
 
-const philosophy = () => spot.texts.find((t) => t.slug === 'philosophy' && t.blocks?.length);
+const philosophy = () => spot.texts.find((t) => t.slug === 'philosophy') || { title: 'Philosophy', blocks: [] };
 
 function renderHeroLinks() {
-  $('[data-hero-links]').innerHTML = (philosophy() ? [['#/philosophy', 'Philosophy']] : [])
+  $('[data-hero-links]').innerHTML = [['#/philosophy', 'Philosophy'], ['#/artist-of-the-month', 'Artist of the Month']]
     .map(([href, label]) => `<a href="${href}">${label} <span class="arrow">→</span></a>`).join('');
 }
 
 function renderText(t) {
   PAGE_TITLES.text = t.title;
   $('[data-text-title]').textContent = t.title;
-  $('[data-text-body]').innerHTML = t.blocks.map((b) => (b.h ? `<h2>${esc(b.h)}</h2>` : `<p>${esc(b.p)}</p>`)).join('');
+  $('[data-text-body]').innerHTML = t.blocks?.length
+    ? t.blocks.map((b) => (b.h ? `<h2>${esc(b.h)}</h2>` : `<p>${esc(b.p)}</p>`)).join('')
+    : '<p class="quiet">Coming soon.</p>';
   document.title = `${data.profile.name} — ${t.title}`;
 }
 
@@ -802,7 +804,7 @@ function route() {
   }
   if (h === '#/watchlist') { showPage('watchlist'); openWatchlist(); }
   else if (h === '#/further') showPage('further');
-  else if (h === '#/philosophy' && philosophy()) {
+  else if (h === '#/philosophy') {
     const was = state.page === 'text';
     renderText(philosophy());
     showPage('text');

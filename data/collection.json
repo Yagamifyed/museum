@@ -12,8 +12,45 @@
     "solana": "8vGmofEerk69yLJeDn9n9ReDsimNXCagMErZCdzHKVpT",
     "bitcoin": null
   },
-  "updated": "2026-11-07",
+  "updated": "2026-11-08",
   "works": [
+    {
+      "status": "owned",
+      "id": "tezos:KT1PBXZiwbBK1UqJpbXHXs2W5nkBUfrbDCDj:0",
+      "chain": "tezos",
+      "contract": "KT1PBXZiwbBK1UqJpbXHXs2W5nkBUfrbDCDj",
+      "tokenId": "0",
+      "title": "No Words",
+      "collection": "Monologues On Loss",
+      "artist": "CSM ",
+      "description": "No words.  \n\nBuried deep, lost within crevices, words swirl; mumbling until they whine. An urge to holler. Yet, silence deafens. Words fail. Small bursts of comfort etch, slowly, intuitively. \n\nMomentary catharsis; sketching loss.\n\nHand-drawn, digital native. \n\n1080 x 1080 PNG",
+      "editions": 15,
+      "owned": 1,
+      "minted": "2026-03-03",
+      "acquired": "2026-11-07",
+      "interactive": null,
+      "links": [
+        [
+          "objkt",
+          "https://objkt.com/tokens/KT1PBXZiwbBK1UqJpbXHXs2W5nkBUfrbDCDj/0"
+        ],
+        [
+          "TzKT",
+          "https://tzkt.io/KT1PBXZiwbBK1UqJpbXHXs2W5nkBUfrbDCDj/tokens/0"
+        ]
+      ],
+      "media": {
+        "src": "media/6acf676d7f79.webp",
+        "w": 1080,
+        "h": 1080,
+        "thumb": "media/thumb/6acf676d7f79.webp",
+        "lqip": "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAABQBACdASoUABQAPuVepk2pJSOiN/VYASAciWkAACVakV0RF5FS+1lJPSMAAP42rco9lbfJwaTRL3YNrCM2JVlzqkL21MB3DO4uJpxwAAA="
+      },
+      "motion": null,
+      "original": "ipfs://bafybeiesqyijva5kfvofszzwsbzbj6ick6cumugff3hxuwm5w5linphljm",
+      "museum": null,
+      "arrival": true
+    },
     {
       "status": "owned",
       "id": "ethereum:0x5894b908017e922f0a3ab59dbbd345961cf198a1:2",
