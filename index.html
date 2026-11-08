@@ -55,7 +55,7 @@
         </div>
       </section>
 
-      <!-- every work, in the order of curation.json → museum, then newest first -->
+      <!-- the works placed in curation.json → museum, in that order (new arrivals wait for edit mode) -->
       <section class="wall" data-wall aria-label="The collection"></section>
       <a class="further-link" href="#/further" data-further-link hidden>Further works <span class="arrow">→</span></a>
 
@@ -122,7 +122,7 @@
           </label>
           <label class="lock-remember quiet"><input type="checkbox" data-lock-remember> Remember on this device</label>
           <button type="submit" class="lock-go">Open →</button>
-          <p class="lock-error" data-lock-error hidden>That isn't it.</p>
+          <p class="lock-error" data-lock-error role="alert" hidden>That isn't it.</p>
         </form>
         <div class="grid watch" data-watch-grid hidden></div>
         <p class="lock-foot quiet" data-watch-foot hidden></p>

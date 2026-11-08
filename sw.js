@@ -28,8 +28,8 @@ self.addEventListener('fetch', (e) => {
 async function fromCache(e, req) {
   const cache = await caches.open(VERSION);
   const hit = await cache.match(req);
-  const fresh = fetch(req).then((res) => {
-    if (res.ok) cache.put(req, res.clone());
+  const fresh = fetch(req).then(async (res) => {
+    if (res.ok) await cache.put(req, res.clone()); // inside waitUntil, so the refresh isn't cut off
     return res;
   });
   if (hit) {

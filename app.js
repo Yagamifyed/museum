@@ -12,6 +12,7 @@ const by = (w) => w.artist || w.collection || 'Unknown';
 const link = (w) => `#/work/${encodeURIComponent(w.id)}`;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const plural = (n, one, many = one + 's') => `${n} ${n === 1 ? one : many}`;
+const decode = (s) => { try { return decodeURIComponent(s); } catch { return ''; } }; // a mangled link lands on the Museum
 
 const PAGE_TITLES = { museum: 'The Museum', further: 'Further works', text: '', watchlist: 'Watch List', artist: '' };
 const state = { page: null };
@@ -35,6 +36,7 @@ function mediaEl(w, { eager = false, first = false, sizes = '(max-width: 720px) 
 // moving works play only while on screen, and not at all for people who have
 // asked their device for less motion (they see the still)
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const glide = reduceMotion ? 'auto' : 'smooth'; // for scrolls the visitor asked for
 const io = new IntersectionObserver((entries) => {
   for (const e of entries) {
     const v = e.target;
@@ -182,9 +184,10 @@ function layoutWall(wall) {
     const h = Object.assign(document.createElement('h2'), { className: 'room', textContent: room });
     return [h, div];
   }));
+  reveal(wall.el); // a wall first laid out when its page opens (Further works) shows its works now
 }
 
-// ── artist of the week ───────────────────────────────
+// ── artist of the month ──────────────────────────────
 // from Mother Flame's "Artist of the Month" list, newest first (data/spotlight.json)
 
 const weekLink = (p) => `#/artist-of-the-month/${p.no}`;
@@ -254,19 +257,20 @@ function renderWeek(no) {
 }
 
 // ── the links under the title, and Levin's texts ─────
+// Philosophy shows once its text is written (Mother Flame → Notes → Philosophy);
 // Artist of the Month is in the bar at the top, so only once on the screen.
 
+const philosophy = () => spot.texts.find((t) => t.slug === 'philosophy' && t.blocks?.length);
+
 function renderHeroLinks() {
-  $('[data-hero-links]').innerHTML = [['#/philosophy', 'Philosophy']]
+  $('[data-hero-links]').innerHTML = (philosophy() ? [['#/philosophy', 'Philosophy']] : [])
     .map(([href, label]) => `<a href="${href}">${label} <span class="arrow">→</span></a>`).join('');
 }
 
 function renderText(t) {
   PAGE_TITLES.text = t.title;
   $('[data-text-title]').textContent = t.title;
-  $('[data-text-body]').innerHTML = t.blocks.length
-    ? t.blocks.map((b) => (b.h ? `<h2>${esc(b.h)}</h2>` : `<p>${esc(b.p)}</p>`)).join('')
-    : '<p class="quiet">Coming soon.</p>';
+  $('[data-text-body]').innerHTML = t.blocks.map((b) => (b.h ? `<h2>${esc(b.h)}</h2>` : `<p>${esc(b.p)}</p>`)).join('');
   document.title = `${data.profile.name} — ${t.title}`;
 }
 
@@ -304,7 +308,7 @@ function showPage(page) {
   for (const el of $$('[data-page]')) el.hidden = el.dataset.page !== page;
   walls.forEach(layoutWall); // a wall on a page that was hidden has no width until now
   document.title = `${data.profile.name} — ${PAGE_TITLES[page]}`;
-  window.scrollTo({ top: 0 });
+  window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
 // ── the watch list (private) ─────────────────────────
@@ -472,7 +476,9 @@ function openZoom(w) {
   z.refit = () => { z.fit = fit(); z.max = Math.max(z.fit * 6, z.pixel ? 24 : 2); zoomTo(z.fit, innerWidth / 2, innerHeight / 2); };
   z.refit();
   history.pushState({ zoom: true }, ''); // the back button (or a swipe back) closes it
-  el.focus?.();
+  el.tabIndex = -1;
+  el.focus({ preventScroll: true });
+  if (reduceMotion) setTimeout(() => el.querySelector('.zoom-hint')?.remove(), 3200); // it fades by itself otherwise
 
   let tap = null, lastTap = 0, pinch = null, single = null;
   el.addEventListener('pointerdown', (e) => {
@@ -552,6 +558,7 @@ function closeZoom(fromHistory = false) {
   if (!zoom) return;
   zoom.el.remove();
   zoom = null;
+  if (!sheet.hidden) $('.sheet-art')?.focus({ preventScroll: true });
   if (!fromHistory && history.state?.zoom) history.back();
 }
 addEventListener('popstate', () => closeZoom(true));
@@ -564,6 +571,8 @@ const sheet = $('[data-sheet]');
 let current = null;
 let lastFocus = null;
 let opened = null; // the work the details were opened on
+let fromPage = false; // opened from a page of the site (not arriving on a work's link)
+let booted = false;
 
 // the works the arrows step through: the main wall, the Further works, or one artist's
 const sequence = () => (current?.further ? further : state.page === 'artist' ? artistWorks : order);
@@ -571,12 +580,13 @@ const sequence = () => (current?.further ? further : state.page === 'artist' ? a
 function openSheet(w) {
   flush();
   if (!sheet.hidden && current?.id === w.id) return;
-  if (sheet.hidden) { lastFocus = document.activeElement; opened = w; }
+  const opening = sheet.hidden;
+  if (opening) { lastFocus = document.activeElement; opened = w; }
   current = w;
   const seq = sequence();
   const pos = seq.indexOf(w);
-  $('[data-sheet-count]').textContent = `${pad(pos + 1, 2)} / ${pad(seq.length, 2)}`;
-  $('[data-prev]').hidden = $('[data-next]').hidden = $('[data-play]').hidden = seq.length < 2;
+  $('[data-sheet-count]').textContent = pos < 0 ? '' : `${pad(pos + 1, 2)} / ${pad(seq.length, 2)}`;
+  $('[data-prev]').hidden = $('[data-next]').hidden = $('[data-play]').hidden = pos < 0 || seq.length < 2;
 
   // on a phone the frame takes the work's own shape (see style.css)
   // The picture the wall already has shows at once, the full-size file is laid
@@ -587,7 +597,7 @@ function openSheet(w) {
   const stand = shown?.currentSrc || w.media.lqip;
   const media = $('[data-sheet-media]');
   media.style.setProperty('--ar', w.media.w && w.media.h ? (w.media.w / w.media.h).toFixed(4) : 1);
-  media.innerHTML = `<div class="sheet-art">${stand ? `<img class="stand${px}${shown ? '' : ' blur'}" src="${esc(stand)}" alt="" aria-hidden="true">` : ''}${w.motion?.src
+  media.innerHTML = `<div class="sheet-art" role="button" tabindex="0" aria-label="Close-up of ${esc(w.title)}">${stand ? `<img class="stand${px}${shown ? '' : ' blur'}" src="${esc(stand)}" alt="" aria-hidden="true">` : ''}${w.motion?.src
     ? `<video class="art${px}" src="${esc(w.motion.src)}" poster="${esc(w.media.src)}" muted loop playsinline${reduceMotion ? '' : ' autoplay'}></video>`
     : `<img class="art${px}" src="${esc(w.media.src)}" alt="${esc(w.title)}">`}</div>`;
   const art = media.querySelector('img.art');
@@ -631,7 +641,8 @@ function openSheet(w) {
   sheet.scrollTop = 0; // on a phone the details scroll: start each work at its top
   document.body.classList.add('locked');
   document.title = `${w.title} — ${data.profile.name}`;
-  $('[data-close]').focus({ preventScroll: true });
+  for (const el of $$('body > header, body > main, body > footer')) el.inert = true; // Tab stays in the details
+  if (opening) $('[data-close]').focus({ preventScroll: true });
 }
 
 // the work's own page (scripts/og.py), so a shared link shows that work's card
@@ -639,7 +650,7 @@ const shareLink = (w) => `https://museum.levinlevin.xyz/w/${w.media.src.split('/
 
 async function share(w) {
   const url = shareLink(w);
-  if (navigator.share && matchMedia('(pointer: coarse)').matches) { try { await navigator.share({ title: `${w.title} — ${by(w)}`, url }); return; } catch {} }
+  if (navigator.share && matchMedia('(pointer: coarse)').matches) { try { await navigator.share({ title: `${w.title} — ${by(w)}`, url }); return; } catch (e) { if (e.name === 'AbortError') return; } }
   navigator.clipboard?.writeText(url).then(() => toast('Link copied'), () => toast(url));
 }
 
@@ -654,6 +665,7 @@ function closeSheet({ morph = false } = {}) {
     endShow();
     sheet.hidden = true;
     sheet.classList.remove('still');
+    for (const el of $$('body > header, body > main, body > footer')) el.inert = false;
     $('[data-sheet-media]').innerHTML = '';
     document.body.classList.remove('locked');
     document.title = `${data.profile.name} — ${PAGE_TITLES[state.page]}`;
@@ -661,7 +673,7 @@ function closeSheet({ morph = false } = {}) {
     const t = onPage(w);
     if (!t) { lastFocus?.focus?.({ preventScroll: true }); return null; }
     const r = t.getBoundingClientRect();
-    if (r.bottom < 60 || r.top > innerHeight) t.scrollIntoView({ block: 'center' });
+    if (r.bottom < 60 || r.top > innerHeight) t.scrollIntoView({ block: 'center', behavior: 'instant' });
     t.focus({ preventScroll: true });
     if (w !== opened) { t.classList.remove('seen'); void t.offsetWidth; t.classList.add('seen'); setTimeout(() => t.classList.remove('seen'), 1700); }
     return t.querySelector(':scope > img:not(.lqip), :scope > video');
@@ -669,7 +681,10 @@ function closeSheet({ morph = false } = {}) {
   if (morph) transition($('.sheet-art'), close); else close();
 }
 
+// Close goes back to the page it was opened from (so Back doesn't reopen the
+// work); arriving on a work's own link, it goes on to the page it belongs to.
 function leaveSheet() {
+  if (fromPage) return history.back();
   history.pushState(null, '', current?.further ? '#/further' : state.page === 'artist' ? artistLink(artistName) : '#/');
   closeSheet({ morph: true });
 }
@@ -749,13 +764,14 @@ document.addEventListener('pointerover', (e) => {
   const a = e.target.closest?.('a[href^="#/work/"]');
   clearTimeout(hover);
   if (!a) return;
-  const id = decodeURIComponent(a.getAttribute('href').slice(7));
+  const id = decode(a.getAttribute('href').slice(7));
   hover = setTimeout(() => warm(works.find((w) => w.id === id)), 120);
 });
 
 function step(d) {
   flush();
   const seq = sequence();
+  if (seq.indexOf(current) < 0) return;
   const next = seq[(seq.indexOf(current) + d + seq.length) % seq.length];
   history.replaceState(null, '', link(next));
   openSheet(next);
@@ -767,35 +783,36 @@ function route() {
   const h = location.hash;
   const m = h.match(/^#\/work\/(.+)$/);
   if (m) {
-    const id = decodeURIComponent(m[1]);
-    const w = works.find((x) => x.id === id);
+    const id = decode(m[1]);
+    const w = works.find((x) => x.id === id && (!x.arrival || document.body.classList.contains('editing')));
     if (w) {
+      if (sheet.hidden) fromPage = booted;
       if (!(state.page === 'artist' && artistWorks.includes(w))) showPage(w.further ? 'further' : 'museum');
       return openFromWall(w);
     }
   }
   closeSheet({ morph: true });
   const a = h.match(/^#\/artist\/(.+)$/);
-  if (a && order.some((w) => sameName(by(w), decodeURIComponent(a[1])))) {
-    const name = by(order.find((w) => sameName(by(w), decodeURIComponent(a[1]))));
+  if (a && order.some((w) => sameName(by(w), decode(a[1])))) {
+    const name = by(order.find((w) => sameName(by(w), decode(a[1]))));
     if (state.page === 'artist' && artistName !== name) state.page = null; // a different artist: back to the top
-    renderArtist(name);
+    if (state.page !== 'artist') renderArtist(name);
     showPage('artist');
     return;
   }
   if (h === '#/watchlist') { showPage('watchlist'); openWatchlist(); }
   else if (h === '#/further') showPage('further');
-  else if (h === '#/philosophy') {
+  else if (h === '#/philosophy' && philosophy()) {
     const was = state.page === 'text';
-    renderText(spot.texts.find((t) => t.slug === 'philosophy') || { title: 'Philosophy', blocks: [] });
+    renderText(philosophy());
     showPage('text');
-    if (was) window.scrollTo({ top: 0 });
+    if (was) window.scrollTo({ top: 0, behavior: 'instant' });
   }
   else if (/^#\/artist-of-the-(month|week)(\/\d+)?$/.test(h)) {
     showPage('museum');
     renderWeek(Number(h.split('/')[2]) || null);
     $('[data-week]').hidden = false; // with no pick yet it says so
-    requestAnimationFrame(() => $('#week').scrollIntoView({ behavior: 'smooth' }));
+    requestAnimationFrame(() => $('#week').scrollIntoView({ behavior: glide }));
   }
   else if (h.startsWith('#/') || h === '' || h === '#') showPage('museum');
   else if (!state.page) showPage('museum'); // plain anchors like #about keep the current page
@@ -816,15 +833,21 @@ document.addEventListener('click', (e) => {
     e.preventDefault();
     navigator.clipboard?.writeText(t.dataset.copy).then(() => toast('Copied'), () => toast(t.dataset.copy));
   }
-  else if (t.hasAttribute('data-more')) { $('.sheet .desc.clamped')?.classList.remove('clamped'); t.remove(); }
+  else if (t.hasAttribute('data-more')) {
+    const d = $('.sheet .desc.clamped');
+    d?.classList.remove('clamped');
+    d?.setAttribute('tabindex', '-1');
+    d?.focus({ preventScroll: true });
+    t.remove();
+  }
   else if (t.hasAttribute('data-share') && current) share(current);
   else if (t.hasAttribute('data-close')) leaveSheet();
   else if (t.hasAttribute('data-prev')) step(-1);
   else if (t.hasAttribute('data-next')) step(1);
   else if (t.hasAttribute('data-play') && current) startShow();
   else if (t.hasAttribute('data-forget')) { forgetKey(); lockWatchlist(); toast('Locked'); }
-  else if (t.hasAttribute('data-top')) { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-  else if (t.hasAttribute('data-about-link')) { e.preventDefault(); $('#about').scrollIntoView({ behavior: 'smooth' }); }
+  else if (t.hasAttribute('data-top')) { e.preventDefault(); window.scrollTo({ top: 0, behavior: glide }); }
+  else if (t.hasAttribute('data-about-link')) { e.preventDefault(); $('#about').scrollIntoView({ behavior: glide }); }
 });
 
 $('[data-sheet-media]').addEventListener('click', (e) => { if (current && !swiped && e.target.closest('.sheet-art')) openZoom(current); });
@@ -915,6 +938,7 @@ function frame(d) {
     requestAnimationFrame(() => m.classList.add('on'));
     setTimeout(() => { for (const old of [...s.el.children]) if (old.compareDocumentPosition(m) & Node.DOCUMENT_POSITION_FOLLOWING) old.remove(); }, 1400);
     warm(s.seq[(s.i + 1) % s.seq.length]);
+    clearTimeout(s.timer);
     s.timer = setTimeout(() => frame(1), SHOW_EVERY);
   });
 }
@@ -936,7 +960,11 @@ function endShow() {
 function stopShow(fromHistory = false) {
   const w = endShow();
   if (!w) return;
-  const land = () => { if (w !== current && !sheet.hidden) { history.replaceState(null, '', link(w)); openSheet(w); } };
+  const land = () => {
+    if (sheet.hidden) return;
+    if (w !== current) { history.replaceState(null, '', link(w)); openSheet(w); }
+    $('[data-play]').focus({ preventScroll: true });
+  };
   if (!fromHistory && history.state?.show) { addEventListener('popstate', land, { once: true }); history.back(); }
   else land();
 }
@@ -962,8 +990,9 @@ document.addEventListener('keydown', (e) => {
     else if (e.key === '0') zoomTo(zoom.fit, innerWidth / 2, innerHeight / 2, true);
     return;
   }
-  if (sheet.hidden) return;
-  if (e.key === 'Escape') leaveSheet();
+  if (sheet.hidden || e.altKey || e.metaKey || e.ctrlKey) return;
+  if ((e.key === 'Enter' || e.key === ' ') && document.activeElement?.classList.contains('sheet-art')) { e.preventDefault(); openZoom(current); }
+  else if (e.key === 'Escape') leaveSheet();
   else if (e.key === 'ArrowLeft') step(-1);
   else if (e.key === 'ArrowRight') step(1);
 });
@@ -990,6 +1019,7 @@ renderWeek(null);
 renderHeroLinks();
 reveal();
 route();
+booted = true;
 
 export { works, order, further, arrivals };
 

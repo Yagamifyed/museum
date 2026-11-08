@@ -16,6 +16,9 @@
   --serif: 'Hedvig Letters Serif', ui-serif, Georgia, serif;
 
   --gutter: clamp(16px, 2.2vw, 32px);
+  /* fixed bars sit outside body's padding: keep them clear of a notch themselves */
+  --gutter-l: max(var(--gutter), env(safe-area-inset-left));
+  --gutter-r: max(var(--gutter), env(safe-area-inset-right));
   --gap: clamp(16px, 2vw, 28px);
   --t-body: clamp(16px, 1.25vw, 20px);
   --t-small: clamp(14px, 1.05vw, 17px);
@@ -55,7 +58,7 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 .bar {
   position: fixed; inset: 0 0 auto 0; z-index: 20;
   display: flex; justify-content: space-between; align-items: center;
-  padding: 18px var(--gutter);
+  padding: 18px var(--gutter-r) 18px var(--gutter-l);
   background: color-mix(in srgb, var(--bg) 82%, transparent);
   backdrop-filter: blur(14px) saturate(1.4);
   -webkit-backdrop-filter: blur(14px) saturate(1.4);
@@ -204,6 +207,7 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
   font-size: clamp(64px, 11vw, 200px);
   letter-spacing: -0.06em; line-height: .9;
   margin: 0 0 0 -0.04em;
+  overflow-wrap: anywhere; /* a long one-word artist name on a phone */
 }
 .page-sub { color: var(--mute); margin: 18px 0 0; max-width: 34em; }
 .block-tight { padding-top: clamp(48px, 8vh, 88px); }
@@ -220,8 +224,6 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 .lock-field input:focus { border-bottom-color: var(--ink); }
 .lock-remember { display: flex; align-items: center; gap: 8px; font-size: var(--t-small); cursor: pointer; }
 .lock-remember input { accent-color: var(--ink); margin: 0; }
-.lock-go { justify-self: start; color: var(--ink); }
-.lock-go:hover { text-decoration: underline; text-underline-offset: 4px; }
 .lock-error { margin: 0; color: var(--ink); font-size: var(--t-small); }
 .lock-foot { margin: clamp(40px, 6vw, 72px) 0 0; font-size: var(--t-small); }
 .cap-note { font-size: var(--t-small); margin-top: 6px; }
@@ -269,8 +271,7 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
   animation: sheet-in .45s var(--ease);
 }
 @keyframes sheet-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
-.sheet-bar { display: flex; justify-content: space-between; align-items: center; padding: 18px var(--gutter); }
-.sheet-nav { display: flex; gap: clamp(16px, 2vw, 32px); }
+.sheet-bar { display: flex; justify-content: space-between; align-items: center; padding: 18px var(--gutter-r) 18px var(--gutter-l); }
 .sheet-nav button { color: var(--mute); transition: color .2s; }
 .sheet-nav button:hover { color: var(--ink); }
 .sheet-play { padding: 8px 4px 9px; }
@@ -291,7 +292,7 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 30vw);
   gap: var(--gap);
   grid-template-rows: minmax(0, 1fr);
-  padding: 0 var(--gutter) var(--gutter);
+  padding: 0 var(--gutter-r) var(--gutter) var(--gutter-l);
   min-height: 0;
 }
 /* the work is laid over its frame rather than inside it, so a tall work can't
@@ -373,6 +374,7 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 .zoom.zoomed:active { cursor: grabbing; }
 @keyframes zoom-in { from { opacity: 0; } to { opacity: 1; } }
 .zoom img, .zoom video {
+  object-fit: contain;
   position: absolute; left: 0; top: 0; max-width: none;
   transform-origin: 0 0; will-change: transform;
   user-select: none; -webkit-user-select: none; -webkit-user-drag: none;
@@ -401,13 +403,15 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
   .sheet-body { grid-template-columns: 1fr; padding-bottom: max(var(--gutter), env(safe-area-inset-bottom)); }
   /* the frame takes the work's own shape, up to two thirds of the screen's
      height; a tall work then sits centred on the plate */
-  .sheet-media { aspect-ratio: var(--ar, 1); max-height: 68vh; max-height: 68svh; }
+  /* full width even when the height cap kicks in (a tall work on a tablet), so
+     the work sits centred on its plate rather than against the left edge */
+  .sheet-media { width: 100%; aspect-ratio: var(--ar, 1); max-height: 68vh; max-height: 68svh; }
   .sheet-media { --mat: 0px; }
 }
 
 /* ── toast ───────────────────────────────────────── */
 .toast {
-  position: fixed; left: 50%; bottom: 24px; z-index: 50;
+  position: fixed; left: 50%; bottom: max(24px, env(safe-area-inset-bottom)); z-index: 50;
   transform: translateX(-50%);
   background: var(--ink); color: var(--bg);
   padding: 8px 14px 9px; font-size: 14px; letter-spacing: -0.01em;
@@ -456,14 +460,14 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
 .seg sup { font-size: .72em; margin-left: 4px; vertical-align: .45em; opacity: .7; letter-spacing: 0; }
 
-.sheet-nav { align-items: center; gap: 10px; }
+.sheet-nav { display: flex; align-items: center; gap: 10px; }
 .sheet-nav .seg button { padding: 8px 16px 9px; }
 .wallets dd button { border: 1px solid var(--rule); border-radius: 999px; padding: 4px 10px 5px; font-size: 13px; }
 .wallets dd button:hover { border-color: var(--faint); }
-.lock-go { border: 1px solid var(--ink); border-radius: 999px; padding: 9px 18px 10px; background: var(--ink); color: var(--bg); }
+.lock-go { justify-self: start; border: 1px solid var(--ink); border-radius: 999px; padding: 9px 18px 10px; background: var(--ink); color: var(--bg); }
 .lock-go:hover { text-decoration: none; background: var(--bg); color: var(--ink); }
 
-/* ── artist of the week ──────────────────────────── */
+/* ── artist of the month ─────────────────────────── */
 .pick { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(24px, 4vw, 72px); align-items: start; }
 .pick-frame {
   display: block; position: relative;
