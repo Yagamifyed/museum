@@ -174,7 +174,7 @@
       },
       "original": "ipfs://QmUYDK8VW4NDapVqbwsmCAs1Gv3JESqzEbuaW2gcEyhpKe",
       "museum": {
-        "rank": 14,
+        "rank": 13,
         "size": "large",
         "note": "",
         "newRow": false,
@@ -346,10 +346,10 @@
       "motion": null,
       "original": "ipfs://bafybeihvxy45wcfixoirdxs6k4bijfbe6dsuvamgkqsndill72emqpctj4/media",
       "museum": {
-        "rank": 12,
+        "rank": 14,
         "size": "large",
         "note": "",
-        "newRow": true,
+        "newRow": false,
         "room": ""
       }
     },
@@ -2220,7 +2220,7 @@
       "motion": null,
       "original": "https://arweave.net/lqKkVY1eR5ptM7ASN9PhwiuC7XuBneEnVtvxoow2Ybo",
       "museum": {
-        "rank": 13,
+        "rank": 12,
         "size": "large",
         "note": "",
         "newRow": false,
