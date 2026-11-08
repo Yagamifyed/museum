@@ -65,7 +65,7 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 }
 .bar nav { display: flex; gap: clamp(16px, 2vw, 32px); }
 .bar nav a { color: var(--mute); transition: color .2s; }
-.bar nav a:hover, .bar nav a[aria-current] { color: var(--ink); }
+.bar nav a:hover { color: var(--ink); }
 
 /* ── hero ────────────────────────────────────────── */
 /* short, so the wall starts on the first screen */

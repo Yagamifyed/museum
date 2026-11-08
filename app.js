@@ -307,7 +307,6 @@ function showPage(page) {
   if (state.page === page) return;
   state.page = page;
   for (const el of $$('[data-page]')) el.hidden = el.dataset.page !== page;
-  $$('.bar nav a').forEach((a) => a.toggleAttribute('aria-current', page === 'month' && a.getAttribute('href') === '#/artist-of-the-month'));
   walls.forEach(layoutWall); // a wall on a page that was hidden has no width until now
   document.title = `${data.profile.name} — ${PAGE_TITLES[page]}`;
   window.scrollTo({ top: 0, behavior: 'instant' });
