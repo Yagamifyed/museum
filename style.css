@@ -210,6 +210,9 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
   overflow-wrap: anywhere; /* a long one-word artist name on a phone */
 }
 .page-sub { color: var(--mute); margin: 18px 0 0; max-width: 34em; }
+/* ← The Museum always on the left; anything else on the same line sits right (and stays right if it wraps) */
+.page-sub.split { display: flex; flex-wrap: wrap; gap: 6px 24px; max-width: none; }
+.page-sub.split > :last-child { margin-left: auto; }
 .block-tight { padding-top: clamp(48px, 8vh, 88px); }
 
 /* ── watch list lock ─────────────────────────────── */
