@@ -321,7 +321,7 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 .sheet-art > .stand.blur { filter: blur(14px) saturate(1.1); }
 
 /* opening and closing a work (a view transition): the work moves, the rest fades */
-.vt .sheet { animation: none; }
+.sheet.still { animation: none; }
 ::view-transition-group(work) { animation-duration: .5s; animation-timing-function: var(--ease); }
 ::view-transition-old(work), ::view-transition-new(work) { height: 100%; object-fit: contain; }
 ::view-transition-old(root), ::view-transition-new(root) { animation-duration: .35s; }

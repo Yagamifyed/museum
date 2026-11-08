@@ -591,7 +591,8 @@ function openSheet(w) {
     ? `<video class="art${px}" src="${esc(w.motion.src)}" poster="${esc(w.media.src)}" muted loop playsinline${reduceMotion ? '' : ' autoplay'}></video>`
     : `<img class="art${px}" src="${esc(w.media.src)}" alt="${esc(w.title)}">`}</div>`;
   const art = media.querySelector('img.art');
-  if (art) { const drop = () => art.previousElementSibling?.remove(); art.complete ? drop() : (art.onload = drop); }
+  // (only once it's decoded: dropping it on load alone could show a blank frame)
+  if (art) art.decode().catch(() => {}).then(() => art.isConnected && art.previousElementSibling?.remove());
   // the works either side load in the background, so the arrows are instant
   warm(seq[(pos + 1) % seq.length]);
   warm(seq[(pos - 1 + seq.length) % seq.length]);
@@ -652,6 +653,7 @@ function closeSheet({ morph = false } = {}) {
     closeZoom(true);
     endShow();
     sheet.hidden = true;
+    sheet.classList.remove('still');
     $('[data-sheet-media]').innerHTML = '';
     document.body.classList.remove('locked');
     document.title = `${data.profile.name} — ${PAGE_TITLES[state.page]}`;
@@ -683,7 +685,7 @@ function onPage(w) {
 // back into it on closing (a view transition, where the browser has them; not
 // for anyone who has asked their device to reduce motion).
 const canMorph = !!document.startViewTransition && !reduceMotion;
-let pending = null, morphing = 0;
+let pending = null;
 
 // The browser makes the change a frame later; anything else that opens, closes
 // or steps first makes it straight away (flush), so a quick second click can
@@ -698,18 +700,22 @@ function transition(from, change) {
   if (!canMorph) return change();
   flush();
   if (from) from.style.viewTransitionName = 'work';
-  document.documentElement.classList.add('vt');
-  morphing++;
   let to = null;
   pending = () => {
     if (from) from.style.viewTransitionName = '';
     to = change();
     if (to && from) to.style.viewTransitionName = 'work';
   };
-  document.startViewTransition(flush).finished.finally(() => {
-    if (to) to.style.viewTransitionName = '';
-    if (!--morphing) document.documentElement.classList.remove('vt');
-  });
+  // the browser pictures the new state once its images are decoded (a quarter
+  // of a second at most), so the work never morphs into an empty frame
+  const t = document.startViewTransition(() => { flush(); return decoded(to); });
+  t.ready.catch(() => {}); // skipped by a quicker click: the change is made all the same
+  t.finished.finally(() => { if (to) to.style.viewTransitionName = ''; });
+}
+
+function decoded(el) {
+  const ims = el ? (el.tagName === 'IMG' ? [el] : [...el.querySelectorAll('img')]) : [];
+  return Promise.race([Promise.all(ims.map((im) => im.decode().catch(() => {}))), sleep(250)]);
 }
 
 // open from the wall: grow out of the tile when it's on screen
@@ -718,7 +724,11 @@ function openFromWall(w) {
   const m = t?.querySelector(':scope > img:not(.lqip), :scope > video');
   const r = t?.getBoundingClientRect();
   if (!m || r.bottom < 0 || r.top > innerHeight) return openSheet(w);
-  transition(m, () => { openSheet(w); return $('.sheet-art'); });
+  transition(m, () => {
+    sheet.classList.add('still'); // the work's growth is the opening: no fade-in on top
+    openSheet(w);
+    return $('.sheet-art');
+  });
 }
 
 // load a work's full-size picture ahead of time (the browser keeps it)
