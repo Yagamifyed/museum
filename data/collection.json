@@ -12,7 +12,7 @@
     "solana": "8vGmofEerk69yLJeDn9n9ReDsimNXCagMErZCdzHKVpT",
     "bitcoin": null
   },
-  "updated": "2026-11-08",
+  "updated": "2026-11-09",
   "works": [
     {
       "status": "owned",
@@ -2522,6 +2522,43 @@
       },
       "motion": null,
       "original": "https://arweave.net/QajJoROlBtLodxgLm-quAWNPTPv9pMNyI_ZCAtSDc3Q",
+      "museum": null,
+      "further": true
+    },
+    {
+      "status": "owned",
+      "id": "base:0xa083d9a4188ad6e78b8bf06062a6c67a3b2be0ba:0",
+      "chain": "base",
+      "contract": "0xa083d9a4188ad6e78b8bf06062a6c67a3b2be0ba",
+      "tokenId": "0",
+      "title": "Eight",
+      "collection": null,
+      "artist": "Keyrun",
+      "description": "A token of gratitude, celebrating 5 years of art & my birthday on 8 November .. an endless dive through nested eight-petal mandalas. An 8 second loop, fully on-chain. Thank you for being part of my art journey.",
+      "editions": 70,
+      "owned": 1,
+      "minted": null,
+      "acquired": null,
+      "interactive": null,
+      "links": [
+        [
+          "OpenSea",
+          "https://opensea.io/item/base/0xa083d9a4188ad6e78b8bf06062a6c67a3b2be0ba/0"
+        ],
+        [
+          "Basescan",
+          "https://basescan.org/nft/0xa083d9a4188ad6e78b8bf06062a6c67a3b2be0ba/0"
+        ]
+      ],
+      "media": {
+        "src": "media/82a7184ccbc4.webp",
+        "w": 1000,
+        "h": 1000,
+        "thumb": "media/thumb/82a7184ccbc4.webp",
+        "lqip": "data:image/webp;base64,UklGRpoAAABXRUJQVlA4II4AAACQBACdASoUABQAPu1urlIppiQiqAgBMB2JaQAALH/qCO1RbwjrLNAJJJ/2rYAA/u6hjy3Pw4A2uNIaX0HrS6iDEni/Mt/f0tWOYh4WcdFzLKw7jJjC29xS5LKiOxsox6lde83nl16WTPmxgrC3jKzA04w/bxILvzAWbCuoTyiPQKGNGr1OWc2OL+4m8AAA"
+      },
+      "motion": null,
+      "original": "https://resolver.abx.io/t/8453/0xa083d9a4188ad6e78b8bf06062a6c67a3b2be0ba/0/image",
       "museum": null,
       "further": true
     }

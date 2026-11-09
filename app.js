@@ -1,4 +1,4 @@
-const CHAINS = { tezos: 'Tezos', ethereum: 'Ethereum', solana: 'Solana', bitcoin: 'Bitcoin', physical: 'Physical work' };
+const CHAINS = { tezos: 'Tezos', ethereum: 'Ethereum', solana: 'Solana', bitcoin: 'Bitcoin', base: 'Base', physical: 'Physical work' };
 const CHAIN_ORDER = ['tezos', 'ethereum', 'solana', 'bitcoin'];
 
 const $ = (s, r = document) => r.querySelector(s);
