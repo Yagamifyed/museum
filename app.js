@@ -190,10 +190,10 @@ function layoutWall(wall) {
 // ── artist of the month ──────────────────────────────
 // from Mother Flame's "Artist of the Month" list, newest first (data/spotlight.json)
 
-const weekLink = (p) => `#/artist-of-the-month/${p.no}`;
+const monthLink = (p) => `#/artist-of-the-month/${p.no}`;
 const sameName = (a, b) => a && b && a.toLowerCase() === b.toLowerCase();
 const collected = (p) => works.filter((w) => sameName(by(w), p.name) || sameName(by(w), p.handle));
-const weekLine = (p) => [`No. ${pad(p.no)}`, p.date && day(p.date)].filter(Boolean).join(' · ');
+const monthLine = (p) => [`No. ${pad(p.no)}`, p.date && day(p.date)].filter(Boolean).join(' · ');
 
 // the pick's own image, or else a work of theirs from the collection
 function pickImage(p) {
@@ -210,12 +210,12 @@ function pickImg(p, { sizes = '(max-width: 720px) 50vw, 25vw', eager = false } =
   return `<img${im.pixelated ? ' class="pixelated"' : ''} src="${esc(im.src)}"${srcset} alt="Work by ${esc(p.name)}"${size} loading="${eager ? 'eager' : 'lazy'}" decoding="async">`;
 }
 
-function renderWeek(no) {
-  const p = spot.weeks.find((x) => x.no === no) || spot.weeks[0];
-  $('[data-week-sub]').innerHTML = `Send me your work on X: <a class="quiet" href="https://x.com/${esc(data.profile.x)}" target="_blank" rel="noopener">@${esc(data.profile.x)} ↗</a>`;
+function renderMonth(no) {
+  const p = spot.months.find((x) => x.no === no) || spot.months[0];
+  $('[data-month-sub]').innerHTML = `Send me your work on X: <a class="quiet" href="https://x.com/${esc(data.profile.x)}" target="_blank" rel="noopener">@${esc(data.profile.x)} ↗</a>`;
   if (!p) {
     $('[data-pick]').innerHTML = '<div class="essay"><p class="quiet">Coming soon.</p></div>'; // as Philosophy does
-    $('[data-week-past-block]').hidden = true;
+    $('[data-month-past-block]').hidden = true;
     return;
   }
   const mine = collected(p);
@@ -228,9 +228,9 @@ function renderWeek(no) {
     p.date && ['Picked', day(p.date)],
   ].filter(Boolean);
   $('[data-pick]').innerHTML = `
-    ${im ? `<a class="frame pick-frame" ${open || `href="${weekLink(p)}"`} data-ar="${ar}">${pickImg(p, { sizes: '(max-width: 860px) 100vw, 55vw' })}</a>` : '<div></div>'}
+    ${im ? `<a class="frame pick-frame" ${open || `href="${monthLink(p)}"`} data-ar="${ar}">${pickImg(p, { sizes: '(max-width: 860px) 100vw, 55vw' })}</a>` : '<div></div>'}
     <div class="pick-info">
-      <span class="sheet-chain">${esc(weekLine(p))}</span>
+      <span class="sheet-chain">${esc(monthLine(p))}</span>
       <h3 class="pick-name">${esc(p.name)}</h3>
       ${p.tagline ? `<p class="pick-tag">${esc(p.tagline)}</p>` : ''}
       ${p.note ? `<p class="pick-note">${esc(p.note)}</p>` : ''}
@@ -241,15 +241,15 @@ function renderWeek(no) {
     </div>`;
   $$('[data-ar]', $('[data-pick]')).forEach((el) => el.style.setProperty('--ar', el.dataset.ar));
 
-  const past = spot.weeks.filter((x) => x !== p);
-  $('[data-week-past-block]').hidden = !past.length;
-  $('[data-week-past-title]').textContent = p === spot.weeks[0] ? 'Earlier picks' : 'Other picks';
-  $('[data-week-count]').textContent = spot.weeks.length;
-  $('[data-week-past]').innerHTML = past.map((x) => `<a class="card" href="${weekLink(x)}">
+  const past = spot.months.filter((x) => x !== p);
+  $('[data-month-past-block]').hidden = !past.length;
+  $('[data-month-past-title]').textContent = p === spot.months[0] ? 'Earlier picks' : 'Other picks';
+  $('[data-month-count]').textContent = spot.months.length;
+  $('[data-month-past]').innerHTML = past.map((x) => `<a class="card" href="${monthLink(x)}">
     <div class="plate">${pickImg(x)}</div>
     <div class="cap">
       <div class="cap-title">${esc(x.name)}</div>
-      <div class="cap-meta">${esc(weekLine(x))}</div>
+      <div class="cap-meta">${esc(monthLine(x))}</div>
     </div>
   </a>`).join('');
   reveal($('[data-page="month"]'));
@@ -287,7 +287,6 @@ function renderPosts() {
     <blockquote class="post-text">${text(p)}</blockquote>
     <figcaption class="post-meta"><a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">${sameName(p.handle, data.profile.x) ? '' : `@${esc(p.handle)} · `}${esc(day(p.date))} ↗</a></figcaption>
   </figure>`).join('');
-  $('[data-posts-list]').classList.toggle('single', posts.length === 1);
 }
 
 // ── shared ───────────────────────────────────────────
@@ -811,7 +810,7 @@ function route() {
   }
   else if (/^#\/artist-of-the-(month|week)(\/\d+)?$/.test(h)) {
     const was = state.page === 'month';
-    renderWeek(Number(h.split('/')[2]) || null);
+    renderMonth(Number(h.split('/')[2]) || null);
     showPage('month');
     if (was) window.scrollTo({ top: 0, behavior: 'instant' }); // another pick: from its top
   }
@@ -1011,12 +1010,12 @@ arrivals = works.filter((w) => !w.museum && !w.further);
 order = museum;
 
 spot = await fetch('data/spotlight.json', { cache: 'no-cache' }).then((r) => r.json()).catch(() => null);
-spot = { weeks: spot?.weeks || [], posts: spot?.posts || [], texts: spot?.texts || [] };
+spot = { months: spot?.months || spot?.weeks || [], posts: spot?.posts || [], texts: spot?.texts || [] }; // 'weeks' until the next sync
 
 renderAbout();
 renderPosts();
 renderMuseum();
-renderWeek(null);
+renderMonth(null);
 renderHeroLinks();
 reveal();
 route();
