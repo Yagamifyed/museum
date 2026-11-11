@@ -12,7 +12,7 @@
     "solana": "8vGmofEerk69yLJeDn9n9ReDsimNXCagMErZCdzHKVpT",
     "bitcoin": null
   },
-  "updated": "2026-11-10",
+  "updated": "2026-11-11",
   "works": [
     {
       "status": "owned",
@@ -150,7 +150,7 @@
       "collection": null,
       "artist": "PAMILO CEIRONE®",
       "description": "Hello to the whole Tezos community. This is my 1,000th NFT and I wanted to personally thank every single person sitting at a computer, wherever they may be in the world, for ever having collected one of my drawings or animations. Perhaps you don’t realise what that means to an artist whose only wish is to keep drawing.\nWith lots of love, this is PAMILO CEIRONE, sending my regards from Argentina.\n-\n6 Frames \nGIF Animation\nPAM! PAM!\nNovember, 2026.",
-      "editions": 17,
+      "editions": 18,
       "owned": 1,
       "minted": "2026-11-04",
       "acquired": "2026-11-05",
@@ -454,7 +454,7 @@
       "collection": null,
       "artist": "PAMILO CEIRONE®",
       "description": "This is my 999th piece, and there’s nothing better than something experimental – just like all my art. Thank you for always being there.\nPAMILO CEIRONE :)",
-      "editions": 5,
+      "editions": 6,
       "owned": 1,
       "minted": "2026-10-30",
       "acquired": "2026-10-31",
