@@ -12,8 +12,45 @@
     "solana": "8vGmofEerk69yLJeDn9n9ReDsimNXCagMErZCdzHKVpT",
     "bitcoin": null
   },
-  "updated": "2026-11-11",
+  "updated": "2026-11-12",
   "works": [
+    {
+      "status": "owned",
+      "id": "tezos:KT1JGik2bL43HNCxy5SwMib7c68rZdcYKNzj:15",
+      "chain": "tezos",
+      "contract": "KT1JGik2bL43HNCxy5SwMib7c68rZdcYKNzj",
+      "tokenId": "15",
+      "title": "Drifting Into Oblivion",
+      "collection": "Rebirth",
+      "artist": "AnjolaDave ✦",
+      "description": "Now I must drift into oblivion to find myself reborn.",
+      "editions": 10,
+      "owned": 1,
+      "minted": "2025-06-03",
+      "acquired": "2026-11-12",
+      "interactive": null,
+      "links": [
+        [
+          "objkt",
+          "https://objkt.com/tokens/KT1JGik2bL43HNCxy5SwMib7c68rZdcYKNzj/15"
+        ],
+        [
+          "TzKT",
+          "https://tzkt.io/KT1JGik2bL43HNCxy5SwMib7c68rZdcYKNzj/tokens/15"
+        ]
+      ],
+      "media": {
+        "src": "media/9496655f5181.webp",
+        "w": 1280,
+        "h": 1600,
+        "thumb": "media/thumb/9496655f5181.webp",
+        "lqip": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADQAwCdASoQABQAPu1iqU2ppaOiMAgBMB2JZwDKACHgVpf84v/mKAAA/uvb8F5Aqz8ns8I9dF+a7lAuoyaqy/BknZR4cxQQTDxLtOJVrq7sAVuAgZtmV7dAyhKVlEnP5Y0wAA=="
+      },
+      "motion": null,
+      "original": "ipfs://bafybeibvffl23fqmv3l2pxkvuenwvadquz3bgczauywsb3434dmvmnxojq",
+      "museum": null,
+      "arrival": true
+    },
     {
       "status": "owned",
       "id": "tezos:KT1PBXZiwbBK1UqJpbXHXs2W5nkBUfrbDCDj:0",
