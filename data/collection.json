@@ -219,7 +219,7 @@
       },
       "original": "ipfs://bafybeidjcluy272eustbfqyig5qbbxrbnhxoigozdv65y5bms535um3jey",
       "museum": {
-        "rank": 52,
+        "rank": 51,
         "size": "medium",
         "note": "",
         "newRow": false,
@@ -521,7 +521,7 @@
       "motion": null,
       "original": "ipfs://bafybeifmygmlyw2hi577kfqumxb6cgqopbszj6un55zpb2ka2zoxipcrhq",
       "museum": {
-        "rank": 53,
+        "rank": 52,
         "size": "medium",
         "note": "",
         "newRow": false,
@@ -648,10 +648,10 @@
       },
       "original": "ipfs://bafybeid2nm34lfbk53cfx3tnnkdovugbgrycbyhctiisf5fdh4asmhtbza",
       "museum": {
-        "rank": 51,
-        "size": "medium",
+        "rank": 4,
+        "size": "small",
         "note": "",
-        "newRow": false,
+        "newRow": true,
         "room": ""
       }
     },
@@ -692,10 +692,10 @@
       },
       "original": "ipfs://bafybeiao5tqfmeulzg36ev72tltgm42c63xzgmyuksyordnqglbtnww4jm",
       "museum": {
-        "rank": 4,
+        "rank": 6,
         "size": "small",
         "note": "",
-        "newRow": true,
+        "newRow": false,
         "room": ""
       }
     },
@@ -818,8 +818,8 @@
       "motion": null,
       "original": "ipfs://QmZA8A2LVM2nCvcYMTC9mdxju625kDph4yx8vwoxoiP5FM",
       "museum": {
-        "rank": 6,
-        "size": "small",
+        "rank": 53,
+        "size": "medium",
         "note": "",
         "newRow": false,
         "room": ""
