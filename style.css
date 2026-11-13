@@ -499,9 +499,22 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 .to-watch li::before { content: counter(watch, decimal-leading-zero); color: var(--mute); letter-spacing: 0; }
 .to-watch a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .pick .links { margin-top: 0; }
+/* a pick with several featured works: the artist first, then each work with Levin's notes */
+.pick.pick-solo { grid-template-columns: minmax(0, 1fr); }
+.pick-solo > .pick-info { max-width: 44em; }
+.pick-solo > .pick-info .pick-note { max-width: 28em; }
+.pick-works { display: flex; flex-direction: column; gap: clamp(56px, 8vw, 112px); margin-top: clamp(24px, 4vw, 56px); }
+.pick-work { margin: 0; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(24px, 4vw, 72px); align-items: start; }
+.pick-work-title {
+  font-family: var(--serif); font-weight: 400;
+  font-size: clamp(26px, 2.4vw, 38px); line-height: 1.05; letter-spacing: -0.04em;
+  margin: 0 0 18px;
+}
+.pick-work .pick-note { font-size: clamp(18px, 1.35vw, 21px); line-height: 1.35; letter-spacing: -0.015em; margin: 0 0 14px; }
+.pick-work .links { margin-top: 14px; }
 .month-past { margin-top: clamp(64px, 9vw, 120px); }
 .month-past .posts-head span:last-child { color: var(--mute); }
-@media (max-width: 860px) { .pick { grid-template-columns: 1fr; } .pick-frame { width: 100%; } }
+@media (max-width: 860px) { .pick, .pick-work { grid-template-columns: 1fr; } .pick-frame { width: 100%; } }
 
 /* ── posts from X (under About) ──────────────────── */
 .posts { margin-top: clamp(64px, 9vw, 120px); }

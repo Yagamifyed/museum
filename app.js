@@ -210,16 +210,35 @@ function pickImg(p, { sizes = '(max-width: 720px) 50vw, 25vw', eager = false } =
   return `<img${im.pixelated ? ' class="pixelated"' : ''} src="${esc(im.src)}"${srcset} alt="Work by ${esc(p.name)}"${size} loading="${eager ? 'eager' : 'lazy'}" decoding="async">`;
 }
 
+// one featured work of the pick: its picture, and Levin's notes beside it
+function featuredWork(p, w) {
+  const im = w.image;
+  const ar = im?.w && im?.h ? (im.w / im.h).toFixed(4) : 1;
+  const open = w.workId ? `href="${link({ id: w.workId })}"` : w.url ? `href="${esc(w.url)}" target="_blank" rel="noopener noreferrer"` : '';
+  const size = im?.w && im?.h ? ` width="${im.w}" height="${im.h}"` : '';
+  const srcset = im?.thumb ? ` srcset="${esc(im.thumb)} 720w, ${esc(im.src)} ${im.w || 1600}w" sizes="(max-width: 860px) 100vw, 55vw"` : '';
+  const img = im ? `<img${im.pixelated ? ' class="pixelated"' : ''} src="${esc(im.src)}"${srcset} alt="${esc(w.title)} by ${esc(p.name)}"${size} loading="lazy" decoding="async">` : '';
+  return `<figure class="pick-work">
+    ${img ? `<a class="frame pick-frame" ${open} data-ar="${ar}">${img}</a>` : '<div></div>'}
+    <figcaption class="pick-info">
+      <h4 class="pick-work-title">${esc(w.title)}</h4>
+      ${(w.notes || []).map((n) => `<p class="pick-note">${esc(n)}</p>`).join('')}
+      ${w.url ? `<div class="links"><a href="${esc(w.url)}" target="_blank" rel="noopener noreferrer">The work on ${esc(w.venue || 'the web')} ↗</a></div>` : ''}
+    </figcaption>
+  </figure>`;
+}
+
 function renderMonth(no) {
   const p = spot.months.find((x) => x.no === no) || spot.months[0];
-  $('[data-month-sub]').innerHTML = `Send me your work on X: <a class="quiet" href="https://x.com/${esc(data.profile.x)}" target="_blank" rel="noopener">@${esc(data.profile.x)} ↗</a>`;
+  $('[data-month-sub]').innerHTML = `I’m very open to self-nominations and to nominations of others. Send them on X: <a class="quiet" href="https://x.com/${esc(data.profile.x)}" target="_blank" rel="noopener">@${esc(data.profile.x)} ↗</a>`;
   if (!p) {
     $('[data-pick]').innerHTML = '<div class="essay"><p class="quiet">Coming soon.</p></div>'; // as Philosophy does
     $('[data-month-past-block]').hidden = true;
     return;
   }
   const mine = collected(p);
-  const im = pickImage(p);
+  const featured = (p.works || []).filter((w) => w.image || w.notes?.length);
+  const im = featured.length ? null : pickImage(p); // with featured works, each shows its own picture below
   const ar = im?.w && im?.h ? (im.w / im.h).toFixed(4) : 1;
   const open = p.workId ? `href="${link({ id: p.workId })}"` : p.work ? `href="${esc(p.work)}" target="_blank" rel="noopener noreferrer"` : '';
   const facts = [
@@ -227,8 +246,9 @@ function renderMonth(no) {
     ['I own', mine.length && order.includes(mine[0]) ? `<a href="${artistLink(by(mine[0]))}">${plural(mine.length, 'work')}</a>` : mine.length ? plural(mine.length, 'work') : 'Nothing yet'],
     p.date && ['Picked', day(p.date)],
   ].filter(Boolean);
+  $('[data-pick]').classList.toggle('pick-solo', !!featured.length);
   $('[data-pick]').innerHTML = `
-    ${im ? `<a class="frame pick-frame" ${open || `href="${monthLink(p)}"`} data-ar="${ar}">${pickImg(p, { sizes: '(max-width: 860px) 100vw, 55vw' })}</a>` : '<div></div>'}
+    ${im ? `<a class="frame pick-frame" ${open || `href="${monthLink(p)}"`} data-ar="${ar}">${pickImg(p, { sizes: '(max-width: 860px) 100vw, 55vw' })}</a>` : featured.length ? '' : '<div></div>'}
     <div class="pick-info">
       <span class="sheet-chain">${esc(monthLine(p))}</span>
       <h3 class="pick-name">${esc(p.name)}</h3>
@@ -238,7 +258,8 @@ function renderMonth(no) {
       ${p.watch?.length ? `<div class="to-watch"><span class="quiet">Also worth a look</span><ol>${p.watch.map((w) =>
         `<li>${w.href ? `<a href="${esc(w.href)}" target="_blank" rel="noopener noreferrer">${esc(w.name)} ↗</a>` : esc(w.name)}</li>`).join('')}</ol></div>` : ''}
       <div class="links">${(p.links || []).map(([label, href]) => `<a href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(label)} ↗</a>`).join('')}</div>
-    </div>`;
+    </div>
+    ${featured.length ? `<div class="pick-works">${featured.map((w) => featuredWork(p, w)).join('')}</div>` : ''}`;
   $$('[data-ar]', $('[data-pick]')).forEach((el) => el.style.setProperty('--ar', el.dataset.ar));
 
   const past = spot.months.filter((x) => x !== p);
