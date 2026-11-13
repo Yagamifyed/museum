@@ -230,7 +230,7 @@ function featuredWork(p, w) {
 
 function renderMonth(no) {
   const p = spot.months.find((x) => x.no === no) || spot.months[0];
-  $('[data-month-sub]').innerHTML = `I’m very open to self-nominations and to nominations of others. Send them on X: <a class="quiet" href="https://x.com/${esc(data.profile.x)}" target="_blank" rel="noopener">@${esc(data.profile.x)} ↗</a>`;
+  $('[data-month-sub]').innerHTML = `Nominate yourself or someone else: <a class="quiet" href="https://x.com/${esc(data.profile.x)}" target="_blank" rel="noopener">@${esc(data.profile.x)} ↗</a>`;
   if (!p) {
     $('[data-pick]').innerHTML = '<div class="essay"><p class="quiet">Coming soon.</p></div>'; // as Philosophy does
     $('[data-month-past-block]').hidden = true;
