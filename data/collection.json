@@ -263,10 +263,10 @@
       },
       "original": "ipfs://QmUYDK8VW4NDapVqbwsmCAs1Gv3JESqzEbuaW2gcEyhpKe",
       "museum": {
-        "rank": 27,
+        "rank": 26,
         "size": "large",
         "note": "",
-        "newRow": false,
+        "newRow": true,
         "room": ""
       }
     },
@@ -604,10 +604,10 @@
       },
       "original": "ipfs://QmbMHrTVkV5K7CaWXQv57fmur1UERVmSiLagqPeLuNn2tD",
       "museum": {
-        "rank": 26,
+        "rank": 27,
         "size": "large",
         "note": "",
-        "newRow": true,
+        "newRow": false,
         "room": ""
       }
     },
