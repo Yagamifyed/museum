@@ -12,7 +12,7 @@
     "solana": "8vGmofEerk69yLJeDn9n9ReDsimNXCagMErZCdzHKVpT",
     "bitcoin": null
   },
-  "updated": "2026-11-13",
+  "updated": "2026-11-14",
   "works": [
     {
       "status": "owned",
@@ -2577,7 +2577,7 @@
       "collection": null,
       "artist": "Keyrun",
       "description": "A token of gratitude, celebrating 5 years of art & my birthday on 8 November .. an endless dive through nested eight-petal mandalas. An 8 second loop, fully on-chain. Thank you for being part of my art journey.",
-      "editions": 71,
+      "editions": 72,
       "owned": 1,
       "minted": null,
       "acquired": null,
