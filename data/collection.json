@@ -12,8 +12,82 @@
     "solana": "8vGmofEerk69yLJeDn9n9ReDsimNXCagMErZCdzHKVpT",
     "bitcoin": null
   },
-  "updated": "2026-11-14",
+  "updated": "2026-11-16",
   "works": [
+    {
+      "status": "owned",
+      "id": "ethereum:0xe6263aa4f47d34cc556415c79ee5ae0a90605b1e:1",
+      "chain": "ethereum",
+      "contract": "0xe6263aa4f47d34cc556415c79ee5ae0a90605b1e",
+      "tokenId": "1",
+      "title": "Icarus",
+      "collection": "CHROMAKOPIA Edition",
+      "artist": "Michael Buda",
+      "description": "A lone figure stands on the dune, caught between light and shadow. That familiar space between wanting something more and feeling completely alone in the moment. The curves of the desert reminded me of the story of Icarus, not in a literal sense, but in the way we all push ourselves toward something bigger, even when we’re unsure of the outcome.\nHere, the idea of “flight” is more about the human spirit reaching, trying, hoping. Icarus becomes a quiet reflection on ambition, solitude, and the beauty in simply standing against something so vast.\n\nThe License:\nExtended Editorial: Primary NFT holder is free to use in advertising, display privately and in groups, including virtual galleries, documentaries and essays by the holder of the NFT, as long as the creator is credited. Provides no rights to create commercial merchandise, commercial distribution, or derivative works. Copyright remains with the creator.",
+      "editions": null,
+      "owned": 1,
+      "minted": null,
+      "acquired": "2026-11-16",
+      "interactive": null,
+      "links": [
+        [
+          "OpenSea",
+          "https://opensea.io/item/ethereum/0xe6263aa4f47d34cc556415c79ee5ae0a90605b1e/1"
+        ],
+        [
+          "Etherscan",
+          "https://etherscan.io/nft/0xe6263aa4f47d34cc556415c79ee5ae0a90605b1e/1"
+        ]
+      ],
+      "media": {
+        "src": "media/2230abfdb116.webp",
+        "w": 1600,
+        "h": 900,
+        "thumb": "media/thumb/2230abfdb116.webp",
+        "lqip": "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAAAQBACdASoUAAsAPu1kqk4ppaQiMAgBMB2JaQAAYdl0fZf/kIklwkpwAAD5ODRY0JdMxy7DFedeeenqhVNXq1uzeEErjOob6ReAMwiMzbe9S3yREipfgAAA"
+      },
+      "motion": null,
+      "original": "ipfs://QmUUcamiDuBsgmKAPTPrF8vHJstHv8L1tvdG5hVNYibjA4/media",
+      "museum": null,
+      "arrival": true
+    },
+    {
+      "status": "owned",
+      "id": "tezos:KT1QwLExYARVrCXZue2BnbsJXGrwNX1h24ct:0",
+      "chain": "tezos",
+      "contract": "KT1QwLExYARVrCXZue2BnbsJXGrwNX1h24ct",
+      "tokenId": "0",
+      "title": "What Remains Awake",
+      "collection": "Not Everything Is Said",
+      "artist": "Hadi khani",
+      "description": "We don’t know what happened before this moment.\nThe body has let go, but the image has not become still. Something remains — in the arms gathered around the head, in the turn of the figure, in colors that no longer obey the natural logic of flesh.\nFor me, this figure does not illustrate a specific event. It feels more like a moment in which the body is holding something that has not yet found a language.\nIt could be exhaustion.\nIt could be silence.\nA moment somewhere between resistance and letting go.\nI don’t want to resolve it.\nThe body is lying down,\nbut something inside the image is still awake.\n\nEdition of 5\n69 ꜩ\nBased on an original physical painting by Hadi Khani. The physical artwork is not included in this NFT edition and remains a separate work.",
+      "editions": 5,
+      "owned": 1,
+      "minted": "2026-10-02",
+      "acquired": "2026-11-15",
+      "interactive": null,
+      "links": [
+        [
+          "objkt",
+          "https://objkt.com/tokens/KT1QwLExYARVrCXZue2BnbsJXGrwNX1h24ct/0"
+        ],
+        [
+          "TzKT",
+          "https://tzkt.io/KT1QwLExYARVrCXZue2BnbsJXGrwNX1h24ct/tokens/0"
+        ]
+      ],
+      "media": {
+        "src": "media/9510a0e1bb8c.webp",
+        "w": 1600,
+        "h": 1184,
+        "thumb": "media/thumb/9510a0e1bb8c.webp",
+        "lqip": "data:image/webp;base64,UklGRogAAABXRUJQVlA4IHwAAACQAwCdASoUAA8APu1iqU2ppaOiMAgBMB2JQBOkGQAly0YvIUXoAP7cacBdQEpQlpYKSE4YSnLbsLSyb6Dpj7PWWfdnZ6MVF3u5+cI+02EXrVd+hN364sKUcnLAAdNXBse+JurOXJb8uHVXHW5gneDzH8mD2HjVAtD8dgAA"
+      },
+      "motion": null,
+      "original": "ipfs://bafybeifxauaq2nuennq5sgdaq26tqg7jyk6pg22azv5awtrf7ilxrsjaxm",
+      "museum": null,
+      "arrival": true
+    },
     {
       "status": "owned",
       "id": "tezos:KT1JGik2bL43HNCxy5SwMib7c68rZdcYKNzj:15",
