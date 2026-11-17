@@ -65,6 +65,9 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 .bar nav { display: flex; gap: clamp(16px, 2vw, 32px); }
 .bar nav a { color: var(--mute); transition: color .2s; }
 .bar nav a:hover { color: var(--ink); }
+.bar nav .arrow { display: none; } /* Philosophy and Artist of the Month sit in the bar on every page */
+.bar nav a { white-space: nowrap; }
+@media (max-width: 480px) { .bar nav { gap: 18px; } .bar .wordmark [data-name] { display: none; } } /* a phone: the punk alone, so the links fit */
 
 /* ── hero ────────────────────────────────────────── */
 /* short, so the wall starts on the first screen */
