@@ -11,6 +11,80 @@
   "works": [
     {
       "status": "owned",
+      "id": "tezos:KT1LuCpoY86Jda4tHkWGFK8FNdpFy7JukyBY:7",
+      "chain": "tezos",
+      "contract": "KT1LuCpoY86Jda4tHkWGFK8FNdpFy7JukyBY",
+      "tokenId": "7",
+      "title": "Eclipse Eye",
+      "collection": "RED Noon",
+      "artist": "viz",
+      "description": "Eclipse Eye",
+      "editions": 1,
+      "owned": 1,
+      "minted": "2026-11-17",
+      "acquired": "2026-11-17",
+      "interactive": null,
+      "links": [
+        [
+          "objkt",
+          "https://objkt.com/tokens/KT1LuCpoY86Jda4tHkWGFK8FNdpFy7JukyBY/7"
+        ],
+        [
+          "TzKT",
+          "https://tzkt.io/KT1LuCpoY86Jda4tHkWGFK8FNdpFy7JukyBY/tokens/7"
+        ]
+      ],
+      "media": {
+        "src": "media/4a2f7d95b304.webp",
+        "w": 900,
+        "h": 1600,
+        "thumb": "media/thumb/4a2f7d95b304.webp",
+        "lqip": "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAAAQAwCdASoLABQAPu1iqU2ppaQiMAgBMB2JaACdMoAAXkAA0mG6B7L6uhowWvvykul5to1cup+MmT/+CC+5Tk0749x+9EE0SHRw3mopmvsAAA=="
+      },
+      "motion": null,
+      "original": "ipfs://bafkreid4hpmiyr6gw2eoku4wpgm6ejtsa5vuy7xhhjhi5wmj6duqwcw2zm",
+      "museum": null,
+      "arrival": true
+    },
+    {
+      "status": "owned",
+      "id": "tezos:KT1Pb4NZMMdwQgH3Pr7oCkZ9cREB8so47h1T:27",
+      "chain": "tezos",
+      "contract": "KT1Pb4NZMMdwQgH3Pr7oCkZ9cREB8so47h1T",
+      "tokenId": "27",
+      "title": "NONSENSE THEORY",
+      "collection": "Pale Ink",
+      "artist": "MJuventa",
+      "description": "Give nonsense enough structure, and someone will call it truth",
+      "editions": 10,
+      "owned": 1,
+      "minted": "2026-11-17",
+      "acquired": "2026-11-17",
+      "interactive": null,
+      "links": [
+        [
+          "objkt",
+          "https://objkt.com/tokens/KT1Pb4NZMMdwQgH3Pr7oCkZ9cREB8so47h1T/27"
+        ],
+        [
+          "TzKT",
+          "https://tzkt.io/KT1Pb4NZMMdwQgH3Pr7oCkZ9cREB8so47h1T/tokens/27"
+        ]
+      ],
+      "media": {
+        "src": "media/4859608428e0.webp",
+        "w": 1234,
+        "h": 1600,
+        "thumb": "media/thumb/4859608428e0.webp",
+        "lqip": "data:image/webp;base64,UklGRpIAAABXRUJQVlA4IIYAAADwAwCdASoPABQAPu1iqU2ppaOiMAgBMB2JaQAAXgRk47g4Ww/YM8kwAP7uPVftkoMli9Xt4QqlOVP0Dxo336hGX99vPFIBNqyavpJva8FnH/fPSLfvfmKnzdSbBHZbGftis76tqmhXIuPw3+DT9ltwduU1P6WFyNQRybPiCo1b4lMB1QAAAA=="
+      },
+      "motion": null,
+      "original": "ipfs://bafybeiegfb7jm67ubilalxgeb33wfhuscnek26jn7uis7joeht3c23vqdi",
+      "museum": null,
+      "arrival": true
+    },
+    {
+      "status": "owned",
       "id": "ethereum:0x02cc35c1667c8bcea5fec2402110f2f432365fca:6",
       "chain": "ethereum",
       "contract": "0x02cc35c1667c8bcea5fec2402110f2f432365fca",
@@ -394,7 +468,7 @@
       "collection": null,
       "artist": "PAMILO CEIRONE®",
       "description": "Hello to the whole Tezos community. This is my 1,000th NFT and I wanted to personally thank every single person sitting at a computer, wherever they may be in the world, for ever having collected one of my drawings or animations. Perhaps you don’t realise what that means to an artist whose only wish is to keep drawing.\nWith lots of love, this is PAMILO CEIRONE, sending my regards from Argentina.\n-\n6 Frames \nGIF Animation\nPAM! PAM!\nNovember, 2026.",
-      "editions": 18,
+      "editions": 20,
       "owned": 1,
       "minted": "2026-11-04",
       "acquired": "2026-11-05",
