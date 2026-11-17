@@ -178,7 +178,8 @@ function layoutWall(wall) {
     const gaps = gap * (items.length - 1);
     let cap = Math.min(tallest, size === 'xl' || W < 720 ? tallest : target * 1.35); // on a phone every row fills the width
     if (i === 0 && W >= 720 && firstRoom > 200) cap = Math.min(cap, firstRoom);
-    if ((W - gaps) / sum > cap) div.style.maxWidth = `${Math.round(cap * sum + gaps)}px`; // too few works to fill it: hang centred
+    // on a phone every work fills the width, even a tall one taller than the screen (user, 17 Nov 2026)
+    if (W >= 720 && (W - gaps) / sum > cap) div.style.maxWidth = `${Math.round(cap * sum + gaps)}px`; // too few works to fill it: hang centred
     if (!room) return [div];
     const h = Object.assign(document.createElement('h2'), { className: 'room', textContent: room });
     return [h, div];
