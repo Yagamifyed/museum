@@ -544,12 +544,15 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 [data-page="text"] .page-sub, [data-page="month"] .page-sub { max-width: none; }
 [data-page="month"] .page-sub.split { flex-direction: column; align-items: center; }
 [data-page="month"] .page-sub.split > :last-child { margin-left: 0; }
-[data-page="month"] .pick-solo > .pick-info { max-width: 40em; margin-inline: auto; align-items: center; text-align: center; }
-[data-page="month"] .pick-solo > .pick-info .pick-note { max-width: 31em; text-wrap: balance; }
-@media (min-width: 600px) { /* justified where the line is long enough for it; a phone keeps the centred lines */
-  [data-page="month"] .pick-solo > .pick-info .pick-note { text-align: justify; hyphens: auto; -webkit-hyphens: auto; text-wrap: pretty; }
+/* the artist's page reads like Philosophy: the same column, the same reading size, a rule between the name and the text */
+[data-page="month"] .pick-solo > .pick-info { max-width: 720px; margin-inline: auto; align-items: stretch; text-align: center; }
+[data-page="month"] .pick-solo > .pick-info .pick-name { margin-bottom: clamp(18px, 2.2vw, 30px); }
+[data-page="month"] .pick-solo > .pick-info .pick-note {
+  max-width: none; font-size: clamp(19px, 1.45vw, 22px); line-height: 1.5; letter-spacing: -0.006em; margin: 0 0 1.2em;
+  text-align: justify; hyphens: auto; -webkit-hyphens: auto; text-wrap: pretty;
 }
-[data-page="month"] .pick-solo .facts { width: min(100%, 24em); text-align: left; }
+[data-page="month"] .pick-solo > .pick-info .pick-note:not(.pick-note ~ .pick-note) { border-top: 1px solid var(--rule); padding-top: clamp(22px, 2.8vw, 40px); }
+[data-page="month"] .pick-solo .facts { width: 100%; text-align: left; margin-top: .6em; }
 [data-page="month"] .pick > .essay { margin-inline: auto; text-align: center; }
 [data-page="month"] .facts dd.wrap { white-space: normal; overflow: visible; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; padding-block: 14px 13px; }
 [data-page="month"] .facts dt:has(+ dd.wrap) { padding-block: 14px 13px; }
