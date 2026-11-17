@@ -101,8 +101,18 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 .essay h2 { font-size: var(--t-body); font-weight: 500; letter-spacing: -0.01em; margin: 2em 0 .6em; }
 /* Levin's texts (Philosophy): a drop cap, an opening quote mark hung in the margin, and the punk as the end mark */
 [data-text-body] p { text-wrap: pretty; }
+/* set for reading: a size smaller than the display serif elsewhere, looser letters, taller lines; on a wide
+   screen two justified columns under a rule (a paragraph is never split between them) */
+[data-text-body] { max-width: 1180px; margin-inline: auto; border-top: 1px solid var(--rule); padding-top: clamp(22px, 2.8vw, 40px); }
+[data-text-body] p { font-size: clamp(19px, 1.45vw, 22px); line-height: 1.5; letter-spacing: -0.006em; }
+[data-text-body]:has(> .quiet) { border-top: 0; padding-top: 0; text-align: center; }
+@media (min-width: 860px) {
+  [data-text-body]:not(:has(> .quiet)) { columns: 2; column-gap: clamp(40px, 5.5vw, 88px); }
+  [data-text-body] p { break-inside: avoid; text-align: justify; hyphens: auto; -webkit-hyphens: auto; margin-bottom: 1.5em; }
+  [data-text-body] h2 { break-after: avoid; }
+}
 [data-text-body] > p:first-child:not(.quiet)::first-letter {
-  float: left; font-size: 4.7em; line-height: .76; letter-spacing: 0; /* three lines deep */
+  float: left; font-size: 5.3em; line-height: .76; letter-spacing: 0; /* three lines deep */
   padding: .07em .07em 0 0; margin-left: -.03em;
 }
 @supports (initial-letter: 3) or (-webkit-initial-letter: 3) {
@@ -525,6 +535,17 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 .pick-work .pick-note { font-size: clamp(18px, 1.35vw, 21px); line-height: 1.35; letter-spacing: -0.015em; margin: 0 0 14px; }
 .pick-work .links { margin-top: 14px; }
 .pick-info > .pick-note:has(+ .pick-note) { margin-bottom: .7em; } /* an intro in several paragraphs */
+/* ── the two reading pages (Philosophy, Artist of the Month) sit on the centre line; the walls stay flush left ── */
+[data-page="text"] .page-head, [data-page="month"] .page-head { text-align: center; }
+[data-page="text"] .page-sub, [data-page="month"] .page-sub { max-width: none; }
+[data-page="month"] .page-sub.split { flex-direction: column; align-items: center; }
+[data-page="month"] .page-sub.split > :last-child { margin-left: 0; }
+[data-page="month"] .pick-solo > .pick-info { max-width: 40em; margin-inline: auto; align-items: center; text-align: center; }
+[data-page="month"] .pick-solo > .pick-info .pick-note { max-width: 31em; text-wrap: balance; }
+[data-page="month"] .pick-solo .facts { width: min(100%, 24em); text-align: left; }
+[data-page="month"] .pick > .essay { margin-inline: auto; text-align: center; }
+[data-page="month"] .hang-one { justify-content: center; }
+[data-page="month"] .hang-cap { align-items: center; text-align: center; }
 /* works without notes: a hang, the first one wide, the rest in pairs of equal height */
 .pick-hang { display: flex; flex-direction: column; gap: clamp(36px, 5vw, 80px); margin-top: clamp(24px, 4vw, 56px); }
 .hang-row { display: flex; align-items: flex-start; gap: clamp(16px, 2.6vw, 44px); }
