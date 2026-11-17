@@ -46,7 +46,17 @@ const io = new IntersectionObserver((entries) => {
 function reveal(root = document) {
   for (const el of $$('.plate img:not(.ready):not(.lqip), .frame img:not(.ready):not(.lqip), .work > img:not(.ready):not(.lqip), .plate video:not(.ready), .frame video:not(.ready), .work > video:not(.ready)', root)) {
     const done = () => el.classList.add('ready');
-    if (el.tagName === 'IMG') { el.complete && el.naturalWidth ? done() : (el.onload = done, el.onerror = done); }
+    // a load that fails (a dropped connection on a phone) is tried once more; if that
+    // fails too, the blurred preview stays rather than the browser's broken-image icon
+    const retry = () => {
+      el.onerror = null;
+      const again = (u) => u && `${u}${u.includes('?') ? '&' : '?'}r=1`;
+      setTimeout(() => {
+        if (el.srcset) el.srcset = el.srcset.split(', ').map((s) => { const [u, d] = s.split(' '); return [again(u), d].filter(Boolean).join(' '); }).join(', ');
+        if (el.getAttribute('src')) el.src = again(el.getAttribute('src'));
+      }, 1500);
+    };
+    if (el.tagName === 'IMG') { el.complete && el.naturalWidth ? done() : (el.onload = done, el.onerror = retry); }
     else done();
   }
   for (const v of $$('video[data-autoplay]', root)) io.observe(v);
