@@ -33,7 +33,7 @@
    "extras": [
     [
      "Restraint shown",
-     "None (two works in five weeks)"
+     "None"
     ]
    ],
    "workId": "ethereum:0xdee40b4100261c9320df0bf10fccce91aaff4d65:2",
@@ -127,10 +127,10 @@
    "title": "Philosophy",
    "blocks": [
     {
-     "p": "The aesthetic value of an artwork is not, as I understand it, contingent solely on the output which the artist produces. It also depends on what is put in, by whom, and in what context. By that I mean that good art depends, at least in part, on what the artist has read and looked at -- whom they have studied, whom they have aligned with, and whom they have placed themselves in opposition to. The great artists of the past knew their history and their philosophy -- they knew who came before them as well as the tradition of which they were a part. Likewise, the Web3 era has marked an exciting blip in the annals of art history. In 2026, the movement has since all but died. It is nigh time we rekindle it."
+     "p": "As I understand it, the aesthetic value of an artwork is not contingent solely on the output which the artist produces. It also depends on what is put in, by whom, and in what context. By that I mean that good art depends, at least in part, on what the artist has read and looked at -- whom they have studied, whom they have aligned with, and whom they have placed themselves in opposition to. The great artists of the past knew their history and their philosophy -- they knew who came before them and the tradition of which they were a part. Likewise, the Web3 era has marked an exciting blip in the annals of art history. In 2026, the movement has since all but died. It is nigh time we rekindle it."
     },
     {
-     "p": "‘It is a shame for a man to grow old without seeing the strength and beauty of which his body is capable’, Socrates is believed to have said. Likewise, it is a tragedy for us to grow old without discovering the art we are capable of making. The Museum is my attempt to foster this vision, and support artists in their quest of making great art. If this resonates with you, please get in touch."
+     "p": "‘It is a shame for a man to grow old without seeing the strength and beauty of which his body is capable’, Socrates is believed to have said. Likewise, it is a tragedy for us to grow old without discovering the art we are capable of making. The Museum is my attempt to live up to this vision, and support artists in their quest of making great art. If this resonates with you, please get in touch."
     }
    ]
   }

@@ -3,7 +3,7 @@
     "name": "LevinLevin",
     "title": "Collection",
     "bio": "PhD in law & philosophy. Digital & physical collector.",
-    "statement": "The Museum is my hand-picked curation, in line with my overall artistic and curatorial philosophy. I hope you enjoy it as much as I do.",
+    "statement": "The Museum is my hand-picked curation. I hope you enjoy it as much as I do.",
     "x": "levinlevin__"
   },
   "wallets": {},
@@ -50,6 +50,43 @@
         "newRow": true,
         "room": ""
       }
+    },
+    {
+      "status": "owned",
+      "id": "ethereum:0x3980983c6973e2e9a4668dd166e8bf7400d12820:81",
+      "chain": "ethereum",
+      "contract": "0x3980983c6973e2e9a4668dd166e8bf7400d12820",
+      "tokenId": "81",
+      "title": "S Y N E S T H E S I A / / #9/15",
+      "collection": "PANIL EDITIONS",
+      "artist": "Danil Pan",
+      "description": "A transient beauty \na vision so perfect beyond compare  \nvivid colors blurring and blending \nin perfect harmony with the sounds in the air  \nthe day’s sun leaves me  \ngranting a moment in its shade  \nleaving me to my thoughts  \na symphony of the senses  \na final instant to see it away",
+      "editions": 1,
+      "owned": 1,
+      "minted": null,
+      "acquired": "2026-11-17",
+      "interactive": null,
+      "links": [
+        [
+          "OpenSea",
+          "https://opensea.io/item/ethereum/0x3980983c6973e2e9a4668dd166e8bf7400d12820/81"
+        ],
+        [
+          "Etherscan",
+          "https://etherscan.io/nft/0x3980983c6973e2e9a4668dd166e8bf7400d12820/81"
+        ]
+      ],
+      "media": {
+        "src": "media/12fcc54580a4.webp",
+        "w": 1216,
+        "h": 1600,
+        "thumb": "media/thumb/12fcc54580a4.webp",
+        "lqip": "data:image/webp;base64,UklGRqQAAABXRUJQVlA4IJgAAADQAwCdASoPABQAPu1iqU2ppaOiMAgBMB2JbACdMoMYACk4f/TjBNwA/mTcp1JgpsTIu/Pa09Olv33z3xazpywU9uqYdw58VD0yfDX55eHNLxRhXx1gz4QL3V5tpcAoZ9HQK48fHcN4Zqwci9I6Mh9i2rblVZ1PA4FIFqYletLJTTAIF4wXebzbB+Wie5ap8itDZr4nDAAAAA=="
+      },
+      "motion": null,
+      "original": "https://arweave.net/9rIG6-fFqrU0dovdEx-Zbe1sLIufn5RihKtg5IZWaR0",
+      "museum": null,
+      "arrival": true
     },
     {
       "status": "owned",
