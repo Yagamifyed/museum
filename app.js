@@ -253,7 +253,7 @@ function hang(p, works) {
 
 function renderMonth(no) {
   const p = spot.months.find((x) => x.no === no) || spot.months[0];
-  $('[data-month-sub]').innerHTML = `Nominate yourself or someone else: <a class="quiet" href="https://x.com/${esc(data.profile.x)}" target="_blank" rel="noopener">@${esc(data.profile.x)} ↗</a>`;
+  $('[data-month-sub]').innerHTML = `<a class="quiet" href="https://x.com/${esc(data.profile.x)}" target="_blank" rel="noopener">Nominate someone on X ↗</a>`;
   if (!p) {
     $('[data-pick]').innerHTML = '<div class="essay"><p class="quiet">Coming soon.</p></div>'; // as Philosophy does
     $('[data-month-past-block]').hidden = true;
