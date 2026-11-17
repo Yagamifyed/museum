@@ -7,7 +7,7 @@
 // when there's no connection. Videos are left to the browser (it fetches them
 // in ranges). Bump VERSION to drop everything cached before.
 
-const VERSION = 'museum-1';
+const VERSION = 'museum-2';
 const STATIC = /^\/(media|fonts|w)\/.+\.(webp|svg|png|jpe?g|gif|woff2)$/;
 
 self.addEventListener('install', () => self.skipWaiting());
