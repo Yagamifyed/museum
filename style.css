@@ -238,14 +238,11 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 /* one column, like a wall text: the statement wide, the other rooms in a line below it */
 .about { display: block; }
 .about-statement {
-  font-family: var(--serif); font-size: clamp(28px, 3.4vw, 54px);
-  line-height: 1.08; letter-spacing: -0.04em; margin: 0; max-width: 24em;
+  font-family: var(--serif); font-size: clamp(34px, 3.4vw, 56px); /* the scale of a work's title */
+  line-height: 1.05; letter-spacing: -0.04em; margin: 0; max-width: 24em;
 }
-.about-links { display: flex; flex-wrap: wrap; gap: 10px 28px; margin-top: 32px; }
-.about-links a { color: var(--mute); text-decoration: none; }
-.about-links a:hover { color: var(--ink); }
-.about-links a .arrow { display: inline-block; transition: transform .2s; }
-.about-links a:hover .arrow { transform: translateX(3px); }
+/* the links row under the statement is the same as the one under "The Museum." */
+.about-foot { margin-top: clamp(28px, 4vw, 48px); }
 
 /* ── footer ──────────────────────────────────────── */
 .foot { padding: clamp(120px, 20vh, 220px) var(--gutter) 24px; }
