@@ -266,16 +266,13 @@ function renderMonth(no) {
     $('[data-month-past-block]').hidden = true;
     return;
   }
-  const mine = collected(p);
   const featured = (p.works || []).filter((w) => w.image || w.notes?.length);
   const im = featured.length ? null : pickImage(p); // with featured works, each shows its own picture below
   const ar = im?.w && im?.h ? (im.w / im.h).toFixed(4) : 1;
   const open = p.workId ? `href="${link({ id: p.workId })}"` : p.work ? `href="${esc(p.work)}" target="_blank" rel="noopener noreferrer"` : '';
   const facts = [
     p.x && ['On X', `<a href="${esc(p.x)}" target="_blank" rel="noopener noreferrer">@${esc(p.handle)} ↗</a>`],
-    p.socials?.length && ['Works', p.socials.map((l) => `<a href="${esc(l.href)}" target="_blank" rel="noopener noreferrer">${esc(l.name)} ↗</a>`).join(' · '), 'wrap'],
-    ['I own', mine.length && order.includes(mine[0]) ? `<a href="${artistLink(by(mine[0]))}">${plural(mine.length, 'work')}</a>` : mine.length ? plural(mine.length, 'work') : 'Nothing yet'],
-    p.date && ['Picked', day(p.date)],
+    p.socials?.length && ['Works', p.socials.map((l) => `<a href="${esc(l.href)}" target="_blank" rel="noopener noreferrer">${esc(l.name)} ↗</a>`).join(''), 'wrap'], // one link to a line
   ].filter(Boolean);
   $('[data-pick]').classList.toggle('pick-solo', !!featured.length);
   $('[data-pick]').innerHTML = `

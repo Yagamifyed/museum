@@ -551,7 +551,8 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 }
 [data-page="month"] .pick-solo .facts { width: min(100%, 24em); text-align: left; }
 [data-page="month"] .pick > .essay { margin-inline: auto; text-align: center; }
-[data-page="month"] .facts dd.wrap { white-space: normal; overflow: visible; }
+[data-page="month"] .facts dd.wrap { white-space: normal; overflow: visible; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; padding-block: 14px 13px; }
+[data-page="month"] .facts dt:has(+ dd.wrap) { padding-block: 14px 13px; }
 .month-nominate { text-align: center; max-width: none; margin-top: clamp(56px, 8vw, 112px); }
 [data-page="month"] .hang-one { justify-content: center; }
 [data-page="month"] .hang-cap { align-items: center; text-align: center; }
