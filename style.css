@@ -65,6 +65,7 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 .bar nav { display: flex; gap: clamp(16px, 2vw, 32px); }
 .bar nav a { color: var(--mute); transition: color .2s; }
 .bar nav a:hover { color: var(--ink); }
+.bar-links { display: contents; }
 .bar nav .arrow { display: none; } /* Philosophy and Artist of the Month sit in the bar on every page */
 .bar nav a { white-space: nowrap; }
 @media (max-width: 480px) { .bar nav { gap: 18px; } .bar .wordmark [data-name] { display: none; } } /* a phone: the punk alone, so the links fit */
@@ -273,6 +274,13 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 }
 /* the links row under the statement is the same as the one under "The Museum." */
 .about-foot { margin-top: clamp(28px, 4vw, 48px); }
+/* About is centred, like a wall text */
+#about .block-head { justify-content: center; text-align: center; }
+.about-who { text-align: center; }
+.about-pfp { margin-inline: auto; }
+.about-statement { margin-inline: auto; max-width: 20em; }
+.about-foot { justify-content: center; max-width: 56em; margin-inline: auto; }
+.about-foot .hero-links { justify-content: center; }
 
 /* ── footer ──────────────────────────────────────── */
 .foot { padding: clamp(120px, 20vh, 220px) var(--gutter) 24px; }
