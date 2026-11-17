@@ -240,14 +240,16 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
   font-family: var(--serif); font-size: clamp(26px, 2.6vw, 40px);
   line-height: 1.1; letter-spacing: -0.04em; margin: 0; max-width: 16em;
 }
-.wallets { margin: 0; display: grid; grid-template-columns: auto 1fr; align-content: start; }
-.wallets dt { padding-right: var(--gap) !important; }
-.wallets dt, .wallets dd { margin: 0; padding: 10px 0 9px; border-bottom: 1px solid var(--rule); }
-.wallets dt { color: var(--mute); }
-.wallets dd { display: flex; justify-content: space-between; gap: 12px; min-width: 0; }
-.wallets dd code { font: inherit; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.wallets dd button { color: var(--mute); flex: none; }
-.wallets dd button:hover { color: var(--ink); }
+/* the Museum's other rooms, beside the statement */
+.about-links { display: flex; flex-direction: column; align-self: start; border-top: 1px solid var(--rule); }
+.about-links a {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto; gap: 16px; align-items: baseline;
+  padding: 16px 0 15px; border-bottom: 1px solid var(--rule); text-decoration: none; color: var(--ink);
+}
+.about-links a .quiet { color: var(--mute); }
+.about-links a .arrow { color: var(--mute); transition: transform .2s; }
+.about-links a:hover .arrow { color: var(--ink); transform: translateX(3px); }
+@media (max-width: 560px) { .about-links a { grid-template-columns: minmax(0, 1fr) auto; } .about-links a .quiet { display: none; } }
 @media (max-width: 860px) { .about { grid-template-columns: 1fr; gap: 40px; } }
 
 /* ── footer ──────────────────────────────────────── */
@@ -461,8 +463,6 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 
 .sheet-nav { display: flex; align-items: center; gap: 10px; }
 .sheet-nav .seg button { padding: 8px 16px 9px; }
-.wallets dd button { border: 1px solid var(--rule); border-radius: 999px; padding: 4px 10px 5px; font-size: 13px; }
-.wallets dd button:hover { border-color: var(--faint); }
 .lock-go { justify-self: start; border: 1px solid var(--ink); border-radius: 999px; padding: 9px 18px 10px; background: var(--ink); color: var(--bg); }
 .lock-go:hover { text-decoration: none; background: var(--bg); color: var(--ink); }
 

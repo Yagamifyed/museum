@@ -1,5 +1,4 @@
 const CHAINS = { tezos: 'Tezos', ethereum: 'Ethereum', solana: 'Solana', bitcoin: 'Bitcoin', base: 'Base', physical: 'Physical work' };
-const CHAIN_ORDER = ['tezos', 'ethereum', 'solana', 'bitcoin'];
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -319,8 +318,6 @@ function renderAbout() {
   $('[data-bio]').textContent = p.bio || '';
   $('[data-bio]').hidden = !p.bio;
   $$('[data-x]').forEach((a) => { a.href = `https://x.com/${p.x}`; if (a.textContent.startsWith('@')) a.textContent = `@${p.x} ↗`; });
-  $('[data-wallets]').innerHTML = CHAIN_ORDER.filter((c) => data.wallets[c]).map((c) =>
-    `<dt>${CHAINS[c]}</dt><dd><code title="${esc(data.wallets[c])}">${esc(short(data.wallets[c]))}</code><button type="button" data-copy="${esc(data.wallets[c])}">Copy</button></dd>`).join('');
 }
 
 function showPage(page) {

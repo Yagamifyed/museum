@@ -6,14 +6,45 @@
     "statement": "The Museum is my hand-picked curation, in line with my overall artistic and curatorial philosophy. I hope you enjoy it as much as I do.",
     "x": "levinlevin__"
   },
-  "wallets": {
-    "ethereum": "0xd8a87ef6a7179c6bcc617eb32c3462ed7eb9e1cd",
-    "tezos": "tz1QHuN1XqWZM5zm51fePfA1kTmavjHSByWZ",
-    "solana": "8vGmofEerk69yLJeDn9n9ReDsimNXCagMErZCdzHKVpT",
-    "bitcoin": null
-  },
-  "updated": "2026-11-16",
+  "updated": "2026-11-17",
   "works": [
+    {
+      "status": "owned",
+      "id": "ethereum:0x02cc35c1667c8bcea5fec2402110f2f432365fca:6",
+      "chain": "ethereum",
+      "contract": "0x02cc35c1667c8bcea5fec2402110f2f432365fca",
+      "tokenId": "6",
+      "title": "Living in My Shadow",
+      "collection": "Ego Dead 1/1s",
+      "artist": "egodead",
+      "description": "My only competition is myself. \n\n\n\n\nOil on Linen  \n18\" x 24\"  \n2023",
+      "editions": 1,
+      "owned": 1,
+      "minted": null,
+      "acquired": "2026-11-17",
+      "interactive": null,
+      "links": [
+        [
+          "OpenSea",
+          "https://opensea.io/item/ethereum/0x02cc35c1667c8bcea5fec2402110f2f432365fca/6"
+        ],
+        [
+          "Etherscan",
+          "https://etherscan.io/nft/0x02cc35c1667c8bcea5fec2402110f2f432365fca/6"
+        ]
+      ],
+      "media": {
+        "src": "media/9a2c798e7176.webp",
+        "w": 1600,
+        "h": 2134,
+        "thumb": "media/thumb/9a2c798e7176.webp",
+        "lqip": "data:image/webp;base64,UklGRqAAAABXRUJQVlA4IJQAAABQBACdASoPABQAPu1iqU2ppaOiMAgBMB2JbACdMoR3ABRyL0B7Dq5ee4cAAPtXwpeAgIM3NoPuPk8S18xVi2VHyrmy6SsuS0av4GNPre4q23J22YC7glOs/Xyg2Zt9wZJh7ArsgK0P/lcBWj8TTfUnlK5v8sXrFI4d8dRn0Lfv6TTvtJd/GftrzzpF4cn+wj7Hs4AA"
+      },
+      "motion": null,
+      "original": "https://arweave.net/6b0JUvIwVTYTVm4AS03FzvlNfuwwKxNG5255lfsjtbA",
+      "museum": null,
+      "arrival": true
+    },
     {
       "status": "owned",
       "id": "ethereum:0xe6263aa4f47d34cc556415c79ee5ae0a90605b1e:1",
