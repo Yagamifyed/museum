@@ -273,6 +273,7 @@ function renderMonth(no) {
   const facts = [
     p.x && ['On X', `<a href="${esc(p.x)}" target="_blank" rel="noopener noreferrer">@${esc(p.handle)} ↗</a>`],
     p.socials?.length && ['Works', p.socials.map((l) => `<a href="${esc(l.href)}" target="_blank" rel="noopener noreferrer">${esc(l.name)} ↗</a>`).join(''), 'wrap'], // one link to a line
+    ...(p.extras || []).map(([k, v]) => [esc(k), esc(v), 'wrap']),
   ].filter(Boolean);
   $('[data-pick]').classList.toggle('pick-solo', !!featured.length);
   $('[data-pick]').innerHTML = `
