@@ -96,6 +96,23 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
   line-height: 1.32; letter-spacing: -0.02em; margin: 0 0 1em;
 }
 .essay h2 { font-size: var(--t-body); font-weight: 500; letter-spacing: -0.01em; margin: 2em 0 .6em; }
+/* Levin's texts (Philosophy): a drop cap, an opening quote mark hung in the margin, and the punk as the end mark */
+[data-text-body] p { text-wrap: pretty; }
+[data-text-body] > p:first-child:not(.quiet)::first-letter {
+  float: left; font-size: 4.7em; line-height: .76; letter-spacing: 0; /* three lines deep */
+  padding: .07em .07em 0 0; margin-left: -.03em;
+}
+@supports (initial-letter: 3) or (-webkit-initial-letter: 3) {
+  [data-text-body] > p:first-child:not(.quiet)::first-letter {
+    float: none; font-size: inherit; line-height: inherit; padding: 0; margin: 0 .07em 0 -.03em;
+    -webkit-initial-letter: 3; initial-letter: 3;
+  }
+}
+[data-text-body] > p.hang { text-indent: -.34em; }
+[data-text-body] > p:last-child:not(.quiet)::after {
+  content: ''; display: inline-block; width: .7em; height: .7em; margin-left: .45em; vertical-align: -.04em;
+  background: url(punk.png) center / contain no-repeat; image-rendering: pixelated;
+}
 
 /* ── blocks ──────────────────────────────────────── */
 .block { padding: clamp(72px, 12vh, 140px) var(--gutter) 0; }
@@ -504,6 +521,17 @@ a.quiet:hover, button.quiet:hover { color: var(--ink); }
 }
 .pick-work .pick-note { font-size: clamp(18px, 1.35vw, 21px); line-height: 1.35; letter-spacing: -0.015em; margin: 0 0 14px; }
 .pick-work .links { margin-top: 14px; }
+.pick-info > .pick-note:has(+ .pick-note) { margin-bottom: .7em; } /* an intro in several paragraphs */
+/* works without notes: a hang, the first one wide, the rest in pairs of equal height */
+.pick-hang { display: flex; flex-direction: column; gap: clamp(36px, 5vw, 80px); margin-top: clamp(24px, 4vw, 56px); }
+.hang-row { display: flex; align-items: flex-start; gap: clamp(16px, 2.6vw, 44px); }
+.hang-work { margin: 0; min-width: 0; flex: var(--ar, 1) 1 0%; }
+.hang-one .hang-work { flex: 0 1 auto; width: min(100%, calc(80svh * var(--ar, 1))); }
+.hang-work .pick-frame { width: 100%; }
+.hang-cap { display: flex; flex-direction: column; gap: 3px; margin-top: 14px; }
+.hang-title { font-family: var(--serif); font-size: clamp(20px, 1.6vw, 26px); letter-spacing: -0.03em; line-height: 1.15; }
+.hang-detail { color: var(--mute); font-size: var(--t-small); }
+@media (max-width: 720px) { .hang-row { flex-direction: column; } .hang-work, .hang-one .hang-work { flex: none; width: 100%; } }
 .month-past { margin-top: clamp(64px, 9vw, 120px); }
 .month-past .posts-head span:last-child { color: var(--mute); }
 @media (max-width: 860px) { .pick, .pick-work { grid-template-columns: 1fr; } .pick-frame { width: 100%; } }

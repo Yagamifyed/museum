@@ -227,6 +227,30 @@ function featuredWork(p, w) {
   </figure>`;
 }
 
+// works shown without notes hang as a gallery: the first one wide, the rest in
+// pairs whose widths follow their proportions, so each pair ends up the same height
+function hungWork(p, w, sizes) {
+  const im = w.image;
+  const ar = im?.w && im?.h ? (im.w / im.h).toFixed(4) : 1;
+  const open = w.workId ? `href="${link({ id: w.workId })}"` : w.url ? `href="${esc(w.url)}" target="_blank" rel="noopener noreferrer"` : '';
+  const size = im?.w && im?.h ? ` width="${im.w}" height="${im.h}"` : '';
+  const srcset = im?.thumb ? ` srcset="${esc(im.thumb)} 720w, ${esc(im.src)} ${im.w || 1600}w" sizes="${sizes}"` : '';
+  return `<figure class="hang-work" data-ar="${ar}">
+    <a class="frame pick-frame" ${open}><img${im.pixelated ? ' class="pixelated"' : ''} src="${esc(im.src)}"${srcset} alt="${esc(w.title)} by ${esc(p.name)}"${size} loading="lazy" decoding="async"></a>
+    <figcaption class="hang-cap">
+      <span class="hang-title">${esc(w.title)}</span>
+      ${w.detail ? `<span class="hang-detail">${esc(w.detail)}</span>` : ''}
+    </figcaption>
+  </figure>`;
+}
+
+function hang(p, works) {
+  const rows = [works.slice(0, 1)];
+  for (let i = 1; i < works.length; i += 2) rows.push(works.slice(i, i + 2));
+  return `<div class="pick-hang">${rows.map((r) => `<div class="hang-row${r.length === 1 ? ' hang-one' : ''}">${
+    r.map((w) => hungWork(p, w, r.length === 1 ? '(max-width: 860px) 100vw, 90vw' : '(max-width: 720px) 100vw, 50vw')).join('')}</div>`).join('')}</div>`;
+}
+
 function renderMonth(no) {
   const p = spot.months.find((x) => x.no === no) || spot.months[0];
   $('[data-month-sub]').innerHTML = `Nominate yourself or someone else: <a class="quiet" href="https://x.com/${esc(data.profile.x)}" target="_blank" rel="noopener">@${esc(data.profile.x)} ↗</a>`;
@@ -252,13 +276,14 @@ function renderMonth(no) {
       <span class="sheet-chain">${esc(monthLine(p))}</span>
       <h3 class="pick-name">${esc(p.name)}</h3>
       ${p.tagline ? `<p class="pick-tag">${esc(p.tagline)}</p>` : ''}
-      ${p.note ? `<p class="pick-note">${esc(p.note)}</p>` : ''}
+      ${(p.noteParas?.length ? p.noteParas : p.note ? [p.note] : []).map((n) => `<p class="pick-note">${esc(n)}</p>`).join('')}
       <dl class="facts">${facts.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
       ${p.watch?.length ? `<div class="to-watch"><span class="quiet">Also worth a look</span><ol>${p.watch.map((w) =>
         `<li>${w.href ? `<a href="${esc(w.href)}" target="_blank" rel="noopener noreferrer">${esc(w.name)} ↗</a>` : esc(w.name)}</li>`).join('')}</ol></div>` : ''}
       <div class="links">${(p.links || []).map(([label, href]) => `<a href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(label)} ↗</a>`).join('')}</div>
     </div>
-    ${featured.length ? `<div class="pick-works">${featured.map((w) => featuredWork(p, w)).join('')}</div>` : ''}`;
+    ${!featured.length ? '' : featured.every((w) => w.image && !w.notes?.length) ? hang(p, featured)
+      : `<div class="pick-works">${featured.map((w) => featuredWork(p, w)).join('')}</div>`}`;
   $$('[data-ar]', $('[data-pick]')).forEach((el) => el.style.setProperty('--ar', el.dataset.ar));
 
   const past = spot.months.filter((x) => x !== p);
@@ -290,7 +315,7 @@ function renderText(t) {
   PAGE_TITLES.text = t.title;
   $('[data-text-title]').textContent = t.title;
   $('[data-text-body]').innerHTML = t.blocks?.length
-    ? t.blocks.map((b) => (b.h ? `<h2>${esc(b.h)}</h2>` : `<p>${esc(b.p)}</p>`)).join('')
+    ? t.blocks.map((b) => (b.h ? `<h2>${esc(b.h)}</h2>` : `<p${/^[‘“'"]/.test(b.p) ? ' class="hang"' : ''}>${esc(b.p)}</p>`)).join('') // an opening quote mark hangs in the margin
     : '<p class="quiet">Coming soon.</p>';
   document.title = `${data.profile.name} — ${t.title}`;
 }
