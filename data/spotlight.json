@@ -6,9 +6,9 @@
    "name": "Amir Rahati",
    "tagline": null,
    "date": "2026-11-17",
-   "note": "Amir Rahati is The Museum’s inaugural artist of the month (#1, November 2026). He is an Iranian painter whose acrylic paintings make ample reference to the figures that came before him – be it Cervantes in the Don Quixote series, Goya in Unnumbered Tears, Modigliani and Jeanne Hébuterne in Jeanne, or Ralph Steadman in A Man from the Middle Earth. His newest series, 33 3ANGLEs, turns the letters of the Persian alphabet into images. As an appreciator of the fine arts, I urge you to mint a piece. It would be most imprudent to miss out.",
+   "note": "Amir Rahati is The Museum’s inaugural artist of the month (#1, November 2026). He is an Iranian painter whose acrylic paintings make ample reference to the figures that came before him -- be it Cervantes in the Don Quixote series, Goya in Unnumbered Tears, Modigliani and Jeanne Hébuterne in Jeanne, or Ralph Steadman in A Man from the Middle Earth. His newest series, 33 3ANGLEs, turns the letters of the Persian alphabet into images. As an appreciator of the fine arts, I urge you to mint a piece. It would be most imprudent to miss out.",
    "noteParas": [
-    "Amir Rahati is The Museum’s inaugural artist of the month (#1, November 2026). He is an Iranian painter whose acrylic paintings make ample reference to the figures that came before him – be it Cervantes in the Don Quixote series, Goya in Unnumbered Tears, Modigliani and Jeanne Hébuterne in Jeanne, or Ralph Steadman in A Man from the Middle Earth.",
+    "Amir Rahati is The Museum’s inaugural artist of the month (#1, November 2026). He is an Iranian painter whose acrylic paintings make ample reference to the figures that came before him -- be it Cervantes in the Don Quixote series, Goya in Unnumbered Tears, Modigliani and Jeanne Hébuterne in Jeanne, or Ralph Steadman in A Man from the Middle Earth.",
     "His newest series, 33 3ANGLEs, turns the letters of the Persian alphabet into images. As an appreciator of the fine arts, I urge you to mint a piece. It would be most imprudent to miss out."
    ],
    "handle": "AmirRahatiarts",
@@ -16,6 +16,20 @@
    "work": null,
    "links": [],
    "watch": [],
+   "socials": [
+    {
+     "name": "SuperRare",
+     "href": "https://superrare.com/amirrahatiarts"
+    },
+    {
+     "name": "33 3ANGLEs on Transient",
+     "href": "https://www.transient.xyz/nfts/ethereum/0xd7c3342ea89dc618df45eb5871181b00f8f87cc6"
+    },
+    {
+     "name": "OpenSea",
+     "href": "https://opensea.io/0xf13b6539b0b311c346b2739884ba896c8b92396f"
+    }
+   ],
    "workId": "ethereum:0xdee40b4100261c9320df0bf10fccce91aaff4d65:2",
    "image": {
     "src": "media/16d30470d71f.webp",
@@ -107,7 +121,7 @@
    "title": "Philosophy",
    "blocks": [
     {
-     "p": "The aesthetic value of an artwork is not, as I understand it, contingent solely on the output which the artist produces. It also depends on what is put in, by whom, and in what context. By that I mean that good art depends, at least in part, on what the artist has read and looked at – whom they have studied, whom they have aligned with, and whom they have placed themselves in opposition to. The great artists of the past knew their history and their philosophy – they knew who came before them as well as the tradition of which they were a part. Likewise, the Web3 era has marked an exciting blip in the annals of art history. In 2026, the movement has since all but died. It is nigh time we rekindle it."
+     "p": "The aesthetic value of an artwork is not, as I understand it, contingent solely on the output which the artist produces. It also depends on what is put in, by whom, and in what context. By that I mean that good art depends, at least in part, on what the artist has read and looked at -- whom they have studied, whom they have aligned with, and whom they have placed themselves in opposition to. The great artists of the past knew their history and their philosophy -- they knew who came before them as well as the tradition of which they were a part. Likewise, the Web3 era has marked an exciting blip in the annals of art history. In 2026, the movement has since all but died. It is nigh time we rekindle it."
     },
     {
      "p": "‘It is a shame for a man to grow old without seeing the strength and beauty of which his body is capable’, Socrates is believed to have said. Likewise, it is a tragedy for us to grow old without discovering the art we are capable of making. The Museum is my attempt to foster this vision, and support artists in their quest of making great art. If this resonates with you, please get in touch."

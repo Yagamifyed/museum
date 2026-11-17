@@ -253,7 +253,14 @@ function hang(p, works) {
 
 function renderMonth(no) {
   const p = spot.months.find((x) => x.no === no) || spot.months[0];
-  $('[data-month-sub]').innerHTML = `<a class="quiet" href="https://x.com/${esc(data.profile.x)}" target="_blank" rel="noopener">Nominate someone on X ↗</a>`;
+  $('[data-month-sub]').hidden = true; // the nomination line sits at the foot of the page
+  let nominate = $('[data-month-nominate]');
+  if (!nominate) {
+    nominate = Object.assign(document.createElement('p'), { className: 'page-sub month-nominate' });
+    nominate.dataset.monthNominate = '';
+    $('[data-month-past-block]').parentElement.append(nominate);
+  }
+  nominate.innerHTML = `<a class="quiet" href="https://x.com/${esc(data.profile.x)}" target="_blank" rel="noopener">Nominate someone on X ↗</a>`;
   if (!p) {
     $('[data-pick]').innerHTML = '<div class="essay"><p class="quiet">Coming soon.</p></div>'; // as Philosophy does
     $('[data-month-past-block]').hidden = true;
@@ -266,6 +273,7 @@ function renderMonth(no) {
   const open = p.workId ? `href="${link({ id: p.workId })}"` : p.work ? `href="${esc(p.work)}" target="_blank" rel="noopener noreferrer"` : '';
   const facts = [
     p.x && ['On X', `<a href="${esc(p.x)}" target="_blank" rel="noopener noreferrer">@${esc(p.handle)} ↗</a>`],
+    p.socials?.length && ['Works', p.socials.map((l) => `<a href="${esc(l.href)}" target="_blank" rel="noopener noreferrer">${esc(l.name)} ↗</a>`).join(' · '), 'wrap'],
     ['I own', mine.length && order.includes(mine[0]) ? `<a href="${artistLink(by(mine[0]))}">${plural(mine.length, 'work')}</a>` : mine.length ? plural(mine.length, 'work') : 'Nothing yet'],
     p.date && ['Picked', day(p.date)],
   ].filter(Boolean);
@@ -277,7 +285,7 @@ function renderMonth(no) {
       <h3 class="pick-name">${esc(p.name)}</h3>
       ${p.tagline ? `<p class="pick-tag">${esc(p.tagline)}</p>` : ''}
       ${(p.noteParas?.length ? p.noteParas : p.note ? [p.note] : []).map((n) => `<p class="pick-note">${esc(n)}</p>`).join('')}
-      <dl class="facts">${facts.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
+      <dl class="facts">${facts.map(([k, v, c]) => `<dt>${k}</dt><dd${c ? ` class="${c}"` : ''}>${v}</dd>`).join('')}</dl>
       ${p.watch?.length ? `<div class="to-watch"><span class="quiet">Also worth a look</span><ol>${p.watch.map((w) =>
         `<li>${w.href ? `<a href="${esc(w.href)}" target="_blank" rel="noopener noreferrer">${esc(w.name)} ↗</a>` : esc(w.name)}</li>`).join('')}</ol></div>` : ''}
       <div class="links">${(p.links || []).map(([label, href]) => `<a href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(label)} ↗</a>`).join('')}</div>
