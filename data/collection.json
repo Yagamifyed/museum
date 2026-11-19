@@ -7,8 +7,119 @@
     "x": "levinlevin__"
   },
   "wallets": {},
-  "updated": "2026-11-18",
+  "updated": "2026-11-19",
   "works": [
+    {
+      "status": "owned",
+      "id": "tezos:KT1Eg88gyLnkNez5QK51ZGjnFpDEy3yL17aA:30",
+      "chain": "tezos",
+      "contract": "KT1Eg88gyLnkNez5QK51ZGjnFpDEy3yL17aA",
+      "tokenId": "30",
+      "title": "His Day",
+      "collection": "In The Nude",
+      "artist": "Lucy Winter",
+      "description": "\"His Day\"\n\nAn original photographic artwork created in celebration of International Men's Day. A quiet tribute to masculinity, strength, and vulnerability. A reminder that every man deserves to be seen, appreciated, and celebrated.\n\nA small gift of appreciation for my collectors, dedicated to this special day. 🖤",
+      "editions": 15,
+      "owned": 1,
+      "minted": "2026-11-19",
+      "acquired": "2026-11-19",
+      "interactive": null,
+      "links": [
+        [
+          "objkt",
+          "https://objkt.com/tokens/KT1Eg88gyLnkNez5QK51ZGjnFpDEy3yL17aA/30"
+        ],
+        [
+          "TzKT",
+          "https://tzkt.io/KT1Eg88gyLnkNez5QK51ZGjnFpDEy3yL17aA/tokens/30"
+        ]
+      ],
+      "media": {
+        "src": "media/d3f17ba1168b.webp",
+        "w": 1380,
+        "h": 1600,
+        "thumb": "media/thumb/d3f17ba1168b.webp",
+        "lqip": "data:image/webp;base64,UklGRlYAAABXRUJQVlA4IEoAAABwAwCdASoRABQAPu1usFIppiSiqAgBMB2JaSdhgAYWF5c11AAA/vAlE2dFpsO9G+zLh8Q6xKQxLGYoDE42/zDehY/tGKJRNswAAA=="
+      },
+      "motion": null,
+      "original": "ipfs://bafkreicswb5cncegsy3g3obtaymxrdnonqt2kmutvrt6rukhl5psqylt3y",
+      "museum": null,
+      "arrival": true
+    },
+    {
+      "status": "owned",
+      "id": "ethereum:0x2dc5c0e1ce5616471b20955ff975aa0c31e2302d:12",
+      "chain": "ethereum",
+      "contract": "0x2dc5c0e1ce5616471b20955ff975aa0c31e2302d",
+      "tokenId": "12",
+      "title": "goblin dAy #12",
+      "collection": "goblin dAy",
+      "artist": null,
+      "description": "",
+      "editions": 1,
+      "owned": 1,
+      "minted": null,
+      "acquired": "2026-11-19",
+      "interactive": "https://time.manifold.xyz/film.html?seed=871944783",
+      "links": [
+        [
+          "OpenSea",
+          "https://opensea.io/item/ethereum/0x2dc5c0e1ce5616471b20955ff975aa0c31e2302d/12"
+        ],
+        [
+          "Etherscan",
+          "https://etherscan.io/nft/0x2dc5c0e1ce5616471b20955ff975aa0c31e2302d/12"
+        ]
+      ],
+      "media": {
+        "src": "media/e64d3e9bd482.webp",
+        "w": 512,
+        "h": 512,
+        "thumb": "media/thumb/e64d3e9bd482.webp",
+        "lqip": "data:image/webp;base64,UklGRqgAAABXRUJQVlA4IJwAAABQBACdASoUABQAPu1wsFIppiSiqAgBMB2JQBTigW9PvV35lhYswa7T1E9wAPtwVHbjBWoFTPxQaQF1WTALd3Sacb9+swuY8LR4K31sB+B7TIA0ZiuqMRZvXPJ22Ez+rc5NKQOCvDwEI5T1ptVWhqkMzRbcXQRmkH9wLSnvMfubi4NbtqreBO3Gsd9NITTJfMIXPphYec+SxZFQAAA="
+      },
+      "motion": null,
+      "original": "https://time.manifold.xyz/api/image/1/12.jpg",
+      "museum": null,
+      "arrival": true
+    },
+    {
+      "status": "owned",
+      "id": "ethereum:0xf60bea71acc9fb1bf3e00cc14e9205c0f1faf7d9:1",
+      "chain": "ethereum",
+      "contract": "0xf60bea71acc9fb1bf3e00cc14e9205c0f1faf7d9",
+      "tokenId": "1",
+      "title": "blue_ocean_etude",
+      "collection": "blue ocean.",
+      "artist": "owlcean",
+      "description": "blue ocean.  \n",
+      "editions": null,
+      "owned": 1,
+      "minted": null,
+      "acquired": "2026-11-19",
+      "interactive": null,
+      "links": [
+        [
+          "OpenSea",
+          "https://opensea.io/item/ethereum/0xf60bea71acc9fb1bf3e00cc14e9205c0f1faf7d9/1"
+        ],
+        [
+          "Etherscan",
+          "https://etherscan.io/nft/0xf60bea71acc9fb1bf3e00cc14e9205c0f1faf7d9/1"
+        ]
+      ],
+      "media": {
+        "src": "media/cdff06e76d4b.webp",
+        "w": 1200,
+        "h": 1600,
+        "thumb": "media/thumb/cdff06e76d4b.webp",
+        "lqip": "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAQBACdASoPABQAPu1kqU2ppaOiMAgBMB2JZgCdMoMYAEs7blG7cs7soAD+Tp3O1K1JNFPO33Zd51APApMfDqMsWYp19/QjF5pbv/cmTkC6OYpRSVTbF/VbKmZyh45UVyKsAAAA"
+      },
+      "motion": null,
+      "original": "https://arweave.net/PCJDkaxtH-DfYRgcsXXB7Y1bVmrEwjBKTR-6ivyg5tM",
+      "museum": null,
+      "arrival": true
+    },
     {
       "status": "owned",
       "id": "tezos:KT1LuCpoY86Jda4tHkWGFK8FNdpFy7JukyBY:7",
