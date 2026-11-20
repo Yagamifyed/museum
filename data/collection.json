@@ -7,7 +7,7 @@
     "x": "levinlevin__"
   },
   "wallets": {},
-  "updated": "2026-11-19",
+  "updated": "2026-11-20",
   "works": [
     {
       "status": "owned",
@@ -60,7 +60,7 @@
       "owned": 1,
       "minted": null,
       "acquired": "2026-11-19",
-      "interactive": "https://time.manifold.xyz/film.html?seed=871944783",
+      "interactive": null,
       "links": [
         [
           "OpenSea",
