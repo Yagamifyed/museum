@@ -7,8 +7,45 @@
     "x": "levinlevin__"
   },
   "wallets": {},
-  "updated": "2026-11-23",
+  "updated": "2026-11-25",
   "works": [
+    {
+      "status": "owned",
+      "id": "ethereum:0xf02038213677e852ca9c0f734ef9b313756b998c:5",
+      "chain": "ethereum",
+      "contract": "0xf02038213677e852ca9c0f734ef9b313756b998c",
+      "tokenId": "5",
+      "title": "I bleed, therefore I am",
+      "collection": "INK BLOT - EDITIONS",
+      "artist": "ADEWALE MAYOWA",
+      "description": "Chemistry is unfeeling yet with the right nudging it gives rise to biological systems that can look upon the universe in awe and wonder how all of this came to be.\n\nLife is raw, horny, violent, loving and wet. To be alive is to feel, to fear, to break, to be put together again with love and finally to die. If you cannot die, can you be said to have truly lived?\n\nMachine men with machine hearts where is the life in you? You think but do you feel? You know but do you love? If I cut you, will you give blood red and true?\n\nYour machine hands can render the most intricate textures of physical reality in perfect detail. But you have never known lust or hate or the fear of monsters lurking in the dark.\n\nI bleed, therefore I am.  \nTill I see your blood run red and true, I do not know you.",
+      "editions": null,
+      "owned": 1,
+      "minted": null,
+      "acquired": "2026-11-25",
+      "interactive": null,
+      "links": [
+        [
+          "OpenSea",
+          "https://opensea.io/item/ethereum/0xf02038213677e852ca9c0f734ef9b313756b998c/5"
+        ],
+        [
+          "Etherscan",
+          "https://etherscan.io/nft/0xf02038213677e852ca9c0f734ef9b313756b998c/5"
+        ]
+      ],
+      "media": {
+        "src": "media/b989a961b3f0.webp",
+        "w": 1280,
+        "h": 1600,
+        "thumb": "media/thumb/b989a961b3f0.webp",
+        "lqip": "data:image/webp;base64,UklGRpoAAABXRUJQVlA4II4AAAAQBACdASoQABQAPu1iqU2ppaOiMAgBMB2JbACdIJPCQxNNPc8iIpA9AAD+eNnYtioM5mYtfKByfr81/ZHijsmBgdzmslCjijEzj4MkqR9QgbE7Qn7MJhsoXeveL4H2/qA0s1DX4utcsrk3nxJvrhPFmevVLvBomFWnZRPJMT7oS3Nns/yGneZsAlgU4AAA"
+      },
+      "motion": null,
+      "original": "https://arweave.net/TTQ5Iogc2m3NDVp6f6JY2V-Tde9SEjmu7ykaqrREV6s",
+      "museum": null,
+      "arrival": true
+    },
     {
       "status": "owned",
       "id": "tezos:KT1QRKCZEkVwcQrVmPvnnPRceez4XPV1JMNb:29",
